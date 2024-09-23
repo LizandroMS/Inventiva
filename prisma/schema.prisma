@@ -23,13 +23,32 @@ model User {
   createdAt DateTime @default(now())
 }
 
-model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Float
-  stock     Int
-  createdAt DateTime @default(now())
+model Branch {
+  id         Int         @id @default(autoincrement())
+  name       String
+  address    String
+  phone      String
+  products   Product[]
+  promotions Promotion[]
 }
 
+model Product {
+  id       Int    @id @default(autoincrement())
+  name     String
+  price    Float
+  stock    Int
+  branchId Int
+  branch   Branch @relation(fields: [branchId], references: [id])
+}
+
+model Promotion {
+  id             Int    @id @default(autoincrement())
+  title          String
+  description    String
+  discount_price Float
+  branchId       Int
+  branch         Branch @relation(fields: [branchId], references: [id])
+}
+//cada ves que se agrege datos se debe ejecutar     npx prisma generate
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
