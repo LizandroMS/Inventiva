@@ -1,110 +1,138 @@
-// src/app/page.tsx
-import { PrismaClient, Product } from "@prisma/client";
-import Image from "next/image";
-import { Branch } from "@/types/branch";
-import { Promotion } from "@/types/promotion";
+"use client";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Slider from 'react-slick'; // Importar el componente Slider de react-slick
 
-const prisma = new PrismaClient();
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
-export default async function Home() {
-  // Obtener la primera sucursal (por defecto)
-  const branch: Branch | null = await prisma.branch.findFirst();
+// Definimos el tipo CustomArrowProps directamente en el archivo
+interface CustomArrowProps {
+  className?: string;
+  style?: React.CSSProperties;
+  onClick?: () => void;
+}
 
-  // Si no hay sucursal, maneja el error aquí
-  if (!branch) {
-    return <div>No se encontraron sucursales</div>;
-  }
+// Flechas personalizadas para el carrusel con tipos correctos
+const NextArrow = (props: CustomArrowProps) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", right: "10px", zIndex: 1 }}
+      onClick={onClick}
+    />
+  );
+};
 
-  // Obtener productos y promociones de la sucursal seleccionada
-  const products: Product[] = await prisma.product.findMany({
-    where: { branchId: branch.id },
-  });
+const PrevArrow = (props: CustomArrowProps) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block", left: "10px", zIndex: 1 }}
+      onClick={onClick}
+    />
+  );
+};
 
-  const promotions: Promotion[] = await prisma.promotion.findMany({
-    where: { branchId: branch.id },
-  });
+export default function Home() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // Confirmamos que estamos en el cliente
+  }, []);
+
+  // Configuración del slider con flechas personalizadas
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    arrows: true, // Habilitar las flechas
+    nextArrow: <NextArrow />, // Flecha siguiente personalizada
+    prevArrow: <PrevArrow />, // Flecha anterior personalizada
+  };
 
   return (
     <div>
       {/* Header */}
-      <header className="bg-yellow-500 text-gray-900 p-4 shadow-md">
+      <header className="bg-yellow-500 text-white py-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-4xl font-bold">Pollería El Sabrosito</h1>
-          <nav className="space-x-4">
-            <a href="#" className="text-gray-900 hover:text-orange-500">Menú</a>
-            <a href="#" className="text-gray-900 hover:text-orange-500">Promociones</a>
+          <div className="flex items-center">
+            <Image src="/images/logo.png" alt="Pollería Logo" width={48} height={48} className="mr-4" />
+            <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
+          </div>
+          <nav className="flex space-x-4">
+            <a href="#" className="text-white hover:text-gray-300">Inicio</a>
+            <a href="#" className="text-white hover:text-gray-300">Carta</a>
+            <a href="#" className="text-white hover:text-gray-300">Promociones</a>
+            <a href="#" className="text-white hover:text-gray-300">Locales</a>
           </nav>
+          <div className="flex space-x-4">
+            <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">Iniciar Sesión</button>
+            <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">¡Pide Online!</button>
+          </div>
         </div>
       </header>
 
-      {/* Selección de sucursal */}
-      <section className="py-4 bg-gray-100">
-        <div className="container mx-auto">
-          <label htmlFor="branch-select" className="block mb-2 text-lg font-semibold text-gray-700">
-            Selecciona una sucursal:
-          </label>
-          <select id="branch-select" className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-            <option value={branch.id}>
-              {branch.name} - {branch.address}
-            </option>
-            {/* Aquí puedes agregar más sucursales si lo deseas */}
-          </select>
-        </div>
-      </section>
-
-      {/* Sección de detalles de la pollería */}
-      <section className="bg-white py-10">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Bienvenido a Pollería Inventiva - {branch.name}
-          </h2>
-          <p className="text-lg text-gray-700">
-            La mejor pollería de la ciudad. ¡Ven a disfrutar del auténtico sabor
-            del pollo a la brasa y más!
-          </p>
-          <Image src="/images/polleria.png" alt="Pollería" width={600} height={400} className="mx-auto my-4 rounded-lg shadow-lg" />
-        </div>
-      </section>
-
-      {/* Menú de productos */}
-      <section className="py-10 bg-gray-50">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Nuestro Menú en {branch.name}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <div key={product.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-lg text-gray-700 mb-4">S/ {product.price}</p>
-                <button className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg shadow-sm hover:shadow-md transition-colors">
-                  Agregar al carrito
-                </button>
+      {/* Carrusel que cubre todo el ancho */}
+      {isClient && (
+        <section className="py-10">
+          <div className="container mx-auto">
+            <Slider {...settings}>
+              <div>
+                <div className="relative w-full h-[400px]">
+                  <Image
+                    src="/images/promo2.png"
+                    alt="Delivery Gratis"
+                    layout="fill"
+                    objectFit="cover" // Hace que la imagen cubra todo el contenedor sin desbordar
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Sección de Promociones */}
-      <section className="py-10 bg-white">
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Promociones Activas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {promotions.map((promo) => (
-              <div key={promo.id} className="bg-yellow-100 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{promo.title}</h3>
-                <p className="text-lg text-gray-700 mb-4">{promo.description}</p>
-                <p className="font-bold text-orange-600">S/ {promo.discount_price}</p>
+              <div>
+                <div className="relative w-full h-[400px]">
+                  <Image
+                    src="/images/promo1.png"
+                    alt="Promoción 2x1"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
-            ))}
+
+              <div>
+                <div className="relative w-full h-[400px]">
+                  <Image
+                    src="/images/promo2.png"
+                    alt="Descuento en combos"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
+                </div>
+              </div>
+            </Slider>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
-      <footer className="bg-yellow-500 text-gray-900 p-4 text-center shadow-inner">
-        <p className="text-lg font-semibold">© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
+      <footer className="bg-green-700 text-white py-4 text-center">
+        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
+        <div className="flex justify-center space-x-4 mt-2">
+          <a href="#">Términos y condiciones</a>
+          <a href="#">Políticas de privacidad</a>
+          <a href="#">Locales</a>
+        </div>
       </footer>
     </div>
   );
