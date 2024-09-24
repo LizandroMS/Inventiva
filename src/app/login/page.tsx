@@ -90,6 +90,7 @@ export default function LoginPage() {
       // Guardar el token JWT en localStorage
       if (user.token) {
         localStorage.setItem("userToken", user.token);
+        localStorage.setItem("userName", user.fullName);
       } else {
         throw new Error("Token no encontrado en la respuesta.");
       }

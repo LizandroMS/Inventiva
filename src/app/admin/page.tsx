@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // Usa jwt-decode para decodificar el token
+import Header from "@/components/Header";
 
 interface Personal {
   id: number;
@@ -61,41 +62,47 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-6">
-        Gestión de Personal y Administradores
-      </h1>
+    <div>
+      <Header />
+      <div className="container mx-auto">
+        <h1 className="text-2xl font-bold mb-6">
+          Gestión de Personal y Administradores
+        </h1>
 
-      <ul>
-        {personal.map((persona) => (
-          <li key={persona.id} className="mb-4 border p-4 rounded-lg shadow-lg">
-            <p>Nombre: {persona.nombre}</p>
-            <p>Rol: {persona.rol}</p>
-            <button className="mt-2 bg-red-500 text-white py-1 px-4 rounded">
-              Eliminar
-            </button>
-          </li>
-        ))}
-      </ul>
+        <ul>
+          {personal.map((persona) => (
+            <li
+              key={persona.id}
+              className="mb-4 border p-4 rounded-lg shadow-lg"
+            >
+              <p>Nombre: {persona.nombre}</p>
+              <p>Rol: {persona.rol}</p>
+              <button className="mt-2 bg-red-500 text-white py-1 px-4 rounded">
+                Eliminar
+              </button>
+            </li>
+          ))}
+        </ul>
 
-      <h2 className="text-xl font-bold mb-4 mt-6">
-        Agregar nuevo personal o administrador
-      </h2>
+        <h2 className="text-xl font-bold mb-4 mt-6">
+          Agregar nuevo personal o administrador
+        </h2>
 
-      <form>
-        <input
-          type="text"
-          placeholder="Nombre completo"
-          className="border p-2 rounded mb-4 w-full"
-        />
-        <select className="border p-2 rounded mb-4 w-full">
-          <option value="personal">Personal</option>
-          <option value="admin">Administrador</option>
-        </select>
-        <button className="bg-green-500 text-white py-2 px-4 rounded">
-          Agregar Personal/Administrador
-        </button>
-      </form>
+        <form>
+          <input
+            type="text"
+            placeholder="Nombre completo"
+            className="border p-2 rounded mb-4 w-full"
+          />
+          <select className="border p-2 rounded mb-4 w-full">
+            <option value="personal">Personal</option>
+            <option value="admin">Administrador</option>
+          </select>
+          <button className="bg-green-500 text-white py-2 px-4 rounded">
+            Agregar Personal/Administrador
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

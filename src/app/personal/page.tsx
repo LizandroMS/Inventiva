@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-
+import Header from "@/components/Header";
 
 interface Pedido {
   id: number;
@@ -89,23 +89,29 @@ export default function PersonalPage() {
   }
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Bandeja de Pedidos</h1>
-      <ul>
-        {pedidos.map((pedido) => (
-          <li key={pedido.id} className="mb-4 border p-4 rounded-lg shadow-lg">
-            <p>Producto: {pedido.producto}</p>
-            <p>Cantidad: {pedido.cantidad}</p>
-            <p>Estado: {pedido.estado}</p>
-            <button
-              onClick={() => cambiarEstadoPedido(pedido.id)}
-              className="mt-2 bg-blue-500 text-white py-1 px-4 rounded"
+    <div>
+      <Header />
+      <div className="container mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Bandeja de Pedidos</h1>
+        <ul>
+          {pedidos.map((pedido) => (
+            <li
+              key={pedido.id}
+              className="mb-4 border p-4 rounded-lg shadow-lg"
             >
-              Cambiar estado
-            </button>
-          </li>
-        ))}
-      </ul>
+              <p>Producto: {pedido.producto}</p>
+              <p>Cantidad: {pedido.cantidad}</p>
+              <p>Estado: {pedido.estado}</p>
+              <button
+                onClick={() => cambiarEstadoPedido(pedido.id)}
+                className="mt-2 bg-blue-500 text-white py-1 px-4 rounded"
+              >
+                Cambiar estado
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
