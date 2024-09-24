@@ -24,6 +24,7 @@ model User {
   phone     String
   dni       String
   birthDate DateTime
+  role      String   @default("cliente") // Añadimos el campo de rol
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -59,6 +60,4 @@ model Promotion {
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
 
-
 //si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev
-

@@ -61,41 +61,45 @@ export default function LoginPage() {
   };
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); // Limpiar cualquier error anterior
+    setError(""); // Limpiar cualquier error anterior
     setLoading(true); // Activar el estado de loading
 
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
+      const res = await fetch("/api/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        setError(errorData.error || 'Error desconocido');
+        setError(errorData.error || "Error desconocido");
         setLoading(false); // Desactivar loading si hay error
         return;
       }
 
       // Si el login fue exitoso
       const user = await res.json();
-      localStorage.setItem('user', JSON.stringify(user)); // Guardar datos del usuario
+      localStorage.setItem("user", JSON.stringify(user)); // Guardar datos del usuario
 
       // Retrasar la redirección para mostrar el loading durante 1 segundo
       setTimeout(() => {
         setLoading(false); // Desactivar el loading
-        router.push('/');  // Redirigir a la página de inicio
-      }, 1000);  // Retraso de 1 segundo
-
+        if (user.role === "cliente") {
+          router.push("/"); // Página de inicio del cliente
+        } else if (user.role === "personal") {
+          router.push("/personal"); // Página del personal
+        } else if (user.role === "admin") {
+          router.push("/admin"); // Página del administrador
+        }
+      }, 1000); // Retraso de 1 segundo
     } catch (error) {
-      setError('Ocurrió un error durante el inicio de sesión');
+      setError("Ocurrió un error durante el inicio de sesión");
       setLoading(false); // Desactivar loading si hay error
     }
   };
-
 
   const toggleForm = () => {
     setIsLogin(!isLogin);

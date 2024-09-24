@@ -5,46 +5,42 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { email, password } = req.body;
+    if (req.method === 'POST') {
+        const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Correo y contraseña son requeridos' });
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Correo y contraseña son requeridos' });
+        }
+
+        try {
+            // Buscar al usuario por correo
+            const user = await prisma.user.findUnique({
+                where: { email },
+            });
+
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
+
+            // Verificar la contraseña
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+
+            if (!isPasswordValid) {
+                return res.status(401).json({ error: 'Contraseña incorrecta' });
+            }
+
+            return res.status(200).json({
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                role: user.role,
+            });
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            return res.status(500).json({ error: 'Error al iniciar sesión' });
+        }
+    } else {
+        res.setHeader('Allow', ['POST']);
+        return res.status(405).end(`Método ${req.method} no permitido`);
     }
-
-    try {
-      // Buscar al usuario por correo
-      const user = await prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (!user) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
-
-      // Verificar la contraseña
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordValid) {
-        return res.status(401).json({ error: 'Contraseña incorrecta' });
-      }
-
-      // Si todo es correcto, retornar los datos del usuario (puedes excluir la contraseña)
-      return res.status(200).json({
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        address: user.address,
-        phone: user.phone,
-        dni: user.dni,
-        birthDate: user.birthDate,
-      });
-    } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      return res.status(500).json({ error: 'Error al iniciar sesión' });
-    }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).end(`Método ${req.method} no permitido`);
-  }
 }
