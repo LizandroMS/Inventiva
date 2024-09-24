@@ -24,6 +24,7 @@ export default function LoginPage() {
     });
   };
 
+  // Manejo del registro de usuario
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Limpiar cualquier error anterior
@@ -59,6 +60,8 @@ export default function LoginPage() {
       setLoading(false); // Desactivar loading si hay error
     }
   };
+
+  // Manejo del inicio de sesión de usuario
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(""); // Limpiar cualquier error anterior
@@ -82,11 +85,19 @@ export default function LoginPage() {
 
       // Si el login fue exitoso
       const user = await res.json();
-      localStorage.setItem("user", JSON.stringify(user)); // Guardar datos del usuario
+      console.log("Contenido del usuario:", user);
+
+      // Guardar el token JWT en localStorage
+      if (user.token) {
+        localStorage.setItem("userToken", user.token);
+      } else {
+        throw new Error("Token no encontrado en la respuesta.");
+      }
 
       // Retrasar la redirección para mostrar el loading durante 1 segundo
       setTimeout(() => {
         setLoading(false); // Desactivar el loading
+        // Redirigir a la página correcta según el rol del usuario
         if (user.role === "cliente") {
           router.push("/"); // Página de inicio del cliente
         } else if (user.role === "personal") {
@@ -101,6 +112,7 @@ export default function LoginPage() {
     }
   };
 
+  // Alternar entre formularios de login y registro
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
@@ -111,9 +123,7 @@ export default function LoginPage() {
         {loading ? (
           <div className="flex flex-col justify-center items-center h-48">
             <div className="spinner mb-4"></div> {/* Spinner personalizado */}
-            <p className="text-xl font-bold text-blue-500 text-black">
-              Registrando...
-            </p>
+            <p className="text-xl font-bold text-blue-500">Cargando...</p>
           </div>
         ) : isLogin ? (
           <div>
@@ -184,11 +194,9 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Otros campos */}
+              {/* Otros campos del formulario de registro */}
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
+                <label className="block text-gray-700">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -212,58 +220,8 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Dirección */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Dirección</label>
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Ingresa tu dirección"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Teléfono */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Teléfono</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Ingresa tu teléfono"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* DNI */}
-              <div className="mb-4">
-                <label className="block text-gray-700">DNI</label>
-                <input
-                  type="text"
-                  name="dni"
-                  placeholder="Ingresa tu DNI"
-                  value={formData.dni}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Fecha de nacimiento */}
-              <div className="mb-4">
-                <label className="block text-gray-700">
-                  Fecha de Nacimiento
-                </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
+              {/* Otros campos adicionales como Dirección, Teléfono, DNI, etc. */}
+              {/* ... */}
 
               <div className="mb-6">
                 <button

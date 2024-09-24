@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -29,11 +30,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(401).json({ error: 'Contraseña incorrecta' });
             }
 
+            // Generar un token JWT
+            const token = jwt.sign(
+                { id: user.id, email: user.email, role: user.role }, // Payload
+                'secret-key', // Clave secreta (deberías usar una clave segura en producción)
+                { expiresIn: '1h' } // Expiración del token
+            );
+
+            // Enviar el token junto con los datos del usuario
             return res.status(200).json({
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role,
+                token, // Incluir el token en la respuesta
             });
         } catch (error) {
             console.error("Error al iniciar sesión:", error);
