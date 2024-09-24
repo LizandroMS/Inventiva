@@ -1,20 +1,20 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    address: "",
-    phone: "",
-    dni: "",
-    birthDate: "",
+    fullName: '',
+    email: '',
+    password: '',
+    address: '',
+    phone: '',
+    dni: '',
+    birthDate: '',
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Estado para el loading
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Estado para manejar el loading
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,32 +26,37 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(""); // Limpiar cualquier error anterior
+    setError(''); // Limpiar cualquier error anterior
     setLoading(true); // Activar el estado de loading
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
+      const res = await fetch('/api/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
         const errorData = await res.json();
-        setError(errorData.error || "Error desconocido");
+        setError(errorData.error || 'Error desconocido');
         setLoading(false); // Desactivar loading si hay error
         return;
       }
 
       // Si el registro fue exitoso
       const user = await res.json();
-      localStorage.setItem("user", JSON.stringify(user)); // Guardar datos del usuario
-      setLoading(false);
-      router.push("/");
+      localStorage.setItem('user', JSON.stringify(user)); // Guardar datos del usuario
+
+      // Retrasar la redirección para mostrar el loading durante 1 segundo
+      setTimeout(() => {
+        setLoading(false); // Desactivar el loading
+        router.push('/');  // Redirigir a la página de inicio
+      }, 1000);  // Retraso de 1 segundo
+
     } catch (error) {
-      setError("Ocurrió un error durante el registro");
+      setError('Ocurrió un error durante el registro');
       setLoading(false); // Desactivar loading si hay error
     }
   };
@@ -64,19 +69,16 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         {loading ? (
-          <div className="flex justify-center items-center h-48">
-            <p className="text-xl font-bold">Registrando...</p>
+          <div className="flex flex-col justify-center items-center h-48">
+            <div className="spinner mb-4"></div> {/* Spinner personalizado */}
+            <p className="text-xl font-bold text-blue-500 text-black">Registrando...</p>
           </div>
         ) : isLogin ? (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-center text-black">
-              Iniciar Sesión
-            </h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-black">Iniciar Sesión</h2>
             <form>
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
+                <label className="block text-gray-700">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -108,19 +110,14 @@ export default function LoginPage() {
             </form>
             <p className="text-center">
               ¿No tienes una cuenta?{" "}
-              <button
-                onClick={toggleForm}
-                className="text-blue-500 hover:underline"
-              >
+              <button onClick={toggleForm} className="text-blue-500 hover:underline">
                 Regístrate aquí
               </button>
             </p>
           </div>
         ) : (
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-center text-black">
-              Registro
-            </h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-black">Registro</h2>
             <form onSubmit={handleSubmit}>
               {/* Nombre completo */}
               <div className="mb-4">
@@ -135,11 +132,9 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Otros campos como dirección, teléfono, etc. */}
+              {/* Otros campos */}
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
+                <label className="block text-gray-700">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -204,9 +199,7 @@ export default function LoginPage() {
 
               {/* Fecha de nacimiento */}
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Fecha de Nacimiento
-                </label>
+                <label className="block text-gray-700">Fecha de Nacimiento</label>
                 <input
                   type="date"
                   name="birthDate"
@@ -228,10 +221,7 @@ export default function LoginPage() {
             </form>
             <p className="text-center">
               ¿Ya tienes una cuenta?{" "}
-              <button
-                onClick={toggleForm}
-                className="text-blue-500 hover:underline"
-              >
+              <button onClick={toggleForm} className="text-blue-500 hover:underline">
                 Inicia sesión aquí
               </button>
             </p>
