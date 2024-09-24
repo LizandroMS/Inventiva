@@ -99,7 +99,6 @@ export default function LoginPage() {
       setTimeout(() => {
         setLoading(false); // Desactivar el loading
         // Redirigir a la página correcta según el rol del usuario
-        console.log("rol asignado", user.role);
         if (user.role === "cliente") {
           router.push("/"); // Página de inicio del cliente
         } else if (user.role === "personal") {
@@ -196,7 +195,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Otros campos del formulario de registro */}
+              {/* Correo Electrónico */}
               <div className="mb-4">
                 <label className="block text-gray-700">
                   Correo Electrónico
@@ -224,8 +223,58 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Otros campos adicionales como Dirección, Teléfono, DNI, etc. */}
-              {/* ... */}
+              {/* Dirección */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Dirección</label>
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Ingresa tu dirección"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+
+              {/* Teléfono */}
+              <div className="mb-4">
+                <label className="block text-gray-700">Teléfono</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Ingresa tu teléfono"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+
+              {/* DNI */}
+              <div className="mb-4">
+                <label className="block text-gray-700">DNI</label>
+                <input
+                  type="text"
+                  name="dni"
+                  placeholder="Ingresa tu DNI"
+                  value={formData.dni}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+
+              {/* Fecha de Nacimiento */}
+              <div className="mb-4">
+                <label className="block text-gray-700">
+                  Fecha de Nacimiento
+                </label>
+                <input
+                  type="date"
+                  name="birthDate"
+                  value={formData.birthDate}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
 
               <div className="mb-6">
                 <button
