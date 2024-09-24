@@ -1,19 +1,27 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Slider from 'react-slick'; // Importar el componente Slider de react-slick
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-// Definimos el tipo CustomArrowProps directamente en el archivo
+// Definir una interfaz para el usuario
+interface User {
+  fullName: string;
+  email: string;
+  // Añade cualquier otra propiedad del usuario que necesites
+}
+
+// Flechas personalizadas para el carrusel
 interface CustomArrowProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
 }
 
-// Flechas personalizadas para el carrusel con tipos correctos
 const NextArrow = (props: CustomArrowProps) => {
   const { className, style, onClick } = props;
   return (
@@ -38,10 +46,24 @@ const PrevArrow = (props: CustomArrowProps) => {
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
+  const [user, setUser] = useState<User | null>(null); // Definir el tipo de estado como 'User | null'
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true); // Confirmamos que estamos en el cliente
+
+    // Verificamos si el usuario está autenticado en localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Limpiamos los datos del usuario
+    setUser(null); // Limpiamos el estado del usuario
+    router.push('/login'); // Redirigir al usuario al login
+  };
 
   // Configuración del slider con flechas personalizadas
   const settings = {
@@ -73,8 +95,20 @@ export default function Home() {
             <a href="#" className="text-white hover:text-gray-300">Promociones</a>
             <a href="#" className="text-white hover:text-gray-300">Locales</a>
           </nav>
+
           <div className="flex space-x-4">
-            <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">Iniciar Sesión</button>
+            {user ? (
+              <>
+                <span className="text-white">Bienvenido, {user.fullName}</span>
+                <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <Link href="/login">
+                <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">Iniciar Sesión</button>
+              </Link>
+            )}
             <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">¡Pide Online!</button>
           </div>
         </div>

@@ -17,10 +17,15 @@ generator client {
 
 model User {
   id        Int      @id @default(autoincrement())
-  name      String
+  fullName  String
   email     String   @unique
   password  String
+  address   String
+  phone     String
+  dni       String
+  birthDate DateTime
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Branch {
@@ -49,6 +54,11 @@ model Promotion {
   branchId       Int
   branch         Branch @relation(fields: [branchId], references: [id])
 }
+
 //cada ves que se agrege datos se debe ejecutar     npx prisma generate
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
+
+
+//si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev
+
