@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import jwt from 'jsonwebtoken';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+
 
 interface Pedido {
   id: number;
@@ -11,41 +12,59 @@ interface Pedido {
   estado: string;
 }
 
+interface DecodedToken {
+  role: string;
+}
+
 export default function PersonalPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [tokenValid, setTokenValid] = useState(false);
 
-  // Simulación de la carga de datos iniciales (esto puede venir de tu API)
   useEffect(() => {
-    // Obtener el token desde localStorage o cookies
-    const token = localStorage.getItem('userToken'); // O ajustar para usar cookies
-    console.log("token",token)
+    const token = localStorage.getItem("userToken"); // Obtener el token de localStorage
+    console.log("Token obtenido de localStorage:", token);
+
     if (!token) {
       // Si no hay token, redirigir al login
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     try {
-      const decoded = jwt.verify(token, 'secret-key') as { role: string };
+      // Decodificar el token en el frontend
+      const decoded = jwtDecode<DecodedToken>(token);
+      console.log("Token decodificado:", decoded);
 
-      if (decoded.role !== 'personal') {
-        // Si el rol no es 'personal', redirigir a la página de "No autorizado"
-        router.push('/unauthorized');
+      if (decoded.role !== "personal") {
+        // Si el rol no es 'personal', redirigir a "No autorizado"
+        router.push("/unauthorized");
         return;
       }
 
-      // Si el token y el rol son válidos, cargar los pedidos iniciales
+      // Si el token y el rol son válidos, cargar los pedidos iniciales simulados
       const pedidosIniciales = [
-        { id: 1, producto: 'Pollo a la brasa', cantidad: 2, estado: 'Pendiente' },
-        { id: 2, producto: 'Salchipapas', cantidad: 1, estado: 'En preparación' },
+        {
+          id: 1,
+          producto: "Pollo a la brasa",
+          cantidad: 2,
+          estado: "Pendiente",
+        },
+        {
+          id: 2,
+          producto: "Salchipapas",
+          cantidad: 1,
+          estado: "En preparación",
+        },
       ];
 
       setPedidos(pedidosIniciales);
+      setTokenValid(true); // El token es válido y el rol es "personal"
     } catch (error) {
-      // Si el token es inválido o expiró, redirigir al login
-      router.push('/login');
+      // Si el token es inválido o hay algún otro error
+      console.error("Error al decodificar el token:", error);
+      router.push("/login");
     } finally {
       setLoading(false);
     }
@@ -54,7 +73,7 @@ export default function PersonalPage() {
   const cambiarEstadoPedido = (id: number) => {
     const nuevosPedidos = pedidos.map((pedido) => {
       if (pedido.id === id) {
-        return { ...pedido, estado: 'Completado' };
+        return { ...pedido, estado: "Completado" };
       }
       return pedido;
     });
@@ -63,6 +82,10 @@ export default function PersonalPage() {
 
   if (loading) {
     return <p>Cargando...</p>;
+  }
+
+  if (!tokenValid) {
+    return <p>No tienes permisos para acceder a esta página.</p>; // Si el token no es válido
   }
 
   return (
@@ -74,7 +97,7 @@ export default function PersonalPage() {
             <p>Producto: {pedido.producto}</p>
             <p>Cantidad: {pedido.cantidad}</p>
             <p>Estado: {pedido.estado}</p>
-            <button 
+            <button
               onClick={() => cambiarEstadoPedido(pedido.id)}
               className="mt-2 bg-blue-500 text-white py-1 px-4 rounded"
             >

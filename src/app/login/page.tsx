@@ -98,6 +98,7 @@ export default function LoginPage() {
       setTimeout(() => {
         setLoading(false); // Desactivar el loading
         // Redirigir a la página correcta según el rol del usuario
+        console.log("rol asignado", user.role);
         if (user.role === "cliente") {
           router.push("/"); // Página de inicio del cliente
         } else if (user.role === "personal") {
@@ -196,7 +197,9 @@ export default function LoginPage() {
 
               {/* Otros campos del formulario de registro */}
               <div className="mb-4">
-                <label className="block text-gray-700">Correo Electrónico</label>
+                <label className="block text-gray-700">
+                  Correo Electrónico
+                </label>
                 <input
                   type="email"
                   name="email"

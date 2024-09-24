@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import jwt from 'jsonwebtoken';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode"; // Usa jwt-decode para decodificar el token
 
 interface Personal {
   id: number;
   nombre: string;
   rol: string;
+}
+
+interface DecodedToken {
+  role: string;
 }
 
 export default function AdminPage() {
@@ -17,34 +21,36 @@ export default function AdminPage() {
 
   useEffect(() => {
     // Simulación de obtener el token desde las cookies o localStorage
-    const token = localStorage.getItem('userToken'); // O reemplazar con tu lógica de obtener cookies
+    const token = localStorage.getItem("userToken"); // O reemplazar con tu lógica de obtener cookies
 
     if (!token) {
       // Si no hay token, redirigir al login
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     try {
-      // Verificar el token y su rol
-      const decoded = jwt.verify(token, 'secret-key') as { role: string };
+      // Decodificar el token y obtener el rol
+      const decoded = jwtDecode<DecodedToken>(token);
+      console.log("Token decodificado:", decoded);
 
-      if (decoded.role !== 'admin') {
+      if (decoded.role !== "admin") {
         // Si el rol no es 'admin', redirigir a "No Autorizado"
-        router.push('/unauthorized');
+        router.push("/unauthorized");
         return;
       }
 
       // Simulación de la carga de datos del personal
       const personalInicial = [
-        { id: 1, nombre: 'Juan Pérez', rol: 'Personal' },
-        { id: 2, nombre: 'María Gómez', rol: 'Administrador' },
+        { id: 1, nombre: "Juan Pérez", rol: "Personal" },
+        { id: 2, nombre: "María Gómez", rol: "Administrador" },
       ];
 
       setPersonal(personalInicial);
     } catch (error) {
       // Si hay un error con el token (expirado, inválido), redirigir al login
-      router.push('/login');
+      console.error("Error al decodificar el token:", error);
+      router.push("/login");
     } finally {
       setLoading(false);
     }
@@ -56,27 +62,39 @@ export default function AdminPage() {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Gestión de Personal y Administradores</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Gestión de Personal y Administradores
+      </h1>
 
       <ul>
         {personal.map((persona) => (
           <li key={persona.id} className="mb-4 border p-4 rounded-lg shadow-lg">
             <p>Nombre: {persona.nombre}</p>
             <p>Rol: {persona.rol}</p>
-            <button className="mt-2 bg-red-500 text-white py-1 px-4 rounded">Eliminar</button>
+            <button className="mt-2 bg-red-500 text-white py-1 px-4 rounded">
+              Eliminar
+            </button>
           </li>
         ))}
       </ul>
 
-      <h2 className="text-xl font-bold mb-4 mt-6">Agregar nuevo personal o administrador</h2>
+      <h2 className="text-xl font-bold mb-4 mt-6">
+        Agregar nuevo personal o administrador
+      </h2>
 
       <form>
-        <input type="text" placeholder="Nombre completo" className="border p-2 rounded mb-4 w-full" />
+        <input
+          type="text"
+          placeholder="Nombre completo"
+          className="border p-2 rounded mb-4 w-full"
+        />
         <select className="border p-2 rounded mb-4 w-full">
           <option value="personal">Personal</option>
           <option value="admin">Administrador</option>
         </select>
-        <button className="bg-green-500 text-white py-2 px-4 rounded">Agregar Personal/Administrador</button>
+        <button className="bg-green-500 text-white py-2 px-4 rounded">
+          Agregar Personal/Administrador
+        </button>
       </form>
     </div>
   );
