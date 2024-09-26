@@ -2,8 +2,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+
+interface User {
+  fullName: string;
+  email: string;
+  // Añade cualquier otra propiedad del usuario que necesites
+}
 export default function Header() {
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -14,7 +20,7 @@ export default function Header() {
       // Si no hay token o nombre, redirigir al login
       router.push("/login");
     } else {
-      setUserName(storedName); // Almacena el nombre del usuario en el estado
+      setUserName(JSON.parse(storedName));// Almacena el nombre del usuario en el estado
     }
   }, [router]);
 
@@ -32,7 +38,7 @@ export default function Header() {
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-2xl font-bold">Aplicación de Gestión</h1>
         <div className="flex items-center space-x-4">
-          {userName && <p>Bienvenido, {userName}</p>}{" "}
+          {userName && <p>Bienvenido, {userName.fullName}</p>}{" "}
           {/* Mostrar el nombre del usuario */}
           <button
             onClick={handleLogout}

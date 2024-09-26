@@ -60,7 +60,7 @@ export default function Home() {
         setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage:", error);
-        localStorage.removeItem("user"); // Eliminamos el item corrupto
+        //localStorage.removeItem("user"); // Eliminamos el item corrupto
       }
     }
   }, []);
