@@ -105,14 +105,14 @@ export default function Home() {
   return (
     <div>
       {/* Header */}
-      <header className="bg-yellow-500 text-white py-4 shadow-md">
+      <header className="bg-yellow-500 text-white py-1 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <Image
               src="/images/logo.png"
               alt="Pollería Logo"
-              width={48}
-              height={48}
+              width={120}
+              height={120}
               className="mr-4"
             />
             <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
@@ -159,41 +159,49 @@ export default function Home() {
 
       {/* Carrusel que cubre todo el ancho */}
       {isClient && (
-        <section className="py-10">
+        <section className=" bg-gray-100">
           <div className="container mx-auto">
             <Slider {...settings}>
               <div>
-                <div className="relative w-full h-[500px]">
+                <div className="relative w-full h-[500px] overflow-hidden">
+                  {" "}
+                  {/* Ajuste para que la imagen llene todo */}
                   <Image
                     src="/images/promo2.png"
                     alt="Delivery Gratis"
-                    layout="fill"
-                    objectFit="cover" // Hace que la imagen cubra todo el contenedor sin desbordar
+                    layout="fill" // La imagen cubre todo el contenedor
+                    objectFit="cover" // Se ajusta sin dejar espacios
+                    objectPosition="center" // Centra la imagen
                     className="rounded-lg"
+                    quality={100} // Ajustar la calidad de la imagen
                   />
                 </div>
               </div>
 
               <div>
-                <div className="relative w-full h-[500px]">
+                <div className="relative w-full h-[500px] overflow-hidden">
                   <Image
                     src="/images/promo1.png"
                     alt="Promoción 2x1"
                     layout="fill"
                     objectFit="cover"
+                    objectPosition="center"
                     className="rounded-lg"
+                    quality={100}
                   />
                 </div>
               </div>
 
               <div>
-                <div className="relative w-full h-[500px]">
+                <div className="relative w-full h-[500px] overflow-hidden">
                   <Image
                     src="/images/promo2.png"
                     alt="Descuento en combos"
                     layout="fill"
                     objectFit="cover"
+                    objectPosition="center"
                     className="rounded-lg"
+                    quality={100}
                   />
                 </div>
               </div>
