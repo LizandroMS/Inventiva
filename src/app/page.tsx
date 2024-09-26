@@ -54,8 +54,14 @@ export default function Home() {
 
     // Verificamos si el usuario está autenticado en localStorage
     const storedUser = localStorage.getItem('user');
+    console.log("storedUser",storedUser)
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
+      try {
+        setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
+      } catch (error) {
+        console.error("Error al parsear el usuario del localStorage:", error);
+        localStorage.removeItem("user"); // Eliminamos el item corrupto
+      }
     }
   }, []);
 
@@ -79,6 +85,22 @@ export default function Home() {
     nextArrow: <NextArrow />, // Flecha siguiente personalizada
     prevArrow: <PrevArrow />, // Flecha anterior personalizada
   };
+
+  // Datos de ejemplo para los platos
+  const platos = [
+    {
+      id: 1,
+      nombre: 'Pollo a la Brasa',
+      precio: 'S/ 45.00',
+      imagen: '/images/PolloEntero.png',
+    },
+    {
+      id: 2,
+      nombre: 'Salchipapas',
+      precio: 'S/ 12.00',
+      imagen: '/images/OctavoPollo.png',
+    }
+  ];
 
   return (
     <div>
@@ -158,6 +180,30 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Sección de platos */}
+      <section className="py-10 bg-gray-100">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold mb-6 text-center">Nuestro Menú</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {platos.map(plato => (
+              <div key={plato.id} className="bg-white p-6 rounded-lg shadow-md">
+                <div className="relative w-full h-[200px] mb-4">
+                  <Image
+                    src={plato.imagen}
+                    alt={plato.nombre}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-2">{plato.nombre}</h3>
+                <p className="text-lg font-semibold text-gray-700">{plato.precio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-green-700 text-white py-4 text-center">

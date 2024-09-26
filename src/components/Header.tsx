@@ -7,7 +7,7 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    const storedName = localStorage.getItem("userName"); // Obtener el nombre del usuario desde localStorage
+    const storedName = localStorage.getItem("user"); // Obtener el nombre del usuario desde localStorage
     const token = localStorage.getItem("userToken");
 
     if (!token || !storedName) {
@@ -21,7 +21,7 @@ export default function Header() {
   const handleLogout = () => {
     // Limpiar el localStorage (o cookies si fuera el caso)
     localStorage.removeItem("userToken");
-    localStorage.removeItem("userName");
+    localStorage.removeItem("user");
 
     // Redirigir al login
     router.push("/login");
