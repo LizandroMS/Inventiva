@@ -54,7 +54,9 @@ export default function RegistroProducto() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -65,33 +67,33 @@ export default function RegistroProducto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-  
+
     if (!file) {
       setError("Debes seleccionar una imagen.");
       return;
     }
-  
+
     setUploading(true); // Mostrar indicador de subida
-  
+
     try {
       // Subir la imagen a Firebase y obtener la URL de la imagen
-      const imageUrl: string = await uploadImage(file); // Tipado correcto
-  
+      const imagenUrl: string = await uploadImage(file);
+      console.log("imageUrl", imagenUrl);
       // Realizar la solicitud para registrar el producto junto con la URL de la imagen
       const res = await fetch("/api/registroProductos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, imagenUrl: imageUrl }), // Guardamos la URL de la imagen junto con los datos del producto
+        body: JSON.stringify({ ...formData, imagenUrl: imagenUrl }), // Guardamos la URL de la imagen junto con los datos del producto
       });
-  
+
       if (!res.ok) {
         const errorData = await res.json();
         setError(errorData.error || "Error desconocido");
         return;
       }
-  
+
       router.push("/admin"); // Redirige de vuelta al admin
     } catch (error) {
       setError("Ocurrió un error al registrar el producto.");
@@ -99,15 +101,21 @@ export default function RegistroProducto() {
       setUploading(false); // Ocultar indicador de subida
     }
   };
-  
 
   return (
     <div className="container mx-auto p-8 bg-white">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Registro de Productos</h1>
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg">
+      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        Registro de Productos
+      </h1>
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg"
+      >
         {/* Campos del formulario de registro */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Nombre del Producto</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Nombre del Producto
+          </label>
           <input
             type="text"
             name="nombreProducto"
@@ -119,7 +127,9 @@ export default function RegistroProducto() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Descripción</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Descripción
+          </label>
           <textarea
             name="descripcion"
             value={formData.descripcion}
@@ -143,7 +153,9 @@ export default function RegistroProducto() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Precio Promocional</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Precio Promocional
+          </label>
           <input
             type="number"
             name="precioPromocional"
@@ -199,7 +211,9 @@ export default function RegistroProducto() {
 
         {/* Campo para seleccionar la imagen */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Imagen del Producto</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Imagen del Producto
+          </label>
           <input
             type="file"
             accept="image/*"

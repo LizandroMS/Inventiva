@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    console.log("cuerpo de registro ",req.body)
-    const { nombreProducto, descripcion, precio, precioPromocional, stock, estado, fechaCreacion, creadoPor, branchId } = req.body;
+    console.log("cuerpo de registro ", req.body)
+    const { nombreProducto, descripcion, precio, precioPromocional, stock, estado, fechaCreacion, creadoPor, branchId, imagenUrl } = req.body;
 
     // Validar los campos necesarios
     if (!nombreProducto || !precio || !stock || !branchId) {
@@ -19,14 +19,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const nuevoProducto = await prisma.product.create({
         data: {
           name: nombreProducto,
-          description: descripcion || null, // Campo opcional
+          description: descripcion || null,
           price: parseFloat(precio),
-          promotional_price: precioPromocional ? parseFloat(precioPromocional) : null, // Campo opcional
+          promotional_price: precioPromocional ? parseFloat(precioPromocional) : null,
           stock: parseInt(stock, 10),
           status: estado,
           created_at: new Date(fechaCreacion),
           created_by: creadoPor,
-          branchId: parseInt(branchId, 10), // ID de la sucursal
+          branchId: parseInt(branchId, 10),
+          imagenUrl: imagenUrl
         },
       });
 

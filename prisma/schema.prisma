@@ -41,7 +41,7 @@ model Branch {
 model Product {
   id                Int      @id @default(autoincrement())
   name              String
-  description       String? // Asegúrate de que este campo esté presente
+  description       String?
   price             Float
   promotional_price Float?
   stock             Int
@@ -50,7 +50,7 @@ model Product {
   created_by        String
   branchId          Int
   branch            Branch   @relation(fields: [branchId], references: [id])
-  imageUrl          String? 
+  imagenUrl         String? // Campo para almacenar la URL de la imagen
 }
 
 model Promotion {
