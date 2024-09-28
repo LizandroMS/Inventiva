@@ -121,7 +121,7 @@ export default function Home() {
             <a href="#" className="text-white hover:text-gray-300">
               Inicio
             </a>
-            <a href="#" className="text-white hover:text-gray-300">
+            <a href="/Carta" className="text-white hover:text-gray-300">
               Carta
             </a>
             <a href="#" className="text-white hover:text-gray-300">
