@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
-  nombre: string;
-  precio: string;
+  name: string;
+  price: string;
   imagenUrl: string;
 }
 
@@ -56,7 +56,7 @@ export default function CartaPage() {
     setSearchTerm(value);
 
     const filtered = products.filter((product) =>
-      product.nombre.toLowerCase().includes(value)
+      product.name.toLowerCase().includes(value)
     );
     setFilteredProducts(filtered);
   };
@@ -95,7 +95,10 @@ export default function CartaPage() {
                 </button>
               </>
             ) : (
-              <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">
+              <button
+                onClick={() => router.push("/login")}
+                className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg"
+              >
                 Iniciar Sesión
               </button>
             )}
@@ -104,7 +107,7 @@ export default function CartaPage() {
       </header>
 
       {/* Buscador */}
-      <div className="container mx-auto my-6">
+      <div className="container mx-auto  bg-white p-4  shadow-md">
         <input
           type="text"
           value={searchTerm}
@@ -117,25 +120,27 @@ export default function CartaPage() {
       {/* Mostrar los productos filtrados */}
       <section className="py-6 bg-gray-100">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center"
+                  className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center transition-all hover:shadow-xl transform hover:scale-105"
                 >
-                  <div className="relative w-full h-[200px] mb-4">
+                  <div className="relative w-full h-[250px] mb-4 overflow-hidden rounded-lg">
                     <Image
                       src={product.imagenUrl || "/images/default.png"}
-                      alt={product.nombre}
+                      alt={product.name}
                       layout="fill"
                       objectFit="cover"
                       className="rounded-lg"
                     />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{product.nombre}</h3>
-                  <p className="text-lg font-semibold text-gray-700">
-                    {product.precio}
+                  <h3 className="text-xl font-bold mb-2 text-center text-gray-800">
+                    {product.name}
+                  </h3>
+                  <p className="text-lg font-semibold text-gray-700 text-center">
+                    {product.price}
                   </p>
                 </div>
               ))
