@@ -71,7 +71,7 @@ export default function CartaPage() {
     <div>
       {/* Header */}
       <header className="bg-yellow-500 text-white py-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex justify-between items-center px-4">
           <div className="flex items-center">
             <Image
               src="/images/logo.png"
@@ -86,7 +86,7 @@ export default function CartaPage() {
           <div className="flex space-x-4">
             {user ? (
               <>
-                <span className="text-white">Bienvenido, {user.fullName}</span>
+                <span className="text-white" style={{ padding: "10px" }}>Bienvenido, {user.fullName}</span>
                 <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -107,7 +107,7 @@ export default function CartaPage() {
       </header>
 
       {/* Buscador */}
-      <div className="container mx-auto  bg-white p-4  shadow-md">
+      <div className="container mx-auto bg-white p-4 shadow-md px-4">
         <input
           type="text"
           value={searchTerm}
@@ -118,8 +118,8 @@ export default function CartaPage() {
       </div>
 
       {/* Mostrar los productos filtrados */}
-      <section className="py-6 bg-gray-100">
-        <div className="container mx-auto">
+      <section className="py-6 bg-gray-200">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
