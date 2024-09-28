@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadImage } from "@/pages/api/firebaseUpload";
+import { uploadImage } from "@/pages/api_firebase/firebaseUpload";
 
 interface Branch {
   id: number;
@@ -65,45 +65,41 @@ export default function RegistroProducto() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+  
     if (!file) {
       setError("Debes seleccionar una imagen.");
       return;
     }
-
+  
     setUploading(true); // Mostrar indicador de subida
-
+  
     try {
-      // Subir la imagen a Firebase
-      const imageUrl = await uploadImage(file);
-      setFormData({
-        ...formData,
-        imagenUrl: imageUrl, // Almacena la URL de la imagen en el formulario
-      });
-
-      // Realizar la solicitud para registrar el producto
+      // Subir la imagen a Firebase y obtener la URL de la imagen
+      const imageUrl: string = await uploadImage(file); // Tipado correcto
+  
+      // Realizar la solicitud para registrar el producto junto con la URL de la imagen
       const res = await fetch("/api/registroProductos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, imagenUrl: imageUrl }),
+        body: JSON.stringify({ ...formData, imagenUrl: imageUrl }), // Guardamos la URL de la imagen junto con los datos del producto
       });
-
+  
       if (!res.ok) {
         const errorData = await res.json();
         setError(errorData.error || "Error desconocido");
         return;
       }
-
-      // Redirige de vuelta al admin después de registrar el producto
-      router.push("/admin");
+  
+      router.push("/admin"); // Redirige de vuelta al admin
     } catch (error) {
       setError("Ocurrió un error al registrar el producto.");
     } finally {
       setUploading(false); // Ocultar indicador de subida
     }
   };
+  
 
   return (
     <div className="container mx-auto p-8 bg-white">

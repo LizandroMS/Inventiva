@@ -1,7 +1,6 @@
 // firebaseConfig.ts
-import { initializeApp } from "firebase/app";
-import firebase from "firebase/compat/app";
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
 // Configuración de Firebase usando las variables de entorno
 const firebaseConfig = {
@@ -13,19 +12,8 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Inicializa Firebase solo en el cliente
-let app;
-if (typeof window !== "undefined") {
-  if (!firebase.apps.length) {
-    app = initializeApp(firebaseConfig);
-    console.log("Firebase inicializado:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
-  } else {
-    app = firebase.app(); // Usa la app ya inicializada
-    console.log("Firebase ya estaba inicializado:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
-  }
-} else {
-  console.log("Firebase no se ejecuta en el servidor");
-}
+// Inicializar la app solo si no ha sido inicializada antes
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Exportar storage para ser utilizado en otras partes de la aplicación
-export const storage = getStorage(app);
+// Obtén la instancia de Firebase Storage
+export const storage: FirebaseStorage = getStorage(app);
