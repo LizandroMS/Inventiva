@@ -73,7 +73,7 @@ export default function RegistroPersonal() {
 
   return (
     <div className="container mx-auto p-8 bg-white">
-      <div className="bg-black p-10 rounded-lg shadow-md w-full max-w-lg mx-auto">
+      <div className="bg-gray-200 p-10 rounded-lg shadow-md w-full max-w-lg mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Registro de Personal
         </h1>
