@@ -4,52 +4,31 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // Usa jwt-decode para decodificar el token
 import Header from "@/components/Header";
-
-interface Personal {
-  id: number;
-  nombre: string;
-  rol: string;
-}
+import { FaUserPlus, FaBoxes, FaHistory, FaClipboardList } from "react-icons/fa"; // Íconos
 
 interface DecodedToken {
   role: string;
 }
 
 export default function AdminPage() {
-  const [personal, setPersonal] = useState<Personal[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter(); // Para redirigir en el cliente
 
   useEffect(() => {
-    // Simulación de obtener el token desde las cookies o localStorage
-    const token = localStorage.getItem("userToken"); // O reemplazar con tu lógica de obtener cookies
+    const token = localStorage.getItem("userToken");
 
     if (!token) {
-      // Si no hay token, redirigir al login
       router.push("/login");
       return;
     }
 
     try {
-      // Decodificar el token y obtener el rol
       const decoded = jwtDecode<DecodedToken>(token);
-      console.log("Token decodificado:", decoded);
-
       if (decoded.role !== "admin") {
-        // Si el rol no es 'admin', redirigir a "No Autorizado"
         router.push("/unauthorized");
         return;
       }
-
-      // Simulación de la carga de datos del personal
-      const personalInicial = [
-        { id: 1, nombre: "Juan Pérez", rol: "Personal" },
-        { id: 2, nombre: "María Gómez", rol: "Administrador" },
-      ];
-
-      setPersonal(personalInicial);
     } catch (error) {
-      // Si hay un error con el token (expirado, inválido), redirigir al login
       console.error("Error al decodificar el token:", error);
       router.push("/login");
     } finally {
@@ -58,50 +37,85 @@ export default function AdminPage() {
   }, [router]);
 
   if (loading) {
-    return <p>Cargando...</p>; // Mostrar indicador de carga mientras se verifica el token
+    return <p>Cargando...</p>;
   }
 
   return (
     <div>
       <Header />
-      <div className="container mx-auto">
-        <h1 className="text-2xl font-bold mb-6">
-          Gestión de Personal y Administradores
+      <div className="container mx-auto py-10 px-4 md:px-8 lg:px-16">
+        <h1 className="text-3xl font-bold mb-8 text-center text-white-800">
+          Panel de Administración
         </h1>
 
-        <ul>
-          {personal.map((persona) => (
-            <li
-              key={persona.id}
-              className="mb-4 border p-4 rounded-lg shadow-lg"
-            >
-              <p>Nombre: {persona.nombre}</p>
-              <p>Rol: {persona.rol}</p>
-              <button className="mt-2 bg-red-500 text-white py-1 px-4 rounded">
-                Eliminar
-              </button>
-            </li>
-          ))}
-        </ul>
+        {/* Grid para las tarjetas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          
+          {/* Card: Registro de Personal */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-yellow-500">
+              <FaUserPlus size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Registro de Personal
+            </h2>
+            <p className="text-gray-600 text-center">
+              Agrega, edita o elimina personal de tu establecimiento. Administra sus roles de acceso.
+            </p>
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+              Gestionar Personal
+            </button>
+          </div>
 
-        <h2 className="text-xl font-bold mb-4 mt-6">
-          Agregar nuevo personal o administrador
-        </h2>
+          {/* Card: Registro de Productos */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-green-500">
+              <FaBoxes size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Registro de Productos
+            </h2>
+            <p className="text-gray-600 text-center">
+              Registra los nuevos platos y productos disponibles para la venta. Mantén tu inventario actualizado.
+            </p>
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+              Gestionar Productos
+            </button>
+          </div>
 
-        <form>
-          <input
-            type="text"
-            placeholder="Nombre completo"
-            className="border p-2 rounded mb-4 w-full"
-          />
-          <select className="border p-2 rounded mb-4 w-full">
-            <option value="personal">Personal</option>
-            <option value="admin">Administrador</option>
-          </select>
-          <button className="bg-green-500 text-white py-2 px-4 rounded">
-            Agregar Personal/Administrador
-          </button>
-        </form>
+          {/* Card: Historial de Actividades */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-purple-500">
+              <FaHistory size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Historial de Actividades
+            </h2>
+            <p className="text-gray-600 text-center">
+              Revisa el historial de operaciones realizadas en el sistema, incluyendo ventas y modificaciones.
+            </p>
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+              Ver Historial
+            </button>
+          </div>
+
+          {/* Card: Pedidos en Cola */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-red-500">
+              <FaClipboardList size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Pedidos en Cola
+            </h2>
+            <p className="text-gray-600 text-center">
+              Administra y revisa los pedidos en cola para ser preparados y entregados.
+            </p>
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+              Ver Pedidos
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
   );
