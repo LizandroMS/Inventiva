@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/pages/api_firebase/firebaseUpload";
+import imageCompression from "browser-image-compression"; // Importa la librería
 
 interface Branch {
   id: number;
@@ -76,9 +77,20 @@ export default function RegistroProducto() {
     setUploading(true); // Mostrar indicador de subida
 
     try {
-      // Subir la imagen a Firebase y obtener la URL de la imagen
-      const imagenUrl: string = await uploadImage(file);
+      // Opciones para la compresión de la imagen
+      const options = {
+        maxSizeMB: 1, // Tamaño máximo de la imagen en MB
+        maxWidthOrHeight: 800, // Dimensión máxima (ancho o alto)
+        useWebWorker: true, // Habilita Web Worker para mejorar el rendimiento
+      };
+
+      // Comprimir la imagen seleccionada
+      const compressedFile = await imageCompression(file, options);
+
+      // Subir la imagen comprimida a Firebase y obtener la URL
+      const imagenUrl: string = await uploadImage(compressedFile);
       console.log("imageUrl", imagenUrl);
+
       // Realizar la solicitud para registrar el producto junto con la URL de la imagen
       const res = await fetch("/api/registroProductos", {
         method: "POST",
