@@ -39,12 +39,18 @@ model Branch {
 }
 
 model Product {
-  id       Int    @id @default(autoincrement())
-  name     String
-  price    Float
-  stock    Int
-  branchId Int
-  branch   Branch @relation(fields: [branchId], references: [id])
+  id                Int      @id @default(autoincrement())
+  name              String
+  description       String? // Asegúrate de que este campo esté presente
+  price             Float
+  promotional_price Float?
+  stock             Int
+  status            String
+  created_at        DateTime @default(now())
+  created_by        String
+  branchId          Int
+  branch            Branch   @relation(fields: [branchId], references: [id])
+  imageUrl          String? 
 }
 
 model Promotion {

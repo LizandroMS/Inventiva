@@ -87,7 +87,8 @@ export default function AdminPage() {
               Registra los nuevos platos y productos disponibles para la venta.
               Mantén tu inventario actualizado.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+            onClick={() => router.push("/admin/RegistroProductos")}>
               Gestionar Productos
             </button>
           </div>
