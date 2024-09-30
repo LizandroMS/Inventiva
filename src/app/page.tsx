@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-//import { useRouter } from "next/navigation";
 import Slider from "react-slick"; // Importar el componente Slider de react-slick
+import Header from "@/components/Header"; // Asegúrate de importar el Header correctamente
+import { Product } from "@/context/CartContext"; // Importa el tipo Product
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { User } from "@prisma/client"; // Importa el tipo User desde Prisma si estás usando Prisma
 
 // Definir tipos de las flechas personalizadas
 interface ArrowProps {
@@ -37,13 +39,34 @@ const PrevArrow = (props: ArrowProps) => {
 };
 
 export default function Home() {
+  // Estados para manejar el usuario y el carrito de compras
   const [isClient, setIsClient] = useState(false);
-  //const router = useRouter();
+  const [user, setUser] = useState<User | null>(null); // Estado para almacenar el usuario
+  const [cartItems, setCartItems] = useState<Product[]>([]); // Estado para almacenar los ítems en el carrito
 
   useEffect(() => {
     setIsClient(true);
+
+    // Cargar usuario desde localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Cargar carrito desde localStorage
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart)); // Asegúrate de que storedCart sea un array de productos
+    }
   }, []);
 
+  // Función para manejar el logout
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Limpiar datos del usuario
+    setUser(null); // Limpiar el estado del usuario
+  };
+
+  // Configuración del carrusel
   const settings = {
     dots: true,
     infinite: true,
@@ -58,6 +81,7 @@ export default function Home() {
     prevArrow: <PrevArrow />,
   };
 
+  // Lista de productos para mostrar
   const platos = [
     {
       id: 1,
@@ -75,6 +99,9 @@ export default function Home() {
 
   return (
     <div>
+      {/* Aquí pasamos el usuario, el carrito (array de productos) y el handleLogout al Header */}
+      <Header user={user} cartItems={cartItems} handleLogout={handleLogout} />
+
       {/* Carrusel que cubre todo el ancho */}
       {isClient && (
         <section className="bg-gray-100">

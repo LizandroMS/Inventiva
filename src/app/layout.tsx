@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { CartProvider } from "@/context/CartContext"; // Importa el CartProvider
-import Header from "@/components/Header"; // Asegúrate de que tu Header esté bien referenciado
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
-
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -31,12 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Envuelve toda la aplicación con el CartProvider */}
-        <CartProvider>
-          {/* Asegúrate de renderizar el Header globalmente */}
-          <Header />
-          {children}
-        </CartProvider>
+        {children}
       </body>
     </html>
   );
