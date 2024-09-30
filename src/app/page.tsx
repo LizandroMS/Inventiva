@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Slider from "react-slick"; // Importar el componente Slider de react-slick
+import { useCart } from "@/context/CartContext";
+import Header from "@/components/Header"; // Importa el Header reutilizable
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -12,17 +13,16 @@ import "slick-carousel/slick/slick-theme.css";
 interface User {
   fullName: string;
   email: string;
-  // Añade cualquier otra propiedad del usuario que necesites
 }
 
-// Flechas personalizadas para el carrusel
-interface CustomArrowProps {
+// Definir tipos de las flechas personalizadas
+interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
 }
 
-const NextArrow = (props: CustomArrowProps) => {
+const NextArrow = (props: ArrowProps) => {
   const { className, style, onClick } = props;
   return (
     <div
@@ -33,7 +33,7 @@ const NextArrow = (props: CustomArrowProps) => {
   );
 };
 
-const PrevArrow = (props: CustomArrowProps) => {
+const PrevArrow = (props: ArrowProps) => {
   const { className, style, onClick } = props;
   return (
     <div
@@ -46,21 +46,20 @@ const PrevArrow = (props: CustomArrowProps) => {
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // Definir el tipo de estado como 'User | null'
+  const [user, setUser] = useState<User | null>(null);
+  const { cartItems } = useCart(); // Para mostrar la cantidad de productos en el carrito
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true); // Confirmamos que estamos en el cliente
+    setIsClient(true);
 
     // Verificamos si el usuario está autenticado en localStorage
     const storedUser = localStorage.getItem("user");
-    console.log("storedUser", storedUser);
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage:", error);
-        //localStorage.removeItem("user"); // Eliminamos el item corrupto
       }
     }
   }, []);
@@ -71,7 +70,6 @@ export default function Home() {
     router.push("/login"); // Redirigir al usuario al login
   };
 
-  // Configuración del slider con flechas personalizadas
   const settings = {
     dots: true,
     infinite: true,
@@ -81,16 +79,15 @@ export default function Home() {
     autoplay: true,
     autoplaySpeed: 3000,
     pauseOnHover: true,
-    arrows: true, // Habilitar las flechas
-    nextArrow: <NextArrow />, // Flecha siguiente personalizada
-    prevArrow: <PrevArrow />, // Flecha anterior personalizada
+    arrows: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
   };
 
-  // Datos de ejemplo para los platos
   const platos = [
     {
       id: 1,
-      nombre: " 1 Pollo a la Brasa",
+      nombre: "1 Pollo a la Brasa",
       precio: "S/ 45.00",
       imagen: "/images/PolloEntero.png",
     },
@@ -104,76 +101,24 @@ export default function Home() {
 
   return (
     <div>
-      {/* Header */}
-      <header className="bg-yellow-500 text-white py-1 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/images/logo.png"
-              alt="Pollería Logo"
-              width={120}
-              height={120}
-              className="mr-4"
-            />
-            <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
-          </div>
-          <nav className="flex space-x-4">
-            <a href="#" className="text-white hover:text-gray-300">
-              Inicio
-            </a>
-            <a href="/Carta" className="text-white hover:text-gray-300">
-              Carta
-            </a>
-            <a href="#" className="text-white hover:text-gray-300">
-              Promociones
-            </a>
-            <a href="#" className="text-white hover:text-gray-300">
-              Locales
-            </a>
-          </nav>
-
-          <div className="flex space-x-4">
-            {user ? (
-              <>
-                <span className="text-white">Bienvenido, {user.fullName}</span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
-                >
-                  Cerrar Sesión
-                </button>
-              </>
-            ) : (
-              <Link href="/login">
-                <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">
-                  Iniciar Sesión
-                </button>
-              </Link>
-            )}
-            <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
-              ¡Pide Online!
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Header reutilizable */}
+      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
       {/* Carrusel que cubre todo el ancho */}
       {isClient && (
-        <section className=" bg-gray-100">
+        <section className="bg-gray-100">
           <div className="container mx-auto">
             <Slider {...settings}>
               <div>
                 <div className="relative w-full h-[500px] overflow-hidden">
-                  {" "}
-                  {/* Ajuste para que la imagen llene todo */}
                   <Image
                     src="/images/promo2.png"
                     alt="Delivery Gratis"
-                    layout="fill" // La imagen cubre todo el contenedor
-                    objectFit="cover" // Se ajusta sin dejar espacios
-                    objectPosition="center" // Centra la imagen
+                    layout="fill"
+                    objectFit="cover"
+                    objectPosition="center"
                     className="rounded-lg"
-                    quality={100} // Ajustar la calidad de la imagen
+                    quality={100}
                   />
                 </div>
               </div>
@@ -223,10 +168,10 @@ export default function Home() {
                   <Image
                     src={plato.imagen}
                     alt={plato.nombre}
-                    width={400} // El ancho que desees
-                    height={400} // El alto que desees
-                    layout="intrinsic" // Mantiene el tamaño especificado
-                    objectFit="cover" // Se asegura de que la imagen se adapte sin deformarse
+                    width={400}
+                    height={400}
+                    layout="intrinsic"
+                    objectFit="cover"
                     className="rounded-lg"
                   />
                 </div>

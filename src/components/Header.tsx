@@ -1,66 +1,28 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { useCart } from "@/context/CartContext";
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Product } from "@/context/CartContext"; // Asegúrate de que este sea el tipo correcto para tus productos
 
-interface User {
-  fullName: string;
-  email: string;
+interface HeaderProps {
+  user: { fullName: string } | null;
+  handleLogout: () => void;
+  cartItems: Product[]; // Asegúrate de que cartItems sea un array de productos
 }
 
-export default function Header() {
-  const [user, setUser] = useState<User | null>(null);
-  const { cartItems } = useCart();
-  const router = useRouter();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error al parsear el usuario del localStorage:", error);
-      }
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    router.push("/login");
-  };
-
+export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
   return (
-    <header className="bg-yellow-500 text-white py-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center px-4">
+    <header className="bg-yellow-500 text-white py-1 shadow-md">
+      <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <Image
-            src="/images/logo.png"
-            alt="Pollería Logo"
-            width={60}
-            height={60}
-            className="mr-4"
-          />
           <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
         </div>
-
-        <div className="flex space-x-4 items-center">
-          <Link href="/cart">
-            <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg relative">
-              🛒 Carrito
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                {cartItems.length}
-              </span>
-            </button>
-          </Link>
-
+        <nav className="flex space-x-4">
+          <Link href="/">Inicio</Link>
+          <Link href="/Carta">Carta</Link>
+          <Link href="/Promociones">Promociones</Link>
+        </nav>
+        <div className="flex space-x-4">
           {user ? (
             <>
-              <span className="text-white text-sm">
-                Bienvenido, {user.fullName}
-              </span>
+              <span>Bienvenido, {user.fullName}</span>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -69,13 +31,21 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <button
-              onClick={() => router.push("/login")}
-              className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg"
-            >
-              Iniciar Sesión
-            </button>
+            <Link href="/login">
+              <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg">
+                Iniciar Sesión
+              </button>
+            </Link>
           )}
+
+          {/* Carrito */}
+          <Link href="/Carrito">
+            <div className="relative">
+              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+                Carrito ({cartItems?.length || 0}) {/* Manejar el caso cuando cartItems es undefined */}
+              </button>
+            </div>
+          </Link>
         </div>
       </div>
     </header>

@@ -1,12 +1,14 @@
-"use client"; 
-import { createContext, useState, useContext, ReactNode } from "react";
-
-interface Product {
+// src/context/CartContext.tsx
+"use client";
+export interface Product {
   id: number;
   name: string;
   price: string;
   imagenUrl: string;
 }
+
+// Exporta los demás hooks y context como de costumbre
+import { createContext, useState, useContext, ReactNode } from "react";
 
 interface CartContextType {
   cartItems: Product[];
@@ -24,7 +26,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: number) => {
-    setCartItems((prevItems) => prevItems.filter(item => item.id !== id));
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   return (
