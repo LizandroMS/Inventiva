@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Product } from "@/context/CartContext"; // Asegúrate de que este sea el tipo correcto para tus productos
+import { FaShoppingCart } from "react-icons/fa";
+import { Product } from "@/context/CartContext";
 
 interface HeaderProps {
   user: { fullName: string } | null;
   handleLogout: () => void;
-  cartItems: Product[]; // Asegúrate de que cartItems sea un array de productos
+  cartItems: Product[];
 }
 
 export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
@@ -17,7 +18,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
         <nav className="flex space-x-4">
           <Link href="/">Inicio</Link>
           <Link href="/Carta">Carta</Link>
-          <Link href="/Promociones">Promocioness</Link>
+          <Link href="/Promociones">Promociones</Link>
         </nav>
         <div className="flex space-x-4">
           {user ? (
@@ -38,11 +39,12 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
             </Link>
           )}
 
-          {/* Carrito */}
+          {/* Carrito con ícono de react-icons */}
           <Link href="/carrito">
             <div className="relative">
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
-                carrito ({cartItems?.length || 0}) {/* Manejar el caso cuando cartItems es undefined */}
+              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
+                <FaShoppingCart className="h-6 w-6" />
+                <span>Carrito ({cartItems?.length || 0})</span>
               </button>
             </div>
           </Link>
