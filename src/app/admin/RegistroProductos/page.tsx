@@ -77,14 +77,17 @@ export default function RegistroProducto() {
     setUploading(true); // Mostrar indicador de subida
 
     try {
-      // Opciones para la compresión de la imagen
+      // Opciones para la compresión y conversión de la imagen a WebP
       const options = {
-        maxSizeMB: 1, // Tamaño máximo de la imagen en MB
-        maxWidthOrHeight: 800, // Dimensión máxima (ancho o alto)
-        useWebWorker: true, // Habilita Web Worker para mejorar el rendimiento
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 500,
+        useWebWorker: true,
+        fileType: 'image/webp', 
+        initialQuality: 0.6, // Ajusta la calidad (entre 0 y 1). Aquí la estamos reduciendo al 70%
       };
+      
 
-      // Comprimir la imagen seleccionada
+      // Comprimir y convertir la imagen seleccionada a WebP
       const compressedFile = await imageCompression(file, options);
 
       // Subir la imagen comprimida a Firebase y obtener la URL
