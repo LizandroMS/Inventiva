@@ -1,9 +1,35 @@
 "use client";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import Header from "@/components/Header"; // Asegúrate de tener este componente disponible
+import { useState, useEffect } from "react";
+
+interface User {
+  fullName: string;
+  email: string;
+}
 
 export default function CartPage() {
   const { cartItems, removeFromCart } = useCart();
+  const [user, setUser] = useState<User | null>(null);
+
+  // Simulación de la función para cerrar sesión
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+
+  // Obtener la información del usuario desde localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error al parsear el usuario del localStorage:", error);
+      }
+    }
+  }, []);
 
   // Calcular el total del carrito
   const totalPrice = cartItems.reduce(
@@ -13,12 +39,8 @@ export default function CartPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header del carrito */}
-      <header className="bg-yellow-500 text-white py-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center px-4">
-          <h1 className="text-2xl font-bold">Tu Carrito de Compras</h1>
-        </div>
-      </header>
+      {/* Header reutilizable */}
+      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
       {/* Contenido del carrito */}
       <main className="flex-grow">
