@@ -68,7 +68,7 @@ export default function CartaPage() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {/* Header */}
       <header className="bg-yellow-500 text-white py-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center px-4">
@@ -86,7 +86,9 @@ export default function CartaPage() {
           <div className="flex space-x-4">
             {user ? (
               <>
-                <span className="text-white" style={{ padding: "10px" }}>Bienvenido, {user.fullName}</span>
+                <span className="text-white" style={{ padding: "10px" }}>
+                  Bienvenido, {user.fullName}
+                </span>
                 <button
                   onClick={handleLogout}
                   className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -106,55 +108,58 @@ export default function CartaPage() {
         </div>
       </header>
 
-      {/* Buscador */}
-      <div className="container mx-auto bg-white p-4 shadow-md px-4">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleSearch}
-          placeholder="Buscar producto..."
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-        />
-      </div>
-
-      {/* Mostrar los productos filtrados */}
-      <section className="py-6 bg-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center transition-all hover:shadow-xl transform hover:scale-105"
-                >
-                  <div className="relative w-full h-[250px] mb-4 overflow-hidden rounded-lg">
-                    <Image
-                      src={product.imagenUrl || "/images/default.png"}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2 text-center text-gray-800">
-                    {product.name}
-                  </h3>
-                  <p className="text-lg font-semibold text-gray-700 text-center">
-                    {product.price}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-center col-span-3 text-gray-700">
-                No se encontraron productos.
-              </p>
-            )}
-          </div>
+      {/* Contenedor Principal */}
+      <main className="flex-grow">
+        {/* Buscador */}
+        <div className="container mx-auto bg-white p-4 shadow-md px-4">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearch}
+            placeholder="Buscar producto..."
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+          />
         </div>
-      </section>
+
+        {/* Mostrar los productos filtrados */}
+        <section className="py-6 flex-grow bg-gray-200">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center transition-all hover:shadow-xl transform hover:scale-105"
+                  >
+                    <div className="relative w-full h-[250px] mb-4 overflow-hidden rounded-lg">
+                      <Image
+                        src={product.imagenUrl || "/images/default.png"}
+                        alt={product.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-center text-gray-800">
+                      {product.name}
+                    </h3>
+                    <p className="text-lg font-semibold text-gray-700 text-center">
+                      {product.price}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center col-span-3 text-gray-700">
+                  No se encontraron productos.
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-green-700 text-white py-4 text-center">
+      <footer className="bg-green-700 text-white py-4 text-center mt-auto">
         <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
       </footer>
     </div>
