@@ -1,19 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import Slider from "react-slick"; // Importar el componente Slider de react-slick
-import { useCart } from "@/context/CartContext";
-import Header from "@/components/Header"; // Importa el Header reutilizable
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-// Definir una interfaz para el usuario
-interface User {
-  fullName: string;
-  email: string;
-}
 
 // Definir tipos de las flechas personalizadas
 interface ArrowProps {
@@ -46,29 +38,11 @@ const PrevArrow = (props: ArrowProps) => {
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const { cartItems } = useCart(); // Para mostrar la cantidad de productos en el carrito
-  const router = useRouter();
+  //const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
-
-    // Verificamos si el usuario está autenticado en localStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser)); // Asignar el usuario desde localStorage
-      } catch (error) {
-        console.error("Error al parsear el usuario del localStorage:", error);
-      }
-    }
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiamos los datos del usuario
-    setUser(null); // Limpiamos el estado del usuario
-    router.push("/login"); // Redirigir al usuario al login
-  };
 
   const settings = {
     dots: true,
@@ -101,9 +75,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* Header reutilizable */}
-      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
-
       {/* Carrusel que cubre todo el ancho */}
       {isClient && (
         <section className="bg-gray-100">

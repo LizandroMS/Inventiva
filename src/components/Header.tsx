@@ -17,7 +17,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
         <nav className="flex space-x-4">
           <Link href="/">Inicio</Link>
           <Link href="/Carta">Carta</Link>
-          <Link href="/Promociones">Promociones</Link>
+          <Link href="/Promociones">Promocioness</Link>
         </nav>
         <div className="flex space-x-4">
           {user ? (
@@ -42,7 +42,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <Link href="/Carrito">
             <div className="relative">
               <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
-                Carrito ({cartItems?.length || 0}) {/* Manejar el caso cuando cartItems es undefined */}
+                carrito ({cartItems?.length || 0}) {/* Manejar el caso cuando cartItems es undefined */}
               </button>
             </div>
           </Link>
