@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import Header from "@/components/Header";
+import Header from "@/components/Header_Interno";
 
 interface Pedido {
   id: number;

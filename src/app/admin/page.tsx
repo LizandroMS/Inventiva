@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"; // Usa jwt-decode para decodificar el token
-import Header from "@/components/Header";
+import Header from "@/components/Header_Interno";
 import {
   FaUserPlus,
   FaBoxes,

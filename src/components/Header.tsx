@@ -1,51 +1,81 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useCart } from "@/context/CartContext";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface User {
   fullName: string;
   email: string;
-  // Añade cualquier otra propiedad del usuario que necesites
 }
+
 export default function Header() {
-  const [userName, setUserName] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const { cartItems } = useCart();
   const router = useRouter();
 
   useEffect(() => {
-    const storedName = localStorage.getItem("user"); // Obtener el nombre del usuario desde localStorage
-    const token = localStorage.getItem("userToken");
-
-    if (!token || !storedName) {
-      // Si no hay token o nombre, redirigir al login
-      router.push("/login");
-    } else {
-      setUserName(JSON.parse(storedName));// Almacena el nombre del usuario en el estado
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error al parsear el usuario del localStorage:", error);
+      }
     }
-  }, [router]);
+  }, []);
 
   const handleLogout = () => {
-    // Limpiar el localStorage (o cookies si fuera el caso)
-    localStorage.removeItem("userToken");
     localStorage.removeItem("user");
-
-    // Redirigir al login
+    setUser(null);
     router.push("/login");
   };
 
   return (
-    <header className="bg-blue-500 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Aplicación de Gestión</h1>
-        <div className="flex items-center space-x-4">
-          {userName && <p>Bienvenido, {userName.fullName}</p>}{" "}
-          {/* Mostrar el nombre del usuario */}
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
-          >
-            Cerrar Sesión
-          </button>
+    <header className="bg-yellow-500 text-white py-4 shadow-md">
+      <div className="container mx-auto flex justify-between items-center px-4">
+        <div className="flex items-center">
+          <Image
+            src="/images/logo.png"
+            alt="Pollería Logo"
+            width={60}
+            height={60}
+            className="mr-4"
+          />
+          <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
+        </div>
+
+        <div className="flex space-x-4 items-center">
+          <Link href="/cart">
+            <button className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg relative">
+              🛒 Carrito
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                {cartItems.length}
+              </span>
+            </button>
+          </Link>
+
+          {user ? (
+            <>
+              <span className="text-white text-sm">
+                Bienvenido, {user.fullName}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => router.push("/login")}
+              className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg"
+            >
+              Iniciar Sesión
+            </button>
+          )}
         </div>
       </div>
     </header>
