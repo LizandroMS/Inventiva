@@ -81,7 +81,33 @@ export default function Home() {
     prevArrow: <PrevArrow />,
   };
 
-  // Lista de productos para mostrar
+  // Lista de productos o platos para mostrar en el carrusel y en la sección de platos
+  const  Slider_Data = [
+    {
+      id: 1,
+      nombre: "1 Pollo a la Brasa",
+      precio: "S/ 45.00",
+      imagen: "/images/promo1.png",
+    },
+    {
+      id: 2,
+      nombre: "1/8 Pollo a la Brasa",
+      precio: "S/ 12.00",
+      imagen: "/images/promo2.png",
+    },
+    {
+      id: 3,
+      nombre: "Combo Familiar",
+      precio: "S/ 85.00",
+      imagen: "/images/promo1.png",
+    },
+    {
+      id: 4,
+      nombre: "Pollo al Horno",
+      precio: "S/ 50.00",
+      imagen: "/images/promo2.png",
+    },
+  ];
   const platos = [
     {
       id: 1,
@@ -107,47 +133,25 @@ export default function Home() {
         <section className="bg-gray-100">
           <div className="container mx-auto">
             <Slider {...settings}>
-              <div>
-                <div className="relative w-full h-[500px] overflow-hidden">
-                  <Image
-                    src="/images/promo2.png"
-                    alt="Delivery Gratis"
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="center"
-                    className="rounded-lg"
-                    quality={100}
-                  />
+              {Slider_Data.map((Slider_Data) => (
+                <div key={Slider_Data.id}>
+                  <div className="relative w-full h-[500px] overflow-hidden">
+                    <Image
+                      src={Slider_Data.imagen}
+                      alt={Slider_Data.nombre}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      className="rounded-lg"
+                      quality={100}
+                    />
+                  </div>
+                  {/* <div className="text-center mt-4">
+                    <h3 className="text-2xl font-bold text-gray-800">{Slider_Data.nombre}</h3>
+                    <p className="text-lg text-gray-600">{Slider_Data.precio}</p>
+                  </div> */}
                 </div>
-              </div>
-
-              <div>
-                <div className="relative w-full h-[500px] overflow-hidden">
-                  <Image
-                    src="/images/promo1.png"
-                    alt="Promoción 2x1"
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="center"
-                    className="rounded-lg"
-                    quality={100}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="relative w-full h-[500px] overflow-hidden">
-                  <Image
-                    src="/images/promo2.png"
-                    alt="Descuento en combos"
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="center"
-                    className="rounded-lg"
-                    quality={100}
-                  />
-                </div>
-              </div>
+              ))}
             </Slider>
           </div>
         </section>
