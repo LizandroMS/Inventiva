@@ -33,7 +33,7 @@ export default function CartPage() {
 
   // Calcular el total del carrito
   const totalPrice = cartItems.reduce(
-    (total, item) => total + parseFloat(item.price),
+    (total, item) => total + item.price, // No es necesario convertir a número si ya es un número
     0
   );
 

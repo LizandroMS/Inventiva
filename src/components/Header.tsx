@@ -28,7 +28,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
         <nav className="flex space-x-4">
           <Link href="/">Inicio</Link>
           <Link href="/Carta">Carta</Link>
-          <Link href="/Promociones">Promociones</Link>
+          <Link href="/Pedidos">Pedidos</Link>
         </nav>
 
         <div className="flex space-x-4">
