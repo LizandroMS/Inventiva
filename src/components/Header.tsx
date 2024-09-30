@@ -25,16 +25,33 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <h1 className="text-2xl font-bold">Pollería El Sabrosito</h1>
         </div>
 
-        <nav className="flex space-x-4">
-          <Link href="/">Inicio</Link>
-          <Link href="/Carta">Carta</Link>
-          <Link href="/Pedidos">Pedidos</Link>
+        {/* Menú de navegación */}
+        <nav className="flex space-x-6"> {/* Ajusté el espacio entre los elementos */}
+          <Link
+            href="/"
+            className="text-red-600 hover:text-black transition-colors duration-300 text-lg font-semibold uppercase hover:underline"
+          >
+            Inicio
+          </Link>
+          <Link
+            href="/Carta"
+            className="text-red-600 hover:text-black transition-colors duration-300 text-lg font-semibold uppercase hover:underline animate-pulse" // Palpitar con animación
+          >
+            Carta
+          </Link>
+          <Link
+            href="/Pedidos"
+            className="text-red-600 hover:text-black transition-colors duration-300 text-lg font-semibold uppercase hover:underline"
+          >
+            Pedidos
+          </Link>
         </nav>
 
+        {/* Controles de usuario y carrito */}
         <div className="flex space-x-4">
           {user ? (
             <>
-              <span className="pt-2.5">Bienvenido, {user.fullName}</span>
+              <span className="pt-2.5 text-lg font-medium text-black">Bienvenido, {user.fullName}</span>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -55,7 +72,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
             <div className="relative">
               <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
                 <FaShoppingCart className="h-6 w-6" />
-                <span>Carrito ({cartItems?.length || 0})</span>
+                <span className="text-lg font-semibold">Carrito ({cartItems?.length || 0})</span>
               </button>
             </div>
           </Link>

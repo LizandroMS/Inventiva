@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { useCart } from "@/context/CartContext"; // Importa el contexto del carrito
-import Header from "@/components/Header"; // Importa el Header
+import { useCart } from "@/context/CartContext";
+import Header from "@/components/Header";
 
 interface Product {
   id: number;
@@ -26,19 +26,22 @@ export default function CartaPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<number | "">(""); // Estado para la sucursal seleccionada
+  const [selectedBranch, setSelectedBranch] = useState<number | "">("");
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const { addToCart, cartItems } = useCart();
-
+  console.log(products);
   useEffect(() => {
     // Cargar sucursales
     const fetchBranches = async () => {
       try {
-        const res = await fetch("/api/getBranches"); // Ruta para obtener sucursales
+        const res = await fetch("/api/getBranches");
         if (res.ok) {
           const data: Branch[] = await res.json();
           setBranches(data);
+          if (data.length > 0) {
+            setSelectedBranch(data[0].id); // Selecciona la primera sucursal por defecto
+          }
         }
       } catch (error) {
         console.error("Error al cargar las sucursales:", error);
@@ -60,42 +63,35 @@ export default function CartaPage() {
   }, []);
 
   // Función para cargar productos por sucursal
-  const fetchProducts = async (branchId: number | "") => {
-    try {
-      const res = await fetch("/api/getProducts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ branchId }), // Enviamos el branchId en la solicitud
-      });
-      if (res.ok) {
-        const data: Product[] = await res.json();
-        setProducts(data);
-        filterProducts(searchTerm, branchId); // Aplicar filtro inicial si es necesario
+  const fetchProducts = useCallback(
+    async (branchId: number | "") => {
+      try {
+        const res = await fetch("/api/getProducts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ branchId }),
+        });
+        if (res.ok) {
+          const data: Product[] = await res.json();
+          setProducts(data);
+          filterProducts(data, searchTerm, branchId); // Aplicar el filtro cuando se obtienen los productos
+        }
+      } catch (error) {
+        console.error("Error al cargar los productos:", error);
       }
-    } catch (error) {
-      console.error("Error al cargar los productos:", error);
-    }
-  };
-
-  // Función para manejar el filtrado
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
-    filterProducts(value, selectedBranch);
-  };
-
-  // Función para manejar el cambio de sucursal
-  const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const branchId = e.target.value === "" ? "" : parseInt(e.target.value);
-    setSelectedBranch(branchId);
-    fetchProducts(branchId); // Llamamos a la API cada vez que cambia la sucursal
-  };
+    },
+    [searchTerm]
+  );
 
   // Función para filtrar los productos según el término de búsqueda y la sucursal seleccionada
-  const filterProducts = (searchTerm: string, branchId: number | "") => {
-    const filtered = products.filter((product) => {
+  const filterProducts = (
+    productList: Product[],
+    searchTerm: string,
+    branchId: number | ""
+  ) => {
+    const filtered = productList.filter((product) => {
       const matchesBranch = branchId === "" || product.branchId === branchId;
       const matchesSearch = product.name.toLowerCase().includes(searchTerm);
       return matchesBranch && matchesSearch;
@@ -103,9 +99,27 @@ export default function CartaPage() {
     setFilteredProducts(filtered);
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const branchId = e.target.value === "" ? "" : parseInt(e.target.value);
+    setSelectedBranch(branchId);
+  };
+
+  // Función para ejecutar la búsqueda manual cuando se da clic en el botón "Buscar"
+  const handleSearchClick = () => {
+    fetchProducts(selectedBranch); // Llamamos a la API para obtener productos basados en la sucursal seleccionada
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header user={user} handleLogout={() => setUser(null)} cartItems={cartItems} />
+      <Header
+        user={user}
+        handleLogout={() => setUser(null)}
+        cartItems={cartItems}
+      />
 
       <div className="container mx-auto p-4 flex space-x-4">
         {/* Buscador */}
@@ -114,22 +128,29 @@ export default function CartaPage() {
           value={searchTerm}
           onChange={handleSearch}
           placeholder="Buscar producto..."
-          className="w-4/5 p-3 border rounded-lg focus:outline-none focus:border-yellow-500"
+          className="w-3/5 p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
         />
 
         {/* Selector de sucursales */}
         <select
           value={selectedBranch}
           onChange={handleBranchChange}
-          className="w-1/5 p-3 border rounded-lg focus:outline-none focus:border-yellow-500"
+          className="w-1/5 p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
         >
-          
           {branches.map((branch) => (
             <option key={branch.id} value={branch.id}>
               {branch.name}
             </option>
           ))}
         </select>
+
+        {/* Botón Buscar */}
+        <button
+          onClick={handleSearchClick}
+          className="w-1/5 bg-yellow-500 hover:bg-yellow-600 text-gray-700 font-bold py-2 px-4 rounded-lg"
+        >
+          Buscar
+        </button>
       </div>
 
       <main className="flex-grow">
