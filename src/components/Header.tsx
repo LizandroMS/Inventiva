@@ -22,7 +22,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
         <div className="flex space-x-4">
           {user ? (
             <>
-              <span>Bienvenido, {user.fullName}</span>
+              <span className="pt-2.5">Bienvenido, {user.fullName}</span>
               <button
                 onClick={handleLogout}
                 className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -39,7 +39,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           )}
 
           {/* Carrito */}
-          <Link href="/Carrito">
+          <Link href="/carrito">
             <div className="relative">
               <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
                 carrito ({cartItems?.length || 0}) {/* Manejar el caso cuando cartItems es undefined */}

@@ -1,29 +1,35 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-//import { useRouter } from "next/navigation";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext"; // Importa el contexto del carrito
+import Header from "@/components/Header"; // Importa el Header
 
 interface Product {
   id: number;
   name: string;
-  price: string;
+  price: number;
   imagenUrl: string;
+}
+
+interface User {
+  fullName: string;
+  email: string;
 }
 
 export default function CartaPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
- // const router = useRouter();
-  const { addToCart } = useCart();
+  const [user, setUser] = useState<User | null>(null); // Estado para el usuario autenticado
+  const { addToCart, cartItems } = useCart();
 
   useEffect(() => {
+    // Cargar los productos desde la API
     const fetchProducts = async () => {
       try {
         const res = await fetch("/api/getProducts");
         if (res.ok) {
-          const data = await res.json();
+          const data: Product[] = await res.json();
           setProducts(data);
           setFilteredProducts(data);
         }
@@ -32,6 +38,17 @@ export default function CartaPage() {
       }
     };
     fetchProducts();
+
+    // Cargar el usuario autenticado desde localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser); // Asignar el usuario desde localStorage al estado
+      } catch (error) {
+        console.error("Error al parsear el usuario del localStorage:", error);
+      }
+    }
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +63,10 @@ export default function CartaPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* Renderiza el Header y pasa el usuario */}
+      <Header user={user} handleLogout={() => setUser(null)} cartItems={cartItems} />
+
+      {/* Buscador */}
       <div className="container mx-auto p-4">
         <input
           type="text"
@@ -78,7 +99,7 @@ export default function CartaPage() {
                     {product.name}
                   </h3>
                   <p className="text-lg font-semibold text-center text-gray-700">
-                    {product.price}
+                    S/ {product.price.toFixed(2)}
                   </p>
                   <button
                     onClick={() => addToCart(product)}

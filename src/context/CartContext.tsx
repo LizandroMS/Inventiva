@@ -1,22 +1,29 @@
-// src/context/CartContext.tsx
 "use client";
+import { createContext, useState, useContext, ReactNode } from "react";
+
+// Define el tipo Product para el carrito
 export interface Product {
   id: number;
   name: string;
-  price: string;
+  price: number;
   imagenUrl: string;
 }
 
-// Exporta los demás hooks y context como de costumbre
-import { createContext, useState, useContext, ReactNode } from "react";
-
-interface CartContextType {
+interface CartContextProps {
   cartItems: Product[];
   addToCart: (product: Product) => void;
   removeFromCart: (id: number) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartContext = createContext<CartContextProps | undefined>(undefined);
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+};
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
@@ -34,12 +41,4 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </CartContext.Provider>
   );
-};
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
 };
