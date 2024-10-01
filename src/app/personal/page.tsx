@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
-
+import { io } from "socket.io-client";
+const socket = io();
 interface PedidoItem {
   id: number;
   productId: number;
@@ -105,6 +106,9 @@ export default function PersonalPage() {
           return pedido;
         });
         setPedidos(updatedPedidos);
+
+        // Emitir actualización de estado a los comensales
+        socket.emit("updateOrderStatus", { id, status: nuevoEstado });
       } else {
         console.error("Error al actualizar el estado del pedido");
       }

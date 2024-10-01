@@ -37,22 +37,24 @@ export default function PedidosPage() {
   const [user, setUser] = useState<User | null>(null);
   const { addToCart, cartItems } = useCart();
 
+  // Función para devolver etiquetas de estado según el estado del pedido
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "PENDIENTE":
-        return "PENDIENTE";
+        return "Pendiente";
       case "PREPARANDO":
-        return "PREPARANDO";
+        return "Preparando";
       case "DRIVER":
-        return "DRIVER";
+        return "En camino";
       case "ENTREGADO":
-        return "ENTREGADO";
+        return "Entregado";
       case "CANCELADO":
-        return "CANCELADO";
+        return "Cancelado";
       default:
         return "Desconocido";
     }
   };
+
   // Función para asignar colores según el estado del pedido
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -69,6 +71,53 @@ export default function PedidosPage() {
       default:
         return "bg-gray-500"; // Desconocido
     }
+  };
+
+  // Función para obtener el índice del estado actual
+  const getStatusIndex = (status: string) => {
+    switch (status) {
+      case "PENDIENTE":
+        return 0;
+      case "PREPARANDO":
+        return 1;
+      case "DRIVER":
+        return 2;
+      case "ENTREGADO":
+        return 3;
+      case "CANCELADO":
+        return -1; // Si es cancelado, lo excluimos de la progresión
+      default:
+        return 0;
+    }
+  };
+
+  // Barra de progreso visual del pedido
+  const PedidoProgress = ({ status }: { status: string }) => {
+    const steps = ["Pendiente", "Preparando", "En camino", "Entregado"];
+    const currentStep = getStatusIndex(status);
+
+    return (
+      <div className="flex items-center space-x-4 my-4">
+        {steps.map((step, index) => (
+          <div key={index} className="flex items-center">
+            <div
+              className={`h-8 w-8 rounded-full flex items-center justify-center text-white ${
+                index <= currentStep ? "bg-green-500" : "bg-gray-300"
+              }`}
+            >
+              {index + 1}
+            </div>
+            {index < steps.length - 1 && (
+              <div
+                className={`h-1 w-8 ${
+                  index < currentStep ? "bg-green-500" : "bg-gray-300"
+                }`}
+              ></div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -116,7 +165,9 @@ export default function PedidosPage() {
 
       {/* Contenido */}
       <div className="container mx-auto py-8 px-4 md:px-0">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Tus Pedidos</h1>
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
+          Tus Pedidos
+        </h1>
         <div className="grid grid-cols-1 gap-6">
           {pedidos.length > 0 ? (
             pedidos.map((pedido) => (
@@ -125,7 +176,9 @@ export default function PedidosPage() {
                 className="bg-white p-6 rounded-lg shadow-lg border border-gray-200"
               >
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-                  <h2 className="text-2xl font-semibold">Pedido #{pedido.id}</h2>
+                  <h2 className="text-2xl font-semibold">
+                    Pedido #{pedido.id}
+                  </h2>
                   <span
                     className={`px-4 py-2 mt-2 sm:mt-0 rounded-full text-white font-bold ${getStatusColor(
                       pedido.status
@@ -134,6 +187,11 @@ export default function PedidosPage() {
                     {getStatusLabel(pedido.status)}
                   </span>
                 </div>
+
+                {/* Barra de progreso */}
+                {pedido.status !== "CANCELADO" && (
+                  <PedidoProgress status={pedido.status} />
+                )}
 
                 <p className="text-lg mb-2">
                   <strong>Total:</strong> S/ {pedido.totalAmount.toFixed(2)}
@@ -169,7 +227,8 @@ export default function PedidosPage() {
                             S/ {item.price.toFixed(2)} x {item.quantity}
                           </p>
                           <p className="text-lg font-semibold text-gray-900">
-                            Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
+                            Subtotal: S/{" "}
+                            {(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       </div>
