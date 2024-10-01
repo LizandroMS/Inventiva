@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: {
           userId,
           totalAmount,
-          status: 'pending',
+          status: 'PENDIENTE',
           items: {
             create: items.map((item: { id: number; quantity: number; price: number }) => ({
               productId: item.id,

@@ -42,8 +42,7 @@ export default function PersonalPage() {
   const [tokenValid, setTokenValid] = useState(false);
   const [branchId, setBranchId] = useState<number | null>(null);
 
-  // Estados posibles del pedido
-  const estadosPosibles = ["pendiente", "preparando", "driver", "entregado"];
+  const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -88,7 +87,6 @@ export default function PersonalPage() {
     }
   }, [router]);
 
-  // Cambiar estado del pedido y actualizar en la base de datos
   const cambiarEstadoPedido = async (id: number, nuevoEstado: string) => {
     try {
       const res = await fetch(`/api/personal/updateOrderStatus`, {
@@ -112,6 +110,13 @@ export default function PersonalPage() {
       }
     } catch (error) {
       console.error("Error al cambiar el estado del pedido:", error);
+    }
+  };
+
+  // Función para cancelar un pedido
+  const cancelarPedido = async (id: number) => {
+    if (window.confirm("¿Estás seguro de cancelar este pedido?")) {
+      cambiarEstadoPedido(id, "CANCELADO");
     }
   };
 
@@ -183,6 +188,16 @@ export default function PersonalPage() {
                   </option>
                 ))}
               </select>
+
+             
+              {pedido.status === "PENDIENTE" && (
+                <button
+                  onClick={() => cancelarPedido(pedido.id)}
+                  className="mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                >
+                  Cancelar Pedido
+                </button>
+              )}
             </li>
           ))}
         </ul>
