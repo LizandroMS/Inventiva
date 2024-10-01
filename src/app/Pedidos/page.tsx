@@ -4,10 +4,13 @@ import Image from "next/image";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { io } from "socket.io-client";
 import { User } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
 
-// Interfaces para el pedido y los productos
+// Inicializar el socket
+const socket = io("http://localhost:3000");
+
 interface PedidoItem {
   productId: number;
   quantity: number;
@@ -41,15 +44,15 @@ export default function PedidosPage() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "PENDIENTE":
-        return "Pendiente";
+        return "PENDIENTE";
       case "PREPARANDO":
-        return "Preparando";
+        return "PREPARANDO";
       case "DRIVER":
-        return "En camino";
+        return "DRIVER";
       case "ENTREGADO":
-        return "Entregado";
+        return "ENTREGADO";
       case "CANCELADO":
-        return "Cancelado";
+        return "CANCELADO";
       default:
         return "Desconocido";
     }
@@ -142,6 +145,7 @@ export default function PedidosPage() {
     };
 
     fetchPedidos();
+
     // Cargar usuario autenticado
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -152,6 +156,20 @@ export default function PedidosPage() {
         console.error("Error al parsear el usuario del localStorage:", error);
       }
     }
+
+    // Escuchar eventos de actualización de estado de pedido
+    socket.on("orderStatusUpdated", (data) => {
+      setPedidos((prevPedidos) =>
+        prevPedidos.map((pedido) =>
+          pedido.id === data.id ? { ...pedido, status: data.status } : pedido
+        )
+      );
+    });
+
+    // Limpiar evento socket cuando se desmonta el componente
+    return () => {
+      socket.off("orderStatusUpdated");
+    };
   }, []);
 
   return (

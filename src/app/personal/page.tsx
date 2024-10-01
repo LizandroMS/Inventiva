@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
-const socket = io();
+const socket = io("http://localhost:3000");
 interface PedidoItem {
   id: number;
   productId: number;
