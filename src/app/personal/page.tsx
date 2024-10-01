@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-import Header from "@/components/Header_Interno";
+import { jwtDecode } from "jwt-decode"; // Decodificador de JWT
+import Header from "@/components/Header_Interno"; // Asegúrate de tener este componente
 
 interface Pedido {
   id: number;
   producto: string;
   cantidad: number;
   estado: string;
+  branchId: number;
 }
 
 interface DecodedToken {
   role: string;
+  branchId: number; // Añadimos branchId al token decodificado
 }
 
 export default function PersonalPage() {
@@ -21,45 +23,49 @@ export default function PersonalPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
-
+  const [branchId, setBranchId] = useState<number | null>(null); // Guardar el branchId del personal
+  console.log(branchId);
   useEffect(() => {
     const token = localStorage.getItem("userToken");
-
     if (!token) {
       router.push("/login");
       return;
     }
-
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-
+      console.log("decoded", decoded);
       if (decoded.role !== "personal") {
         router.push("/unauthorized");
         return;
       }
 
-      const pedidosIniciales = [
-        {
-          id: 1,
-          producto: "Pollo a la brasa",
-          cantidad: 2,
-          estado: "Pendiente",
-        },
-        {
-          id: 2,
-          producto: "Salchipapas",
-          cantidad: 1,
-          estado: "En preparación",
-        },
-      ];
+      // Guardar el branchId en el estado
+      setBranchId(decoded.branchId);
 
-      setPedidos(pedidosIniciales);
+      // Cargar los pedidos correspondientes a la sucursal del personal
+      const fetchPedidos = async () => {
+        try {
+          const res = await fetch(
+            `/api/personal/getOrders?branchId=${decoded.branchId}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setPedidos(data);
+          } else {
+            console.error("Error al obtener pedidos");
+          }
+        } catch (error) {
+          console.error("Error al obtener pedidos:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchPedidos();
       setTokenValid(true);
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       router.push("/login");
-    } finally {
-      setLoading(false);
     }
   }, [router]);
 
@@ -95,7 +101,9 @@ export default function PersonalPage() {
               className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
             >
               <div>
-                <p className="font-semibold text-gray-700">Producto: {pedido.producto}</p>
+                <p className="font-semibold text-gray-700">
+                  Producto: {pedido.producto}
+                </p>
                 <p className="text-gray-600">Cantidad: {pedido.cantidad}</p>
                 <p className="text-gray-600">Estado: {pedido.estado}</p>
               </div>

@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Generar un token JWT
             const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role }, // Payload
+                { id: user.id, email: user.email, role: user.role, branchId: user.branchId }, // Payload
                 'secret-key', // Clave secreta (deberías usar una clave segura en producción)
                 { expiresIn: '1h' } // Expiración del token
             );
