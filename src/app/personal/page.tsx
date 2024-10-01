@@ -23,27 +23,21 @@ export default function PersonalPage() {
   const [tokenValid, setTokenValid] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken"); // Obtener el token de localStorage
-    console.log("Token obtenido de localStorage:", token);
+    const token = localStorage.getItem("userToken");
 
     if (!token) {
-      // Si no hay token, redirigir al login
       router.push("/login");
       return;
     }
 
     try {
-      // Decodificar el token en el frontend
       const decoded = jwtDecode<DecodedToken>(token);
-      console.log("Token decodificado:", decoded);
 
       if (decoded.role !== "personal") {
-        // Si el rol no es 'personal', redirigir a "No autorizado"
         router.push("/unauthorized");
         return;
       }
 
-      // Si el token y el rol son válidos, cargar los pedidos iniciales simulados
       const pedidosIniciales = [
         {
           id: 1,
@@ -60,9 +54,8 @@ export default function PersonalPage() {
       ];
 
       setPedidos(pedidosIniciales);
-      setTokenValid(true); // El token es válido y el rol es "personal"
+      setTokenValid(true);
     } catch (error) {
-      // Si el token es inválido o hay algún otro error
       console.error("Error al decodificar el token:", error);
       router.push("/login");
     } finally {
@@ -85,26 +78,30 @@ export default function PersonalPage() {
   }
 
   if (!tokenValid) {
-    return <p>No tienes permisos para acceder a esta página.</p>; // Si el token no es válido
+    return <p>No tienes permisos para acceder a esta página.</p>;
   }
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
-      <div className="container mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Bandeja de Pedidos</h1>
-        <ul>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Bandeja de Pedidos
+        </h1>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {pedidos.map((pedido) => (
             <li
               key={pedido.id}
-              className="mb-4 border p-4 rounded-lg shadow-lg"
+              className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
             >
-              <p>Producto: {pedido.producto}</p>
-              <p>Cantidad: {pedido.cantidad}</p>
-              <p>Estado: {pedido.estado}</p>
+              <div>
+                <p className="font-semibold text-gray-700">Producto: {pedido.producto}</p>
+                <p className="text-gray-600">Cantidad: {pedido.cantidad}</p>
+                <p className="text-gray-600">Estado: {pedido.estado}</p>
+              </div>
               <button
                 onClick={() => cambiarEstadoPedido(pedido.id)}
-                className="mt-2 bg-blue-500 text-white py-1 px-4 rounded"
+                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
               >
                 Cambiar estado
               </button>
@@ -112,6 +109,11 @@ export default function PersonalPage() {
           ))}
         </ul>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-green-700 text-white py-4 text-center mt-auto">
+        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
+      </footer>
     </div>
   );
 }
