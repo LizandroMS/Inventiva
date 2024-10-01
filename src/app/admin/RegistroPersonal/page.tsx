@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Branch } from "@prisma/client";
 
 export default function RegistroPersonal() {
   const [formData, setFormData] = useState({
@@ -12,13 +13,33 @@ export default function RegistroPersonal() {
     phone: "",
     dni: "",
     birthDate: "",
+    role: "cliente", // Valor por defecto "cliente"
+    branchId: "", // Sucursal seleccionada (si es personal)
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el loading
+  const [branches, setBranches] = useState<Branch[]>([]); // Para almacenar las sucursales desde la API
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Cargar las sucursales cuando se carga el componente
+  useEffect(() => {
+    const fetchBranches = async () => {
+      try {
+        const res = await fetch("/api/getBranches"); // Asegúrate de tener esta API implementada
+        if (res.ok) {
+          const data = await res.json();
+          setBranches(data);
+        }
+      } catch (error) {
+        console.error("Error al cargar las sucursales:", error);
+      }
+    };
+
+    fetchBranches();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -30,7 +51,7 @@ export default function RegistroPersonal() {
     setError("");
     setSuccessMessage(""); // Limpiar mensajes anteriores
     setLoading(true);
-
+    console.log("formData",formData)
     try {
       const res = await fetch("/api/registerPersonal", {
         method: "POST",
@@ -58,6 +79,8 @@ export default function RegistroPersonal() {
         phone: "",
         dni: "",
         birthDate: "",
+        role: "cliente",
+        branchId: "",
       });
 
       // Redirigir o hacer cualquier acción adicional si lo deseas
@@ -75,7 +98,7 @@ export default function RegistroPersonal() {
     <div className="container mx-auto p-8 bg-white">
       <div className="bg-gray-200 p-10 rounded-lg shadow-md w-full max-w-lg mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
-          Registro de Personal
+          Registro de {formData.role === "personal" ? "Personal" : "Usuario"}
         </h1>
 
         {loading && (
@@ -170,6 +193,40 @@ export default function RegistroPersonal() {
               required
             />
           </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium">Rol</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
+            >
+              <option value="cliente">Usuario</option>
+              <option value="personal">Personal</option>
+            </select>
+          </div>
+
+          {/* Mostrar el campo de selección de sucursal solo si es personal */}
+          {formData.role === "personal" && (
+            <div>
+              <label className="block text-gray-700 font-medium">Sucursal</label>
+              <select
+                name="branchId"
+                value={formData.branchId}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
+                required={formData.role === "personal"}
+              >
+                <option value="">Seleccione una sucursal</option>
+                {branches.map((branchId) => (
+                  <option key={branchId.id} value={branchId.id}>
+                    {branchId.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="text-center">
             <button

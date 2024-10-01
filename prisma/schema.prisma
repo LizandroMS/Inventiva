@@ -28,6 +28,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Pedido[]
+  branchId  Int?
+  branch    Branch?   @relation(fields: [branchId], references: [id])
 }
 
 model Branch {
@@ -37,6 +39,7 @@ model Branch {
   phone      String
   products   Product[]
   promotions Promotion[]
+  user       User[]
 }
 
 model Product {
@@ -84,8 +87,10 @@ model OrderItem {
   Product   Product @relation(fields: [productId], references: [id])
 }
 
-//cada ves que se agrege datos se debe ejecutar     npx prisma generate
+
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
+//cada ves que se agrege datos se debe ejecutar     npx prisma generate
+//npx prisma migrate dev --name add_branch_to_user_relation
 
 //si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev

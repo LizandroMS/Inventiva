@@ -6,12 +6,12 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fullName, email, password, address, phone, dni, birthDate } = req.body;
+    const { fullName, email, password, address, phone, dni, birthDate, branchId } = req.body;
 
     if (!fullName || !email || !password || !address || !phone || !dni || !birthDate) {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
-
+    console.log("personal ",req.body)
     try {
       // Verificar si el usuario ya existe
       const existingUser = await prisma.user.findUnique({
@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           dni,
           birthDate: new Date(birthDate), // Asegurarnos de que la fecha se almacene como objeto Date
           role: 'personal', // Asignar el rol automáticamente como 'personal'
+          branchId: parseInt(branchId, 10),
         },
       });
 
