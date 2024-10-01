@@ -1,5 +1,4 @@
-"use client"; // Añade esta línea para marcar este componente como un Client Component
-
+"use client";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Header from "@/components/Header";
@@ -8,7 +7,7 @@ import { useRouter } from "next/navigation"; // Para redirigir al usuario
 import { User } from "@prisma/client";
 
 export default function CartPage() {
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, clearCart } = useCart(); // Agrega clearCart
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter(); // Redireccionar si es necesario
 
@@ -24,6 +23,38 @@ export default function CartPage() {
   }, []);
 
   const totalPrice = cartItems.reduce((total, item) => total + item.price, 0);
+
+  // Función para guardar el pedido
+  const handleOrder = async () => {
+    if (!user) {
+      alert("Por favor inicia sesión para proceder con el pedido.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/createOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id, // ID del usuario
+          items: cartItems,
+          totalAmount: totalPrice,
+        }),
+      });
+
+      if (response.ok) {
+        // Pedido creado con éxito, limpiar carrito y redirigir a la página de pedidos
+        clearCart(); // Limpia el carrito
+        router.push("/Pedidos");
+      } else {
+        console.error("Error al crear el pedido.");
+      }
+    } catch (error) {
+      console.error("Error al crear el pedido:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -76,7 +107,7 @@ export default function CartPage() {
                   Total a pagar: S/ {totalPrice.toFixed(2)}
                 </h2>
                 <button
-                  onClick={() => router.push("/Pedidos")}
+                  onClick={handleOrder} // Llama a la función handleOrder cuando se hace clic
                   className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg w-full mt-6 transition-colors"
                 >
                   Proceder con el pedido

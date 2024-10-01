@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { userId, items, totalAmount } = req.body;
 
       // Crear el pedido y los items en la base de datos
-      const order = await prisma.order.create({
+      const order = await prisma.Pedido.create({
         data: {
           userId,
           totalAmount,

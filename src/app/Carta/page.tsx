@@ -178,7 +178,10 @@ export default function CartaPage() {
                     S/ {product.price.toFixed(2)}
                   </p>
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={() => addToCart({
+                      ...product,
+                      quantity: 1, // Añadir la cantidad por defecto cuando se añade al carrito
+                    })}
                     className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg mt-4"
                   >
                     Añadir al carrito

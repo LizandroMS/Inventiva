@@ -27,7 +27,7 @@ model User {
   role      String   @default("cliente") // Añadimos el campo de rol
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders Order[]
+  orders Pedido[]
 }
 
 model Branch {
@@ -64,7 +64,7 @@ model Promotion {
   branch         Branch @relation(fields: [branchId], references: [id])
 }
 
-model Order {
+model Pedido {
   id          Int         @id @default(autoincrement())
   userId      Int
   user        User         @relation(fields: [userId], references: [id])
@@ -75,7 +75,7 @@ model Order {
 model OrderItem {
   id        Int     @id @default(autoincrement())
   orderId   Int
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Pedido   @relation(fields: [orderId], references: [id])
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
