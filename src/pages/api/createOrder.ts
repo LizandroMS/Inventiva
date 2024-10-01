@@ -7,21 +7,24 @@ const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { userId, items, totalAmount } = req.body; // Datos del pedido
-      
-      // Crear el pedido en la base de datos
+      const { userId, items, totalAmount } = req.body;
+
+      // Crear el pedido y los items en la base de datos
       const order = await prisma.order.create({
         data: {
-          userId, // ID del usuario que realiza el pedido
+          userId,
           totalAmount,
-          status: 'pending', // Estado inicial del pedido
+          status: 'pending',
           items: {
-            create: items.map((item: any) => ({
+            create: items.map((item: { id: number; quantity: number; price: number }) => ({
               productId: item.id,
               quantity: item.quantity,
               price: item.price,
             })),
           },
+        },
+        include: {
+          items: true, // Incluir los items en la respuesta
         },
       });
 
