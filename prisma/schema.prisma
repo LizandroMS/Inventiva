@@ -27,7 +27,7 @@ model User {
   role      String   @default("cliente") // Añadimos el campo de rol
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orders Pedido[]
+  orders    Pedido[]
 }
 
 model Branch {
@@ -40,19 +40,19 @@ model Branch {
 }
 
 model Product {
-  id                Int      @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   name              String
   description       String?
   price             Float
   promotional_price Float?
   stock             Int
   status            String
-  created_at        DateTime @default(now())
+  created_at        DateTime    @default(now())
   created_by        String
   branchId          Int
-  branch            Branch   @relation(fields: [branchId], references: [id])
+  branch            Branch      @relation(fields: [branchId], references: [id])
   imagenUrl         String? // Campo para almacenar la URL de la imagen
-   orders    OrderItem[] 
+  orders            OrderItem[]
 }
 
 model Promotion {
@@ -67,19 +67,21 @@ model Promotion {
 model Pedido {
   id          Int         @id @default(autoincrement())
   userId      Int
-  user        User         @relation(fields: [userId], references: [id])
   totalAmount Float
-  status      String       // Estado del pedido
-  items       OrderItem[]  // Relación con los items del pedido
+  status      String
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  User        User        @relation(fields: [userId], references: [id])
 }
+
 model OrderItem {
   id        Int     @id @default(autoincrement())
   orderId   Int
-  order     Pedido   @relation(fields: [orderId], references: [id])
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+  order     Pedido  @relation(fields: [orderId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id])
 }
 
 //cada ves que se agrege datos se debe ejecutar     npx prisma generate
