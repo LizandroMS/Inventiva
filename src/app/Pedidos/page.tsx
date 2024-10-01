@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image"; // Importamos el componente Image de Next.js
 
 // Interfaces para los pedidos y productos
 interface PedidoItem {
@@ -101,12 +102,14 @@ export default function PedidosPage() {
                   <li key={item.productId} className="py-4">
                     <div className="flex justify-between">
                       <div className="flex items-center">
-                        {/* Imagen del producto */}
+                        {/* Imagen del producto utilizando next/image */}
                         <div className="mr-4">
-                          <img
+                          <Image
                             src={item.Product.imagenUrl}
                             alt={item.Product.name}
-                            className="w-16 h-16 rounded-lg"
+                            width={64}
+                            height={64} // Tamaño fijo para mejorar el rendimiento
+                            className="rounded-lg"
                           />
                         </div>
 
