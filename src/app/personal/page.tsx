@@ -2,20 +2,37 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode"; // Decodificador de JWT
-import Header from "@/components/Header_Interno"; // Asegúrate de tener este componente
+import { jwtDecode } from "jwt-decode";
+import Header from "@/components/Header_Interno";
+
+interface PedidoItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: number;
+  Product: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    promotional_price: number | null;
+    stock: number;
+    status: string;
+    imagenUrl: string;
+  };
+}
 
 interface Pedido {
   id: number;
-  producto: string;
-  cantidad: number;
-  estado: string;
-  branchId: number;
+  totalAmount: number;
+  status: string;
+  createdAt: string;
+  items: PedidoItem[];
 }
 
 interface DecodedToken {
   role: string;
-  branchId: number; // Añadimos branchId al token decodificado
+  branchId: number;
 }
 
 export default function PersonalPage() {
@@ -23,26 +40,28 @@ export default function PersonalPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
-  const [branchId, setBranchId] = useState<number | null>(null); // Guardar el branchId del personal
-  console.log(branchId);
+  const [branchId, setBranchId] = useState<number | null>(null);
+
+  // Estados posibles del pedido
+  const estadosPosibles = ["pendiente", "preparando", "driver", "entregado"];
+
   useEffect(() => {
     const token = localStorage.getItem("userToken");
     if (!token) {
       router.push("/login");
       return;
     }
+
     try {
       const decoded = jwtDecode<DecodedToken>(token);
-      console.log("decoded", decoded);
+
       if (decoded.role !== "personal") {
         router.push("/unauthorized");
         return;
       }
 
-      // Guardar el branchId en el estado
       setBranchId(decoded.branchId);
 
-      // Cargar los pedidos correspondientes a la sucursal del personal
       const fetchPedidos = async () => {
         try {
           const res = await fetch(
@@ -69,14 +88,31 @@ export default function PersonalPage() {
     }
   }, [router]);
 
-  const cambiarEstadoPedido = (id: number) => {
-    const nuevosPedidos = pedidos.map((pedido) => {
-      if (pedido.id === id) {
-        return { ...pedido, estado: "Completado" };
+  // Cambiar estado del pedido y actualizar en la base de datos
+  const cambiarEstadoPedido = async (id: number, nuevoEstado: string) => {
+    try {
+      const res = await fetch(`/api/personal/updateOrderStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, nuevoEstado }),
+      });
+
+      if (res.ok) {
+        const updatedPedidos = pedidos.map((pedido) => {
+          if (pedido.id === id) {
+            return { ...pedido, status: nuevoEstado };
+          }
+          return pedido;
+        });
+        setPedidos(updatedPedidos);
+      } else {
+        console.error("Error al actualizar el estado del pedido");
       }
-      return pedido;
-    });
-    setPedidos(nuevosPedidos);
+    } catch (error) {
+      console.error("Error al cambiar el estado del pedido:", error);
+    }
   };
 
   if (loading) {
@@ -101,18 +137,52 @@ export default function PersonalPage() {
               className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
             >
               <div>
-                <p className="font-semibold text-gray-700">
-                  Producto: {pedido.producto}
+                <h2 className="font-semibold text-gray-700">
+                  Pedido #{pedido.id}
+                </h2>
+                <p className="text-gray-600">
+                  Fecha: {new Date(pedido.createdAt).toLocaleString()}
                 </p>
-                <p className="text-gray-600">Cantidad: {pedido.cantidad}</p>
-                <p className="text-gray-600">Estado: {pedido.estado}</p>
+                <p className="text-gray-600">Estado: {pedido.status}</p>
+
+                <h3 className="font-bold text-gray-800 mt-4 mb-2">Productos</h3>
+                <ul className="space-y-2">
+                  {pedido.items.map((item) => (
+                    <li key={item.id} className="flex flex-col">
+                      <p className="font-semibold text-gray-700">
+                        {item.Product.name}
+                      </p>
+                      <p className="text-gray-600">
+                        {item.Product.description}
+                      </p>
+                      <p className="text-gray-600">Cantidad: {item.quantity}</p>
+                      <p className="text-gray-600">
+                        Precio unitario: S/ {item.price.toFixed(2)}
+                      </p>
+                      <p className="text-gray-600">
+                        Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="text-lg font-bold text-gray-800 mt-4">
+                  Total: S/ {pedido.totalAmount.toFixed(2)}
+                </p>
               </div>
-              <button
-                onClick={() => cambiarEstadoPedido(pedido.id)}
-                className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+
+              {/* Cambiar estado */}
+              <select
+                value={pedido.status}
+                onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
+                className="mt-4 bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg"
               >
-                Cambiar estado
-              </button>
+                {estadosPosibles.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {estado.charAt(0).toUpperCase() + estado.slice(1)}
+                  </option>
+                ))}
+              </select>
             </li>
           ))}
         </ul>
