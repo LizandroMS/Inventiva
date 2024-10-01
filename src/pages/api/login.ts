@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Verificar la contraseña
+            console.log("Comapracion de password ",password, user.password)
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
             if (!isPasswordValid) {
