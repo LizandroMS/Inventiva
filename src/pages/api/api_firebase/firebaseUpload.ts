@@ -1,5 +1,5 @@
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebaseConfig"; // Asegúrate de que esta importación esté correcta
+import { storage } from "../../../firebaseConfig"; // Asegúrate de que esta importación esté correcta
 
 // Función para subir la imagen
 export const uploadImage = async (file: File): Promise<string> => {

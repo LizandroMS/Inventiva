@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadImage } from "@/pages/api_firebase/firebaseUpload";
+import { uploadImage } from "@/pages/api/api_firebase/firebaseUpload";
 import imageCompression from "browser-image-compression"; // Importa la librería
 
 interface Branch {
@@ -82,10 +82,9 @@ export default function RegistroProducto() {
         maxSizeMB: 0.5,
         maxWidthOrHeight: 500,
         useWebWorker: true,
-        fileType: 'image/webp', 
+        fileType: "image/webp",
         initialQuality: 0.6, // Ajusta la calidad (entre 0 y 1). Aquí la estamos reduciendo al 70%
       };
-      
 
       // Comprimir y convertir la imagen seleccionada a WebP
       const compressedFile = await imageCompression(file, options);
