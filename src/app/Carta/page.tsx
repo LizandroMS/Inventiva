@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
-
+import { useRouter } from "next/navigation";
 interface Product {
   id: number;
   name: string;
@@ -30,6 +30,7 @@ export default function CartaPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const { addToCart, cartItems } = useCart();
+  const router = useRouter();
   console.log(products);
   useEffect(() => {
     // Cargar sucursales
@@ -59,6 +60,8 @@ export default function CartaPage() {
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage:", error);
       }
+    }else{
+      router.push("/login");
     }
   }, []);
 
@@ -112,15 +115,14 @@ export default function CartaPage() {
   const handleSearchClick = () => {
     fetchProducts(selectedBranch); // Llamamos a la API para obtener productos basados en la sucursal seleccionada
   };
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Limpiar datos del usuario
+    setUser(null); // Limpiar el estado del usuario
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header
-        user={user}
-        handleLogout={() => setUser(null)}
-        cartItems={cartItems}
-      />
-
+      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
       <div className="container mx-auto p-4 flex space-x-4">
         {/* Buscador */}
         <input
@@ -178,10 +180,12 @@ export default function CartaPage() {
                     S/ {product.price.toFixed(2)}
                   </p>
                   <button
-                    onClick={() => addToCart({
-                      ...product,
-                      quantity: 1, // Añadir la cantidad por defecto cuando se añade al carrito
-                    })}
+                    onClick={() =>
+                      addToCart({
+                        ...product,
+                        quantity: 1, // Añadir la cantidad por defecto cuando se añade al carrito
+                      })
+                    }
                     className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg mt-4"
                   >
                     Añadir al carrito
