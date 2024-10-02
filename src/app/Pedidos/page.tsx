@@ -7,9 +7,9 @@ import Footer from "@/components/Footer";
 import { io } from "socket.io-client";
 import { User } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
-
+import { useRouter } from "next/navigation";
 // Inicializar el socket
-const socket = io("http://localhost:3000", {
+const socket = io({
   path: "/api/socket",
 });
 
@@ -41,7 +41,8 @@ export default function PedidosPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const { addToCart, cartItems } = useCart();
-console.log(addToCart)
+  const router = useRouter();
+  console.log(addToCart);
   // Función para devolver etiquetas de estado según el estado del pedido
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -157,6 +158,8 @@ console.log(addToCart)
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage:", error);
       }
+    } else {
+      router.push("/login");
     }
 
     // Escuchar eventos de actualización de estado de pedido
