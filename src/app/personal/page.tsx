@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:3000", {
+  path: "/api/socket",
+});
 interface PedidoItem {
   id: number;
   productId: number;
@@ -42,7 +44,7 @@ export default function PersonalPage() {
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
   const [branchId, setBranchId] = useState<number | null>(null);
-
+  console.log(branchId)
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
 
   useEffect(() => {
@@ -89,6 +91,8 @@ export default function PersonalPage() {
   }, [router]);
 
   const cambiarEstadoPedido = async (id: number, nuevoEstado: string) => {
+    fetch("/api/socket");
+
     try {
       const res = await fetch(`/api/personal/updateOrderStatus`, {
         method: "POST",

@@ -9,7 +9,9 @@ import { User } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
 
 // Inicializar el socket
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:3000", {
+  path: "/api/socket",
+});
 
 interface PedidoItem {
   productId: number;
@@ -39,7 +41,7 @@ export default function PedidosPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const { addToCart, cartItems } = useCart();
-
+console.log(addToCart)
   // Función para devolver etiquetas de estado según el estado del pedido
   const getStatusLabel = (status: string) => {
     switch (status) {
