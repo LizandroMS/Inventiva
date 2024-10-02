@@ -15,8 +15,8 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
 
   return (
     <header className="bg-yellow-500 text-white shadow-md">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        {/* Logo e imagen */}
+      <div className="container mx-auto flex items-center justify-between p-4">
+        {/* Sección Izquierda: Logo e imagen */}
         <div className="flex items-center">
           <Image
             src="/images/logo.png"
@@ -30,34 +30,8 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           </h1>
         </div>
 
-        {/* Botón de menú hamburguesa para móviles */}
-        <div className="md:hidden">
-          <button
-            id="mobile-menu-button"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-white focus:outline-none focus:ring-2 focus:ring-white"
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              ></path>
-            </svg>
-          </button>
-        </div>
-
-        {/* Navegación para pantallas medianas y grandes */}
-        <nav className="hidden md:flex space-x-6 items-center">
+        {/* Sección Central: Enlaces de navegación */}
+        <nav className="hidden md:flex space-x-6">
           <Link
             href="/"
             className="text-red-600 hover:text-black transition-colors duration-300 text-lg font-semibold uppercase"
@@ -76,9 +50,53 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           >
             Pedidos
           </Link>
+        </nav>
 
-          {/* Controles de usuario y carrito */}
-          <div className="flex space-x-4 items-center">
+        {/* Sección Derecha: Botón del carrito y controles de usuario */}
+        <div className="flex items-center space-x-4">
+          {/* Botón del carrito visible en todas las pantallas */}
+          <Link href="/carrito">
+            <div className="relative">
+              <button className="bg-red-600 hover:bg-red-700 text-white font-bold p-2 rounded-lg flex items-center">
+                <FaShoppingCart className="h-6 w-6" />
+                {/* Mostrar el contador si hay artículos en el carrito */}
+                {cartItems.length > 0 && (
+                  <span className="ml-1 text-lg font-semibold">
+                    ({cartItems.length})
+                  </span>
+                )}
+              </button>
+            </div>
+          </Link>
+
+          {/* Botón de menú hamburguesa para móviles */}
+          <div className="md:hidden">
+            <button
+              id="mobile-menu-button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-white focus:outline-none focus:ring-2 focus:ring-white"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          {/* Controles de usuario en pantallas md y superiores */}
+          <div className="hidden md:flex md:items-center md:space-x-4">
             {user ? (
               <>
                 <span className="text-lg font-medium text-black">
@@ -98,20 +116,8 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
                 </button>
               </Link>
             )}
-
-            {/* Carrito */}
-            <Link href="/carrito">
-              <div className="relative">
-                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
-                  <FaShoppingCart className="h-6 w-6" />
-                  <span className="text-lg font-semibold">
-                    Carrito ({cartItems.length || 0})
-                  </span>
-                </button>
-              </div>
-            </Link>
           </div>
-        </nav>
+        </div>
       </div>
 
       {/* Menú desplegable en móviles */}
@@ -130,7 +136,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
             Pedidos
           </Link>
 
-          {/* Controles de usuario y carrito en móvil */}
+          {/* Controles de usuario en móvil */}
           <div className="flex flex-col items-center space-y-4 mt-4">
             {user ? (
               <>
@@ -151,18 +157,6 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
                 </button>
               </Link>
             )}
-
-            {/* Carrito */}
-            <Link href="/carrito">
-              <div className="relative">
-                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2">
-                  <FaShoppingCart className="h-6 w-6" />
-                  <span className="text-lg font-semibold">
-                    Carrito ({cartItems.length || 0})
-                  </span>
-                </button>
-              </div>
-            </Link>
           </div>
         </nav>
       </div>
