@@ -5,6 +5,12 @@ import Header from "@/components/Header";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Para redirigir al usuario
 import { User } from "@prisma/client";
+import { io } from "socket.io-client";
+
+// Inicializar el socket
+const socket = io({
+  path: "/api/socket",
+});
 
 export default function CartPage() {
   const { cartItems, removeFromCart, clearCart } = useCart(); // Agrega clearCart
@@ -46,7 +52,12 @@ export default function CartPage() {
 
       if (response.ok) {
         // Pedido creado con éxito, limpiar carrito y redirigir a la página de pedidos
+        //const newOrder = await response.json(); // Obtener el pedido creado
         clearCart(); // Limpia el carrito
+
+        // Emitir el pedido a través del socket
+        socket.emit("newOrder");
+        console.log("newOrder");
         router.push("/Pedidos");
       } else {
         console.error("Error al crear el pedido.");

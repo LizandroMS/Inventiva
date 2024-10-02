@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
-const socket = io( {
+
+// Inicializar el socket
+const socket = io({
   path: "/api/socket",
 });
+
 interface PedidoItem {
   id: number;
   productId: number;
@@ -44,7 +47,7 @@ export default function PersonalPage() {
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
   const [branchId, setBranchId] = useState<number | null>(null);
-  console.log(branchId)
+  console.log(branchId);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
 
   useEffect(() => {
@@ -84,6 +87,14 @@ export default function PersonalPage() {
 
       fetchPedidos();
       setTokenValid(true);
+
+      // Escuchar eventos de nuevos pedidos a través del socket
+      socket.on("newOrder", () => {
+        console.log("Nuevo pedido recibido a través del socket");
+        fetchPedidos();
+      });
+
+
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       router.push("/login");
@@ -91,8 +102,6 @@ export default function PersonalPage() {
   }, [router]);
 
   const cambiarEstadoPedido = async (id: number, nuevoEstado: string) => {
-    fetch("/api/socket");
-
     try {
       const res = await fetch(`/api/personal/updateOrderStatus`, {
         method: "POST",
@@ -118,13 +127,6 @@ export default function PersonalPage() {
       }
     } catch (error) {
       console.error("Error al cambiar el estado del pedido:", error);
-    }
-  };
-
-  // Función para cancelar un pedido
-  const cancelarPedido = async (id: number) => {
-    if (window.confirm("¿Estás seguro de cancelar este pedido?")) {
-      cambiarEstadoPedido(id, "CANCELADO");
     }
   };
 
@@ -196,16 +198,6 @@ export default function PersonalPage() {
                   </option>
                 ))}
               </select>
-
-             
-              {pedido.status === "PENDIENTE" && (
-                <button
-                  onClick={() => cancelarPedido(pedido.id)}
-                  className="mt-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                >
-                  Cancelar Pedido
-                </button>
-              )}
             </li>
           ))}
         </ul>

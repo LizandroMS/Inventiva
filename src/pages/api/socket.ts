@@ -14,25 +14,27 @@ export default function handler(req: NextApiRequest, res: NextApiResponseWithSoc
   if (!res.socket.server.io) {
     console.log("Iniciando el servidor Socket.IO...");
     
-    // Inicializar el servidor de Socket.IO
     const io = new IOServer(res.socket.server, {
       path: "/api/socket",
       cors: {
-        origin: "*", // Asegúrate de configurar correctamente el CORS si es necesario
+        origin: "*", // Configura el CORS según tus necesidades
         methods: ["GET", "POST"],
       },
     });
 
-    // Guardar la instancia de Socket.IO en el servidor para evitar inicializarlo de nuevo
     res.socket.server.io = io;
 
-    // Manejar la conexión de clientes
     io.on("connection", (socket) => {
       console.log("Cliente conectado:", socket.id);
 
+      socket.on("newOrder", (data) => {
+        console.log("Nuevo pedido recibido:", data);
+        io.emit("newOrder", data);
+      });
+
       socket.on("updateOrderStatus", (data) => {
         console.log("Estado de pedido actualizado:", data);
-        io.emit("orderStatusUpdated", data); // Emitir evento a todos los clientes conectados
+        io.emit("orderStatusUpdated", data);
       });
 
       socket.on("disconnect", () => {
