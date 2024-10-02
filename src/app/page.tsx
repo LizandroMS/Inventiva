@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   // Lista de productos o platos para mostrar en el carrusel y en la sección de platos
-  const  Slider_Data = [
+  const Slider_Data = [
     {
       id: 1,
       nombre: "1 Pollo a la Brasa",
@@ -108,6 +108,7 @@ export default function Home() {
       imagen: "/images/promo2.png",
     },
   ];
+
   const platos = [
     {
       id: 1,
@@ -131,25 +132,19 @@ export default function Home() {
       {/* Carrusel que cubre todo el ancho */}
       {isClient && (
         <section className="bg-gray-100">
-          <div className="container mx-auto">
+          <div className="container mx-auto p-4">
             <Slider {...settings}>
               {Slider_Data.map((Slider_Data) => (
-                <div key={Slider_Data.id}>
-                  <div className="relative w-full h-[500px] overflow-hidden">
-                    <Image
-                      src={Slider_Data.imagen}
-                      alt={Slider_Data.nombre}
-                      layout="fill"
-                      objectFit="cover"
-                      objectPosition="center"
-                      className="rounded-lg"
-                      quality={100}
-                    />
-                  </div>
-                  {/* <div className="text-center mt-4">
-                    <h3 className="text-2xl font-bold text-gray-800">{Slider_Data.nombre}</h3>
-                    <p className="text-lg text-gray-600">{Slider_Data.precio}</p>
-                  </div> */}
+                <div key={Slider_Data.id} className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] overflow-hidden">
+                  <Image
+                    src={Slider_Data.imagen}
+                    alt={Slider_Data.nombre}
+                    layout="fill"
+                    objectFit="cover"
+                    objectPosition="center"
+                    className="rounded-lg"
+                    quality={100}
+                  />
                 </div>
               ))}
             </Slider>
@@ -163,24 +158,22 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
             Nuestro Menú
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {platos.map((plato) => (
-              <div key={plato.id} className="bg-white p-6 rounded-lg shadow-md">
-                <div className="relative w-full mb-4">
+              <div key={plato.id} className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105">
+                <div className="relative w-full mb-4 h-[200px]">
                   <Image
                     src={plato.imagen}
                     alt={plato.nombre}
-                    width={400}
-                    height={400}
-                    layout="intrinsic"
+                    layout="fill"
                     objectFit="cover"
                     className="rounded-lg"
                   />
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-700">
+                <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
                   {plato.nombre}
                 </h3>
-                <p className="text-lg font-semibold text-gray-700">
+                <p className="text-lg font-semibold text-gray-700 text-center">
                   {plato.precio}
                 </p>
               </div>
@@ -193,9 +186,9 @@ export default function Home() {
       <footer className="bg-green-700 text-white py-4 text-center">
         <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
         <div className="flex justify-center space-x-4 mt-2">
-          <a href="#">Términos y condiciones</a>
-          <a href="#">Políticas de privacidad</a>
-          <a href="#">Locales</a>
+          <a href="#" className="hover:underline">Términos y condiciones</a>
+          <a href="#" className="hover:underline">Políticas de privacidad</a>
+          <a href="#" className="hover:underline">Locales</a>
         </div>
       </footer>
     </div>
