@@ -93,7 +93,7 @@ export default function Home() {
       id: 2,
       nombre: "1/8 Pollo a la Brasa",
       precio: "S/ 12.00",
-      imagen: "/images/promo2.png",
+      imagen: "/images/promo1.png",
     },
     {
       id: 3,
@@ -105,7 +105,7 @@ export default function Home() {
       id: 4,
       nombre: "Pollo al Horno",
       precio: "S/ 50.00",
-      imagen: "/images/promo2.png",
+      imagen: "/images/promo1.png",
     },
   ];
 

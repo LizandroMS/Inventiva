@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { uploadImage } from "@/pages/api/api_firebase/firebaseUpload";
 import imageCompression from "browser-image-compression"; // Importa la librería
+import Header from "@/components/Header_Interno";
+import Footer from "@/components/Footer";
 
 interface Branch {
   id: number;
@@ -117,134 +119,144 @@ export default function RegistroProducto() {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-white">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Registro de Productos
-      </h1>
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg"
-      >
-        {/* Campos del formulario de registro */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Nombre del Producto
-          </label>
-          <input
-            type="text"
-            name="nombreProducto"
-            value={formData.nombreProducto}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-            required
-          />
-        </div>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      {/* Header reutilizable */}
+      <Header />
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Descripción
-          </label>
-          <textarea
-            name="descripcion"
-            value={formData.descripcion}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-            rows={3}
-            required
-          ></textarea>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Precio</label>
-          <input
-            type="number"
-            name="precio"
-            value={formData.precio}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Precio Promocional
-          </label>
-          <input
-            type="number"
-            name="precioPromocional"
-            value={formData.precioPromocional}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Stock</label>
-          <input
-            type="number"
-            name="stock"
-            value={formData.stock}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Estado</label>
-          <select
-            name="estado"
-            value={formData.estado}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-          >
-            <option value="disponible">Disponible</option>
-            <option value="no disponible">No disponible</option>
-          </select>
-        </div>
-
-        {/* Selector de sucursales */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Sucursal</label>
-          <select
-            name="branchId"
-            value={formData.branchId}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-            required
-          >
-            <option value="">Selecciona una sucursal</option>
-            {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Campo para seleccionar la imagen */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Imagen del Producto
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
-          disabled={uploading}
+      <div className="container mx-auto p-8 bg-white">
+        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Registro de Productos
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg"
         >
-          {uploading ? "Subiendo Imagen..." : "Registrar Producto"}
-        </button>
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-      </form>
+          {/* Campos del formulario de registro */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Nombre del Producto
+            </label>
+            <input
+              type="text"
+              name="nombreProducto"
+              value={formData.nombreProducto}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Descripción
+            </label>
+            <textarea
+              name="descripcion"
+              value={formData.descripcion}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              rows={3}
+              required
+            ></textarea>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">Precio</label>
+            <input
+              type="number"
+              name="precio"
+              value={formData.precio}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Precio Promocional
+            </label>
+            <input
+              type="number"
+              name="precioPromocional"
+              value={formData.precioPromocional}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">Stock</label>
+            <input
+              type="number"
+              name="stock"
+              value={formData.stock}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">Estado</label>
+            <select
+              name="estado"
+              value={formData.estado}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+            >
+              <option value="disponible">Disponible</option>
+              <option value="no disponible">No disponible</option>
+            </select>
+          </div>
+
+          {/* Selector de sucursales */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Sucursal
+            </label>
+            <select
+              name="branchId"
+              value={formData.branchId}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              required
+            >
+              <option value="">Selecciona una sucursal</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Campo para seleccionar la imagen */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">
+              Imagen del Producto
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+            disabled={uploading}
+          >
+            {uploading ? "Subiendo Imagen..." : "Registrar Producto"}
+          </button>
+          {error && <p className="text-red-500 mt-4">{error}</p>}
+        </form>
+      </div>
+
+      {/* Footer reutilizable */}
+      <Footer />
     </div>
   );
 }

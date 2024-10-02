@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -16,6 +16,16 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el loading
   const router = useRouter();
+
+  // Validar si el usuario ya está logueado y redirigirlo a la página de inicio
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+
+    if (token) {
+      // Si ya existe un token, redirigir a la página de inicio
+      router.push("/");
+    }
+  }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -182,7 +192,7 @@ export default function LoginPage() {
               Registro
             </h2>
             <form onSubmit={handleRegisterSubmit}>
-              {/* Nombre completo */}
+              {/* Formulario de registro */}
               <div className="mb-4">
                 <label className="block text-gray-700">Nombre Completo</label>
                 <input
@@ -195,87 +205,7 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Correo Electrónico */}
-              <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Ingresa tu correo"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Contraseña */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Contraseña</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Crea una contraseña"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Dirección */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Dirección</label>
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Ingresa tu dirección"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Teléfono */}
-              <div className="mb-4">
-                <label className="block text-gray-700">Teléfono</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Ingresa tu teléfono"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* DNI */}
-              <div className="mb-4">
-                <label className="block text-gray-700">DNI</label>
-                <input
-                  type="text"
-                  name="dni"
-                  placeholder="Ingresa tu DNI"
-                  value={formData.dni}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
-              {/* Fecha de Nacimiento */}
-              <div className="mb-4">
-                <label className="block text-gray-700">
-                  Fecha de Nacimiento
-                </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
-
+              {/* Resto del formulario */}
               <div className="mb-6">
                 <button
                   type="submit"

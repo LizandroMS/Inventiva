@@ -10,6 +10,7 @@ import {
   FaHistory,
   FaClipboardList,
 } from "react-icons/fa"; // Íconos
+import Footer from "@/components/Footer";
 
 interface DecodedToken {
   role: string;
@@ -128,6 +129,7 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }
