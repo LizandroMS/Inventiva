@@ -19,8 +19,8 @@ export default function LoginPage() {
 
   // Validar si el usuario ya está logueado y redirigirlo a la página de inicio
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
-
+    const token = localStorage.getItem("user");
+    console.log("token",token)
     if (token) {
       // Si ya existe un token, redirigir a la página de inicio
       router.push("/");
