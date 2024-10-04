@@ -1,18 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import { format } from "date-fns"; // Para manejar formato de fechas
+import { format } from "date-fns";
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
 const familias = [
-  "Pollos a la brasa",
-  "Chifa",
-  "Platos a la carta",
-  "Parrillas",
-  "Guarniciones",
-  "Bebidas sin alcohol",
-  "Bebidas con alcohol",
-];
+    "Pollos a la brasa",
+    "Chifa",
+    "Platos a la carta",
+    "Parrillas",
+    "Guarniciones",
+    "Bebidas sin alcohol",
+    "Bebidas con alcohol",
+  ].map(familia => familia.toUpperCase());
+  
 
 interface Pedido {
   id: number;
@@ -20,7 +21,7 @@ interface Pedido {
   totalAmount: number;
   items: PedidoItem[];
   createdAt: string;
-  User: { fullName: string }; // Asegúrate de que los datos del usuario estén incluidos
+  User: { fullName: string };
 }
 
 interface PedidoItem {
@@ -42,10 +43,13 @@ export default function HistorialActividades() {
   const [fechaFin, setFechaFin] = useState(format(new Date(), "yyyy-MM-dd"));
   const [familiaSeleccionada, setFamiliaSeleccionada] = useState("");
   const [historial, setHistorial] = useState<Pedido[]>([]);
+  const [totalOrders, setTotalOrders] = useState(0); // Guardar el total de pedidos
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 15; // Limitar a 15 pedidos por página
 
   useEffect(() => {
     handleBuscar();
-  }, []);
+  }, [currentPage]);
 
   const handleBuscar = async () => {
     try {
@@ -58,17 +62,34 @@ export default function HistorialActividades() {
           fechaInicio,
           fechaFin,
           familia: familiaSeleccionada,
+          page: currentPage, // Enviar la página actual
+          limit: ordersPerPage, // Enviar el límite de pedidos por página
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setHistorial(data); // Guardar el historial filtrado
+        setHistorial(data.orders); // Guardar el historial filtrado
+        setTotalOrders(data.totalOrders); // Guardar el total de pedidos
       } else {
         console.error("Error al obtener historial");
       }
     } catch (error) {
       console.error("Error al buscar historial:", error);
+    }
+  };
+
+  const totalPages = Math.ceil(totalOrders / ordersPerPage); // Calcular el total de páginas
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
@@ -165,7 +186,7 @@ export default function HistorialActividades() {
                   {historial.map((pedido, index) => (
                     <tr key={pedido.id} className="bg-white border-b">
                       <td className="px-4 py-2 text-sm text-gray-700">
-                        {index + 1}
+                        {(currentPage - 1) * ordersPerPage + index + 1}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-700">
                         {pedido.id}
@@ -208,6 +229,35 @@ export default function HistorialActividades() {
               No se encontraron resultados.
             </p>
           )}
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === 1 ? "bg-gray-300" : "bg-blue-500 hover:bg-blue-600"
+            } text-white font-semibold`}
+          >
+            Anterior
+          </button>
+
+          <span>
+            Página {currentPage} de {totalPages}
+          </span>
+
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === totalPages
+                ? "bg-gray-300"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white font-semibold`}
+          >
+            Siguiente
+          </button>
         </div>
       </div>
       <Footer />

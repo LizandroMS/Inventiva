@@ -5,25 +5,30 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fechaInicio, fechaFin, familia } = req.body;
+    const { fechaInicio, fechaFin, familia, page = 1, limit = 15 } = req.body;
 
-    // Convertir las fechas a UTC
-    const startDate = new Date(new Date(fechaInicio).setUTCHours(0, 0, 0, 0)); // Inicio del día en UTC
-    const endDate = new Date(new Date(fechaFin).setUTCHours(23, 59, 59, 999)); // Fin del día en UTC
+    // Convertir las fechas para abarcar todo el día
+        // Convertir las fechas a UTC
+        const startDate = new Date(new Date(fechaInicio).setUTCHours(0, 0, 0, 0)); // Inicio del día en UTC
+        const endDate = new Date(new Date(fechaFin).setUTCHours(23, 59, 59, 999)); // Fin del día en UTC
+    
+        console.log("Fechas UTC recibidas:", startDate.toISOString(), endDate.toISOString());
+    
 
-    console.log("Fechas UTC recibidas:", startDate.toISOString(), endDate.toISOString());
+    const skip = (page - 1) * limit; // Calcular cuántos registros omitir
+    const take = limit; // Limitar a `limit` registros
 
     try {
       const orders = await prisma.pedido.findMany({
         where: {
           createdAt: {
-            gte: startDate, // Filtrar pedidos desde el inicio del día en UTC
-            lte: endDate, // Filtrar pedidos hasta el final del día en UTC
+            gte: startDate,
+            lte: endDate,
           },
           items: {
             some: {
               Product: {
-                familia: familia ? familia : undefined, // Filtrar por familia si está definida
+                familia: familia ? familia : undefined,
               },
             },
           },
@@ -31,19 +36,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         include: {
           items: {
             include: {
-              Product: true, // Incluir detalles del producto
+              Product: true,
             },
           },
-          User: { // Incluir detalles del usuario
+          User: {
             select: {
               fullName: true,
               phone: true,
             },
           },
         },
+        skip, // Omitir registros
+        take, // Limitar a `limit` registros
       });
 
-      res.status(200).json(orders);
+      // Obtener el número total de pedidos para la paginación
+      const totalOrders = await prisma.pedido.count({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          items: {
+            some: {
+              Product: {
+                familia: familia ? familia : undefined,
+              },
+            },
+          },
+        },
+      });
+
+      res.status(200).json({ orders, totalOrders });
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
       res.status(500).json({ message: 'Error al obtener los pedidos', error });
