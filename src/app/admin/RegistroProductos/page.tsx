@@ -6,6 +6,16 @@ import imageCompression from "browser-image-compression"; // Importa la librerí
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
+const familias = [
+  "Pollos a la brasa",
+  "Chifa",
+  "Platos a la carta",
+  "Parrillas",
+  "Guarniciones",
+  "Bebidas sin alcohol",
+  "Bebidas con alcohol",
+].map(familia => familia.toUpperCase());
+
 interface Branch {
   id: number;
   name: string;
@@ -23,6 +33,7 @@ export default function RegistroProducto() {
     creadoPor: "admin", // Temporalmente estático, puedes cambiarlo según el usuario autenticado
     branchId: "", // Campo para almacenar la sucursal seleccionada
     imagenUrl: "", // Almacena la URL de la imagen subida
+    familia: "", // Campo para almacenar la familia seleccionada
   });
 
   const [branches, setBranches] = useState<Branch[]>([]); // Para almacenar las sucursales
@@ -207,6 +218,25 @@ export default function RegistroProducto() {
             >
               <option value="disponible">Disponible</option>
               <option value="no disponible">No disponible</option>
+            </select>
+          </div>
+
+          {/* Selector de familia */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-bold mb-2">Familia</label>
+            <select
+              name="familia"
+              value={formData.familia}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              required
+            >
+              <option value="">Selecciona una familia</option>
+              {familias.map((familia) => (
+                <option key={familia} value={familia}>
+                  {familia}
+                </option>
+              ))}
             </select>
           </div>
 
