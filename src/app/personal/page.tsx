@@ -91,10 +91,20 @@ export default function PersonalPage() {
       // Escuchar eventos de nuevos pedidos a través del socket
       socket.on("newOrder", () => {
         console.log("Nuevo pedido recibido a través del socket");
+        const audio = new Audio("/sounds/nuevo_pedido.mp3");
+
+        // Escuchar una interacción del usuario antes de reproducir el audio
+        document.addEventListener(
+          "click",
+          () => {
+            audio.play().catch((error) => {
+              console.error("Error al reproducir el audio:", error);
+            });
+          },
+          { once: true }
+        );
         fetchPedidos();
       });
-
-
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       router.push("/login");
