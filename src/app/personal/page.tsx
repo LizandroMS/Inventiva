@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
 
@@ -47,8 +47,22 @@ export default function PersonalPage() {
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
   const [branchId, setBranchId] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isAudioAllowed, setIsAudioAllowed] = useState(false);
+  const isAudioAllowedRef = useRef(isAudioAllowed);
   console.log(branchId);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
+
+  // Mantener la referencia actualizada
+  useEffect(() => {
+    isAudioAllowedRef.current = isAudioAllowed;
+  }, [isAudioAllowed]);
+
+  // Inicializar el elemento de audio
+  useEffect(() => {
+    audioRef.current = new Audio("/audio/nuevo_pedido.mp3");
+    audioRef.current.load();
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -91,20 +105,17 @@ export default function PersonalPage() {
       // Escuchar eventos de nuevos pedidos a través del socket
       socket.on("newOrder", () => {
         console.log("Nuevo pedido recibido a través del socket");
-        const audio = new Audio("/sounds/nuevo_pedido.mp3");
-
-        // Escuchar una interacción del usuario antes de reproducir el audio
-        document.addEventListener(
-          "click",
-          () => {
-            audio.play().catch((error) => {
-              console.error("Error al reproducir el audio:", error);
-            });
-          },
-          { once: true }
-        );
         fetchPedidos();
+        if (isAudioAllowedRef.current && audioRef.current) {
+          audioRef.current.play().catch((error) => {
+            console.error("Error al reproducir el audio:", error);
+          });
+        }
       });
+
+      return () => {
+        socket.off("newOrder");
+      };
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       router.push("/login");
@@ -140,6 +151,33 @@ export default function PersonalPage() {
     }
   };
 
+  // Solicitar permiso para reproducir audio
+  if (!isAudioAllowed) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <button
+          onClick={() => {
+            setIsAudioAllowed(true);
+            if (audioRef.current) {
+              // Intentar reproducir y pausar para "desbloquear" el audio
+              audioRef.current
+                .play()
+                .then(() => {
+                  audioRef.current?.pause();
+                })
+                .catch((error) => {
+                  console.error("Error al reproducir el audio:", error);
+                });
+            }
+          }}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Habilitar Sonido
+        </button>
+      </div>
+    );
+  }
+
   if (loading) {
     return <p>Cargando...</p>;
   }
@@ -170,7 +208,9 @@ export default function PersonalPage() {
                 </p>
                 <p className="text-gray-600">Estado: {pedido.status}</p>
 
-                <h3 className="font-bold text-gray-800 mt-4 mb-2">Productos</h3>
+                <h3 className="font-bold text-gray-800 mt-4 mb-2">
+                  Productos
+                </h3>
                 <ul className="space-y-2">
                   {pedido.items.map((item) => (
                     <li key={item.id} className="flex flex-col">
@@ -180,12 +220,15 @@ export default function PersonalPage() {
                       <p className="text-gray-600">
                         {item.Product.description}
                       </p>
-                      <p className="text-gray-600">Cantidad: {item.quantity}</p>
+                      <p className="text-gray-600">
+                        Cantidad: {item.quantity}
+                      </p>
                       <p className="text-gray-600">
                         Precio unitario: S/ {item.price.toFixed(2)}
                       </p>
                       <p className="text-gray-600">
-                        Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
+                        Subtotal: S/{" "}
+                        {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </li>
                   ))}
@@ -199,7 +242,9 @@ export default function PersonalPage() {
               {/* Cambiar estado */}
               <select
                 value={pedido.status}
-                onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
+                onChange={(e) =>
+                  cambiarEstadoPedido(pedido.id, e.target.value)
+                }
                 className="mt-4 bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg"
               >
                 {estadosPosibles.map((estado) => (
