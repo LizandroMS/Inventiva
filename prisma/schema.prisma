@@ -48,6 +48,7 @@ model Product {
   description       String?
   price             Float
   promotional_price Float?
+  familia           String?
   stock             Int
   status            String
   created_at        DateTime    @default(now())
@@ -94,3 +95,13 @@ model OrderItem {
 //npx prisma migrate dev --name add_branch_to_user_relation
 
 //si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev
+
+
+//npx prisma generate
+//npx prisma migrate deploy
+
+
+
+//Migracion de nuevas columnas , estas deben ser de tipo opcionl ?
+//npx prisma migrate dev --name add-familia-to-product
+//npx prisma generate
