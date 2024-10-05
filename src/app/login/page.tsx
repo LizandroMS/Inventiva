@@ -23,8 +23,17 @@ export default function LoginPage() {
     const token = localStorage.getItem("user");
 
     if (token) {
+      const rol = JSON.parse(token);
+      if (rol.role == "cliente") {
+        router.push("/");
+      } else if (rol.role == "personal") {
+        router.push("/personal");
+      } else if (rol.role == "admin") {
+        router.push("/admin");
+      }
       // Si ya existe un token, redirigir a la página de inicio
-      router.push("/");
+    } else {
+      router.push("/login");
     }
   }, [router]);
 
