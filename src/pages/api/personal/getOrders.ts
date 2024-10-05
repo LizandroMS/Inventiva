@@ -37,6 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               Product: true, // Incluir detalles del producto
             },
           },
+          User: {
+            select: {
+              fullName: true,
+              phone: true,
+              address: true,
+            },
+          },
         },
       });
 

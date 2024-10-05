@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
 
@@ -34,6 +34,11 @@ interface Pedido {
   status: string;
   createdAt: string;
   items: PedidoItem[];
+  User: {
+    fullName: string;
+    address: string;
+    phone: string;
+  }; // Datos del usuario asociados con el pedido
 }
 
 interface DecodedToken {
@@ -207,6 +212,14 @@ export default function PersonalPage() {
                   Fecha: {new Date(pedido.createdAt).toLocaleString()}
                 </p>
                 <p className="text-gray-600">Estado: {pedido.status}</p>
+
+                {/* Mostrar datos del usuario */}
+                <div className="mt-4">
+                  <h3 className="font-semibold text-gray-800">Datos del Cliente</h3>
+                  <p className="text-gray-600">Nombres: {pedido.User.fullName}</p>
+                  <p className="text-gray-600">Dirección: {pedido.User.address}</p>
+                  <p className="text-gray-600">Número: {pedido.User.phone}</p>
+                </div>
 
                 <h3 className="font-bold text-gray-800 mt-4 mb-2">
                   Productos
