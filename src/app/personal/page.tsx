@@ -235,7 +235,7 @@ export default function PersonalPage() {
                     <span className="font-bold">{pedido.User.address}</span>
                   </p>
                   <p className="text-gray-600">
-                    Dirección:{" "}
+                    Referencia:{" "}
                     <span className="font-bold">{pedido.User.Referencia}</span>
                   </p>
                   <p className="text-gray-600">

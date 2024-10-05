@@ -42,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               fullName: true,
               phone: true,
               address: true,
+              Referencia: true,
             },
           },
         },

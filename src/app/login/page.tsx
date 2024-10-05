@@ -12,6 +12,7 @@ export default function LoginPage() {
     phone: "",
     dni: "",
     birthDate: "",
+    Referencia: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el loading
@@ -204,8 +205,86 @@ export default function LoginPage() {
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
                 />
               </div>
-
-              {/* Resto del formulario */}
+              <div className="mb-4">
+                <label className="block text-gray-700">
+                  Correo Electrónico
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Ingresa tu correo"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Contraseña</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Ingresa tu contraseña"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Dirección</label>
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Ingresa tu dirección"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Referencia</label>
+                <input
+                  type="text"
+                  name="Referencia"
+                  placeholder="Ingresa tu Referencia"
+                  value={formData.Referencia}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Teléfono</label>
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Ingresa tu teléfono"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">DNI</label>
+                <input
+                  type="text"
+                  name="dni"
+                  placeholder="Ingresa tu DNI"
+                  value={formData.dni}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
+              <div className="mb-6">
+                <label className="block text-gray-700">
+                  Fecha de Nacimiento
+                </label>
+                <input
+                  type="date"
+                  name="birthDate"
+                  value={formData.birthDate}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+              </div>
               <div className="mb-6">
                 <button
                   type="submit"
