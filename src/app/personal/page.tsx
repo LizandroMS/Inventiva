@@ -140,12 +140,15 @@ export default function PersonalPage() {
       });
 
       if (res.ok) {
-        const updatedPedidos = pedidos.map((pedido) => {
-          if (pedido.id === id) {
-            return { ...pedido, status: nuevoEstado };
-          }
-          return pedido;
-        });
+        const updatedPedidos = pedidos
+          .map((pedido) => {
+            if (pedido.id === id) {
+              return { ...pedido, status: nuevoEstado };
+            }
+            return pedido;
+          })
+          .filter((pedido) => pedido.status !== "ENTREGADO");//verificar si funciona con eficacia
+
         setPedidos(updatedPedidos);
 
         // Emitir actualización de estado a los comensales
