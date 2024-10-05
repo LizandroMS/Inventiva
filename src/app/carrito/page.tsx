@@ -102,13 +102,18 @@ export default function CartPage() {
       [id]: value,
     }));
   };
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Limpiar datos del usuario
+    setUser(null); // Limpiar el estado del usuario
+    router.push("/");
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Header reutilizable */}
       <Header
         user={user}
-        handleLogout={() => setUser(null)}
+        handleLogout={handleLogout}
         cartItems={cartItems}
       />
 

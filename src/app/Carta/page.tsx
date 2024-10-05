@@ -188,6 +188,7 @@ export default function CartaPage() {
   const handleLogout = () => {
     localStorage.removeItem("user"); // Limpiar datos del usuario
     setUser(null); // Limpiar el estado del usuario
+    router.push("/");
   };
 
   return (

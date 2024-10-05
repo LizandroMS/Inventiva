@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 import { User } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+
 // Inicializar el socket
 const socket = io({
   path: "/api/socket",
@@ -21,7 +22,9 @@ interface PedidoItem {
     name: string;
     description: string;
     imagenUrl: string;
+    promotional_price: number | null; // Añadimos el campo de precio promocional
   };
+  observation:string
 }
 
 interface Pedido {
@@ -29,6 +32,7 @@ interface Pedido {
   status: string;
   totalAmount: number;
   items: PedidoItem[];
+  observation:string
 }
 
 interface DecodedToken {
@@ -65,17 +69,17 @@ export default function PedidosPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDIENTE":
-        return "bg-yellow-500"; // Pendiente
+        return "bg-yellow-500";
       case "PREPARANDO":
-        return "bg-blue-500"; // Preparando
+        return "bg-blue-500";
       case "DRIVER":
-        return "bg-orange-500"; // En camino
+        return "bg-orange-500";
       case "ENTREGADO":
-        return "bg-green-500"; // Entregado
+        return "bg-green-500";
       case "CANCELADO":
-        return "bg-red-500"; // Cancelado
+        return "bg-red-500";
       default:
-        return "bg-gray-500"; // Desconocido
+        return "bg-gray-500";
     }
   };
 
@@ -91,7 +95,7 @@ export default function PedidosPage() {
       case "ENTREGADO":
         return 3;
       case "CANCELADO":
-        return -1; // Si es cancelado, lo excluimos de la progresión
+        return -1;
       default:
         return 0;
     }
@@ -171,18 +175,25 @@ export default function PedidosPage() {
       );
     });
 
-    // Limpiar evento socket cuando se desmonta el componente
     return () => {
       socket.off("orderStatusUpdated");
     };
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // Limpiar datos del usuario
+    setUser(null); // Limpiar el estado del usuario
+    router.push("/");
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header */}
-      <Header user={user} handleLogout={() => setUser(null)} cartItems={cartItems} />
+      <Header
+        user={user}
+        handleLogout={handleLogout}
+        cartItems={cartItems}
+      />
 
-      {/* Contenido */}
       <div className="container mx-auto py-8 px-4 md:px-0">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
           Tus Pedidos
@@ -207,7 +218,6 @@ export default function PedidosPage() {
                   </span>
                 </div>
 
-                {/* Barra de progreso */}
                 {pedido.status !== "CANCELADO" && (
                   <PedidoProgress status={pedido.status} />
                 )}
@@ -238,16 +248,34 @@ export default function PedidosPage() {
                             <p className="text-sm text-gray-600">
                               {item.Product.description}
                             </p>
+                            <p className="text-sm text-gray-600">
+                              Observacion: {item.observation}
+                            </p>
                           </div>
                         </div>
 
                         <div className="text-right">
                           <p className="text-lg font-bold text-gray-700">
-                            S/ {item.price.toFixed(2)} x {item.quantity}
+                            {item.Product.promotional_price ? (
+                              <>
+                                <span className="text-green-600">
+                                  S/ {item.Product.promotional_price.toFixed(2)}
+                                </span>
+                                <span className="line-through text-red-500 ml-2">
+                                  S/ {item.price.toFixed(2)}
+                                </span>
+                              </>
+                            ) : (
+                              <span>S/ {item.price.toFixed(2)}</span>
+                            )}{" "}
+                            x {item.quantity}
                           </p>
                           <p className="text-lg font-semibold text-gray-900">
                             Subtotal: S/{" "}
-                            {(item.price * item.quantity).toFixed(2)}
+                            {(
+                              (item.Product.promotional_price || item.price) *
+                              item.quantity
+                            ).toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -270,7 +298,6 @@ export default function PedidosPage() {
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
