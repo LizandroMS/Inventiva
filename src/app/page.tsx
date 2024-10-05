@@ -134,16 +134,20 @@ export default function Home() {
         <section className="bg-gray-100">
           <div className="container mx-auto p-4">
             <Slider {...settings}>
-              {Slider_Data.map((Slider_Data) => (
-                <div key={Slider_Data.id} className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] overflow-hidden">
+              {Slider_Data.map((item) => (
+                <div
+                  key={item.id}
+                  className="relative w-full overflow-hidden h-[200px] sm:h-[200px] md:h-[450px]"
+                >
                   <Image
-                    src={Slider_Data.imagen}
-                    alt={Slider_Data.nombre}
+                    src={item.imagen}
+                    alt={item.nombre}
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain" // Cambiado a "contain"
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
+                    priority
                   />
                 </div>
               ))}
@@ -158,9 +162,12 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
             Nuestro Menú
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {platos.map((plato) => (
-              <div key={plato.id} className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105">
+              <div
+                key={plato.id}
+                className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
+              >
                 <div className="relative w-full mb-4 h-[200px]">
                   <Image
                     src={plato.imagen}
@@ -186,9 +193,15 @@ export default function Home() {
       <footer className="bg-green-700 text-white py-4 text-center">
         <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
         <div className="flex justify-center space-x-4 mt-2">
-          <a href="#" className="hover:underline">Términos y condiciones</a>
-          <a href="#" className="hover:underline">Políticas de privacidad</a>
-          <a href="#" className="hover:underline">Locales</a>
+          <a href="#" className="hover:underline">
+            Términos y condiciones
+          </a>
+          <a href="#" className="hover:underline">
+            Políticas de privacidad
+          </a>
+          <a href="#" className="hover:underline">
+            Locales
+          </a>
         </div>
       </footer>
     </div>

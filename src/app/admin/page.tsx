@@ -106,7 +106,8 @@ export default function AdminPage() {
               Revisa el historial de operaciones realizadas en el sistema,
               incluyendo ventas y modificaciones.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+            onClick={() => router.push("/admin/HistorialActividades")}>
               Ver Historial
             </button>
           </div>

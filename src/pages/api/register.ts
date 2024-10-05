@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fullName, email, password, address, phone, dni, birthDate } = req.body;
+    const { fullName, email, password, address, phone, dni, birthDate, Referencia } = req.body;
 
-    if (!fullName || !email || !password || !address || !phone || !dni || !birthDate) {
+    if (!fullName || !email || !password || !address || !phone || !dni || !birthDate || !Referencia) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
     }
 
@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           phone,
           dni,
           birthDate: new Date(birthDate),
+          Referencia: Referencia
         },
       });
 

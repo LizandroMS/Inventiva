@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
@@ -26,6 +26,7 @@ interface PedidoItem {
     status: string;
     imagenUrl: string;
   };
+  observation: string;
 }
 
 interface Pedido {
@@ -34,6 +35,12 @@ interface Pedido {
   status: string;
   createdAt: string;
   items: PedidoItem[];
+  User: {
+    fullName: string;
+    address: string;
+    phone: string;
+    Referencia: string;
+  }; // Datos del usuario asociados con el pedido
 }
 
 interface DecodedToken {
@@ -47,8 +54,22 @@ export default function PersonalPage() {
   const router = useRouter();
   const [tokenValid, setTokenValid] = useState(false);
   const [branchId, setBranchId] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isAudioAllowed, setIsAudioAllowed] = useState(false);
+  const isAudioAllowedRef = useRef(isAudioAllowed);
   console.log(branchId);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
+
+  // Mantener la referencia actualizada
+  useEffect(() => {
+    isAudioAllowedRef.current = isAudioAllowed;
+  }, [isAudioAllowed]);
+
+  // Inicializar el elemento de audio
+  useEffect(() => {
+    audioRef.current = new Audio("/audio/nuevo_pedido.mp3");
+    audioRef.current.load();
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -92,9 +113,16 @@ export default function PersonalPage() {
       socket.on("newOrder", () => {
         console.log("Nuevo pedido recibido a través del socket");
         fetchPedidos();
+        if (isAudioAllowedRef.current && audioRef.current) {
+          audioRef.current.play().catch((error) => {
+            console.error("Error al reproducir el audio:", error);
+          });
+        }
       });
 
-
+      return () => {
+        socket.off("newOrder");
+      };
     } catch (error) {
       console.error("Error al decodificar el token:", error);
       router.push("/login");
@@ -112,12 +140,15 @@ export default function PersonalPage() {
       });
 
       if (res.ok) {
-        const updatedPedidos = pedidos.map((pedido) => {
-          if (pedido.id === id) {
-            return { ...pedido, status: nuevoEstado };
-          }
-          return pedido;
-        });
+        const updatedPedidos = pedidos
+          .map((pedido) => {
+            if (pedido.id === id) {
+              return { ...pedido, status: nuevoEstado };
+            }
+            return pedido;
+          })
+          .filter((pedido) => pedido.status !== "ENTREGADO");//verificar si funciona con eficacia
+
         setPedidos(updatedPedidos);
 
         // Emitir actualización de estado a los comensales
@@ -130,12 +161,43 @@ export default function PersonalPage() {
     }
   };
 
+  // Solicitar permiso para reproducir audio
+  if (!isAudioAllowed) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <button
+          onClick={() => {
+            setIsAudioAllowed(true);
+            if (audioRef.current) {
+              // Intentar reproducir y pausar para "desbloquear" el audio
+              audioRef.current
+                .play()
+                .then(() => {
+                  audioRef.current?.pause();
+                })
+                .catch((error) => {
+                  console.error("Error al reproducir el audio:", error);
+                });
+            }
+          }}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md"
+        >
+          Habilitar Sonido
+        </button>
+      </div>
+    );
+  }
+
   if (loading) {
-    return <p>Cargando...</p>;
+    return <p className="text-center text-gray-600">Cargando...</p>;
   }
 
   if (!tokenValid) {
-    return <p>No tienes permisos para acceder a esta página.</p>;
+    return (
+      <p className="text-center text-red-500">
+        No tienes permisos para acceder a esta página.
+      </p>
+    );
   }
 
   return (
@@ -149,32 +211,70 @@ export default function PersonalPage() {
           {pedidos.map((pedido) => (
             <li
               key={pedido.id}
-              className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+              className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between border-l-4 border-yellow-500"
             >
               <div>
-                <h2 className="font-semibold text-gray-700">
+                <h2 className="font-bold text-lg text-yellow-600">
                   Pedido #{pedido.id}
                 </h2>
                 <p className="text-gray-600">
                   Fecha: {new Date(pedido.createdAt).toLocaleString()}
                 </p>
-                <p className="text-gray-600">Estado: {pedido.status}</p>
+                <p className="text-gray-600 font-semibold">
+                  Estado:{" "}
+                  <span className="text-yellow-500">{pedido.status}</span>
+                </p>
 
-                <h3 className="font-bold text-gray-800 mt-4 mb-2">Productos</h3>
+                {/* Mostrar datos del usuario */}
+                <div className="mt-4 bg-yellow-100 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-800">
+                    Datos del Cliente
+                  </h3>
+                  <p className="text-gray-600">
+                    Nombres:{" "}
+                    <span className="font-bold">{pedido.User.fullName}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Dirección:{" "}
+                    <span className="font-bold">{pedido.User.address}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Referencia:{" "}
+                    <span className="font-bold">{pedido.User.Referencia}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Número:{" "}
+                    <span className="font-bold">{pedido.User.phone}</span>
+                  </p>
+                </div>
+
+                <h3 className="font-bold text-gray-800 mt-4 mb-2">
+                  Productos ({pedido.items.length})
+                </h3>
                 <ul className="space-y-2">
                   {pedido.items.map((item) => (
-                    <li key={item.id} className="flex flex-col">
+                    <li
+                      key={item.id}
+                      className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
+                    >
                       <p className="font-semibold text-gray-700">
                         {item.Product.name}
                       </p>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-sm">
                         {item.Product.description}
                       </p>
-                      <p className="text-gray-600">Cantidad: {item.quantity}</p>
-                      <p className="text-gray-600">
-                        Precio unitario: S/ {item.price.toFixed(2)}
+                      <p className="text-gray-600 text-sm">
+                        Observacion: {item.observation}
                       </p>
-                      <p className="text-gray-600">
+                      <div className="flex justify-between items-center mt-2">
+                        <p className="text-gray-600">
+                          Cantidad: {item.quantity}
+                        </p>
+                        <p className="text-gray-600">
+                          Precio: S/ {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                      <p className="text-gray-600 text-sm">
                         Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </li>

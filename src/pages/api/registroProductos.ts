@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     console.log("cuerpo de registro ", req.body)
-    const { nombreProducto, descripcion, precio, precioPromocional, stock, estado, fechaCreacion, creadoPor, branchId, imagenUrl } = req.body;
+    const { nombreProducto, descripcion, precio, precioPromocional, stock, estado, fechaCreacion, creadoPor, branchId, imagenUrl, familia } = req.body;
 
     // Validar los campos necesarios
     if (!nombreProducto || !precio || !stock || !branchId) {
@@ -27,7 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           created_at: new Date(fechaCreacion),
           created_by: creadoPor,
           branchId: parseInt(branchId, 10),
-          imagenUrl: imagenUrl
+          imagenUrl: imagenUrl,
+          familia: familia
         },
       });
 

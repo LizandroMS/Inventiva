@@ -16,10 +16,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           totalAmount,
           status: 'PENDIENTE',
           items: {
-            create: items.map((item: { id: number; quantity: number; price: number }) => ({
+            create: items.map((item: { id: number; quantity: number; price: number ;observation:string}) => ({
               productId: item.id,
               quantity: item.quantity,
               price: item.price,
+              observation: item.observation,
             })),
           },
         },

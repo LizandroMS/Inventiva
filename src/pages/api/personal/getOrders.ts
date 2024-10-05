@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
           },
           status: {
-            not: "cancelado", // Excluir los pedidos cancelados
+            notIn: ["CANCELADO", "ENTREGADO"], // Excluir los pedidos cancelados
           },
           createdAt: {
             gte: today, // Fecha mayor o igual al inicio del día de hoy
@@ -35,6 +35,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           items: {
             include: {
               Product: true, // Incluir detalles del producto
+            },
+          },
+          User: {
+            select: {
+              fullName: true,
+              phone: true,
+              address: true,
+              Referencia: true,
             },
           },
         },

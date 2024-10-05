@@ -17,6 +17,7 @@ export default function RegistroPersonal() {
     birthDate: "",
     role: "cliente", // Valor por defecto "cliente"
     branchId: "", // Sucursal seleccionada (si es personal)
+    Referencia: "",
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -85,6 +86,7 @@ export default function RegistroPersonal() {
         birthDate: "",
         role: "cliente",
         branchId: "",
+        Referencia: "",
       });
 
       // Redirigir o hacer cualquier acción adicional si lo deseas
@@ -100,7 +102,7 @@ export default function RegistroPersonal() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header/>
+      <Header />
       <div className="container mx-auto p-8 bg-white">
         <div className="bg-gray-200 p-10 rounded-lg shadow-md w-full max-w-lg mx-auto">
           <h1 className="text-3xl font-bold mb-6 text-center text-black">
@@ -166,6 +168,20 @@ export default function RegistroPersonal() {
                 type="text"
                 name="address"
                 value={formData.address}
+                onChange={handleChange}
+                placeholder="Ingresa la dirección"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium">
+                Referencia
+              </label>
+              <input
+                type="text"
+                name="Referencia"
+                value={formData.Referencia}
                 onChange={handleChange}
                 placeholder="Ingresa la dirección"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
