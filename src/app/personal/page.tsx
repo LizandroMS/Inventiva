@@ -26,6 +26,7 @@ interface PedidoItem {
     status: string;
     imagenUrl: string;
   };
+  observation: string;
 }
 
 interface Pedido {
@@ -258,6 +259,9 @@ export default function PersonalPage() {
                       </p>
                       <p className="text-gray-600 text-sm">
                         {item.Product.description}
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Observacion: {item.observation}
                       </p>
                       <div className="flex justify-between items-center mt-2">
                         <p className="text-gray-600">
