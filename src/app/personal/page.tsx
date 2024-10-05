@@ -38,6 +38,7 @@ interface Pedido {
     fullName: string;
     address: string;
     phone: string;
+    Referencia: string;
   }; // Datos del usuario asociados con el pedido
 }
 
@@ -175,7 +176,7 @@ export default function PersonalPage() {
                 });
             }
           }}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md"
         >
           Habilitar Sonido
         </button>
@@ -184,11 +185,15 @@ export default function PersonalPage() {
   }
 
   if (loading) {
-    return <p>Cargando...</p>;
+    return <p className="text-center text-gray-600">Cargando...</p>;
   }
 
   if (!tokenValid) {
-    return <p>No tienes permisos para acceder a esta página.</p>;
+    return (
+      <p className="text-center text-red-500">
+        No tienes permisos para acceder a esta página.
+      </p>
+    );
   }
 
   return (
@@ -202,46 +207,68 @@ export default function PersonalPage() {
           {pedidos.map((pedido) => (
             <li
               key={pedido.id}
-              className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+              className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between border-l-4 border-yellow-500"
             >
               <div>
-                <h2 className="font-semibold text-gray-700">
+                <h2 className="font-bold text-lg text-yellow-600">
                   Pedido #{pedido.id}
                 </h2>
                 <p className="text-gray-600">
                   Fecha: {new Date(pedido.createdAt).toLocaleString()}
                 </p>
-                <p className="text-gray-600">Estado: {pedido.status}</p>
+                <p className="text-gray-600 font-semibold">
+                  Estado:{" "}
+                  <span className="text-yellow-500">{pedido.status}</span>
+                </p>
 
                 {/* Mostrar datos del usuario */}
-                <div className="mt-4">
-                  <h3 className="font-semibold text-gray-800">Datos del Cliente</h3>
-                  <p className="text-gray-600">Nombres: {pedido.User.fullName}</p>
-                  <p className="text-gray-600">Dirección: {pedido.User.address}</p>
-                  <p className="text-gray-600">Número: {pedido.User.phone}</p>
+                <div className="mt-4 bg-yellow-100 p-4 rounded-lg">
+                  <h3 className="font-semibold text-gray-800">
+                    Datos del Cliente
+                  </h3>
+                  <p className="text-gray-600">
+                    Nombres:{" "}
+                    <span className="font-bold">{pedido.User.fullName}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Dirección:{" "}
+                    <span className="font-bold">{pedido.User.address}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Dirección:{" "}
+                    <span className="font-bold">{pedido.User.Referencia}</span>
+                  </p>
+                  <p className="text-gray-600">
+                    Número:{" "}
+                    <span className="font-bold">{pedido.User.phone}</span>
+                  </p>
                 </div>
 
                 <h3 className="font-bold text-gray-800 mt-4 mb-2">
-                  Productos
+                  Productos ({pedido.items.length})
                 </h3>
                 <ul className="space-y-2">
                   {pedido.items.map((item) => (
-                    <li key={item.id} className="flex flex-col">
+                    <li
+                      key={item.id}
+                      className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
+                    >
                       <p className="font-semibold text-gray-700">
                         {item.Product.name}
                       </p>
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-sm">
                         {item.Product.description}
                       </p>
-                      <p className="text-gray-600">
-                        Cantidad: {item.quantity}
-                      </p>
-                      <p className="text-gray-600">
-                        Precio unitario: S/ {item.price.toFixed(2)}
-                      </p>
-                      <p className="text-gray-600">
-                        Subtotal: S/{" "}
-                        {(item.price * item.quantity).toFixed(2)}
+                      <div className="flex justify-between items-center mt-2">
+                        <p className="text-gray-600">
+                          Cantidad: {item.quantity}
+                        </p>
+                        <p className="text-gray-600">
+                          Precio: S/ {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                      <p className="text-gray-600 text-sm">
+                        Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </li>
                   ))}
@@ -255,9 +282,7 @@ export default function PersonalPage() {
               {/* Cambiar estado */}
               <select
                 value={pedido.status}
-                onChange={(e) =>
-                  cambiarEstadoPedido(pedido.id, e.target.value)
-                }
+                onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
                 className="mt-4 bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg"
               >
                 {estadosPosibles.map((estado) => (

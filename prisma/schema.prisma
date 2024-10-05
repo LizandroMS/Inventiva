@@ -16,20 +16,21 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  fullName  String
-  email     String   @unique
-  password  String
-  address   String
-  phone     String
-  dni       String
-  birthDate DateTime
-  role      String   @default("cliente") // Añadimos el campo de rol
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Pedido[]
-  branchId  Int?
-  branch    Branch?   @relation(fields: [branchId], references: [id])
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  email      String   @unique
+  password   String
+  address    String
+  Referencia String?
+  phone      String
+  dni        String
+  birthDate  DateTime
+  role       String   @default("cliente") // Añadimos el campo de rol
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Pedido[]
+  branchId   Int?
+  branch     Branch?  @relation(fields: [branchId], references: [id])
 }
 
 model Branch {
@@ -79,17 +80,15 @@ model Pedido {
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  price     Float
-  order     Pedido  @relation(fields: [orderId], references: [id])
-  Product   Product @relation(fields: [productId], references: [id])
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  price       Float
+  order       Pedido  @relation(fields: [orderId], references: [id])
+  Product     Product @relation(fields: [productId], references: [id])
   observation String?
 }
-
-
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
 //cada ves que se agrege datos se debe ejecutar     npx prisma generate
@@ -97,11 +96,8 @@ model OrderItem {
 
 //si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev
 
-
 //npx prisma generate
 //npx prisma migrate deploy
-
-
 
 //Migracion de nuevas columnas , estas deben ser de tipo opcionl ?
 //npx prisma migrate dev --name add-familia-to-product
