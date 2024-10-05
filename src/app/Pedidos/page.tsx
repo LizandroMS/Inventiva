@@ -180,11 +180,7 @@ export default function PedidosPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Header */}
-      <Header
-        user={user}
-        handleLogout={() => setUser(null)}
-        cartItems={cartItems}
-      />
+      <Header user={user} handleLogout={() => setUser(null)} cartItems={cartItems} />
 
       {/* Contenido */}
       <div className="container mx-auto py-8 px-4 md:px-0">

@@ -5,16 +5,20 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
 
-interface Product {
+
+// Definir la interfaz del producto
+export interface Product {
   id: number;
   name: string;
   price: number;
-  promotional_price?: number; // Precio promocional opcional
-  imagenUrl: string;
   branchId: number;
+  imagenUrl: string;
+  quantity: number;
   familia: string;
-  description?: string; // Campo de observación opcional
+  promotional_price?: number; // Hacer que sea opcional
+  description: string;
 }
+
 
 interface Branch {
   id: number;
@@ -162,22 +166,24 @@ export default function CartaPage() {
 
   // Función para agregar o actualizar la cantidad del producto en el carrito
   const handleAddToCart = (product: Product) => {
-    const quantity = quantities[product.id] || 1; // Cantidad seleccionada o 1 por defecto
-
+    const quantity = quantities[product.id] || 1;
+  
     // Verificar si el producto ya está en el carrito
     const existingCartItem = cartItems.find((item) => item.id === product.id);
-
+  
     if (existingCartItem) {
       // Actualizar la cantidad si el producto ya está en el carrito
       updateCartItemQuantity(product.id, quantity);
     } else {
-      // Agregar al carrito si no está presente
+      // Asegurarse de que promotional_price siempre tenga un valor
       addToCart({
         ...product,
         quantity,
+        promotional_price: product.promotional_price || product.price, // Si no hay promotional_price, usar el precio regular
       });
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user"); // Limpiar datos del usuario
