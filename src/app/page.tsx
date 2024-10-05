@@ -134,19 +134,20 @@ export default function Home() {
         <section className="bg-gray-100">
           <div className="container mx-auto p-4">
             <Slider {...settings}>
-              {Slider_Data.map((Slider_Data) => (
+              {Slider_Data.map((item) => (
                 <div
-                  key={Slider_Data.id}
-                  className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] overflow-hidden"
+                  key={item.id}
+                  className="relative w-full overflow-hidden h-[200px] sm:h-[200px] md:h-[450px]"
                 >
                   <Image
-                    src={Slider_Data.imagen}
-                    alt={Slider_Data.nombre}
+                    src={item.imagen}
+                    alt={item.nombre}
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain" // Cambiado a "contain"
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
+                    priority
                   />
                 </div>
               ))}
