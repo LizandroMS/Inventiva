@@ -32,10 +32,14 @@ export default function CartPage() {
     }
   }, []);
 
+  // Realizar el cálculo del total basado en el precio promocional o regular
   const totalPrice = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) =>
+      total +
+      (item.promotional_price ? item.promotional_price : item.price) *
+        item.quantity,
     0
-  ); // Multiplica el precio por la cantidad
+  );
 
   // Función para guardar el pedido
   const handleOrder = async () => {
@@ -77,14 +81,14 @@ export default function CartPage() {
 
   // Manejar el cambio de cantidad a través de los botones
   const handleIncrement = (id: number) => {
-    const currentItem = cartItems.find(item => item.id === id);
+    const currentItem = cartItems.find((item) => item.id === id);
     if (currentItem) {
       updateCartItemQuantity(id, currentItem.quantity + 1);
     }
   };
 
   const handleDecrement = (id: number) => {
-    const currentItem = cartItems.find(item => item.id === id);
+    const currentItem = cartItems.find((item) => item.id === id);
     if (currentItem && currentItem.quantity > 1) {
       updateCartItemQuantity(id, currentItem.quantity - 1);
     }
