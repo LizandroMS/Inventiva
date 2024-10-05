@@ -188,7 +188,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         handleObservationChange(item.id, e.target.value)
                       }
-                      className="mt-4 w-full p-2 border rounded-lg"
+                      className="mt-4 w-full p-2 border rounded-lg text-gray-600"
                     ></textarea>
 
                     {/* Botón Eliminar */}

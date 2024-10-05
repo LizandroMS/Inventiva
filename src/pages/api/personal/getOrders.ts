@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
           },
           status: {
-            not: "cancelado", // Excluir los pedidos cancelados
+            notIn: ["CANCELADO", "ENTREGADO"], // Excluir los pedidos cancelados
           },
           createdAt: {
             gte: today, // Fecha mayor o igual al inicio del día de hoy

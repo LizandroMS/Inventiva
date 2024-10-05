@@ -20,6 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const orders = await prisma.pedido.findMany({
         where: {
           userId: Number(id), // Filtrar por el userId si es necesario
+          NOT: {
+            status: {
+              in: ['CANCELADO', 'ENTREGADO'], // Excluir los estados CANCELADO y ENTREGADO
+            },
+          },
           OR: [
             {
               createdAt: {
