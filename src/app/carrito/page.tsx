@@ -49,6 +49,7 @@ export default function CartPage() {
     }
 
     try {
+      console.log("cartItems ",cartItems)
       const response = await fetch("/api/createOrder", {
         method: "POST",
         headers: {

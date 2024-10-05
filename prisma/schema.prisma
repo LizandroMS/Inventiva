@@ -86,6 +86,7 @@ model OrderItem {
   price     Float
   order     Pedido  @relation(fields: [orderId], references: [id])
   Product   Product @relation(fields: [productId], references: [id])
+  observation String?
 }
 
 
