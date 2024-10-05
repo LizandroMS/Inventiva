@@ -9,9 +9,11 @@ interface Product {
   id: number;
   name: string;
   price: number;
+  promotional_price?: number; // Precio promocional opcional
   imagenUrl: string;
   branchId: number;
-  familia: string; // Asegúrate de incluir familia en los productos
+  familia: string;
+  description?: string; // Campo de observación opcional
 }
 
 interface Branch {
@@ -32,7 +34,7 @@ const familias = [
   "Guarniciones",
   "Bebidas sin alcohol",
   "Bebidas con alcohol",
-].map(familia => familia.toUpperCase());
+].map((familia) => familia.toUpperCase());
 
 export default function CartaPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,9 +45,12 @@ export default function CartaPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [errorMessage, setErrorMessage] = useState(""); // Para manejar el mensaje de error
-  const { addToCart, cartItems } = useCart();
+  const { addToCart, updateCartItemQuantity, cartItems } = useCart(); // Añadido `updateCartItemQuantity`
   const router = useRouter();
   console.log(products);
+  // Para controlar la cantidad de productos
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+
   useEffect(() => {
     // Cargar sucursales
     const fetchBranches = async () => {
@@ -142,9 +147,36 @@ export default function CartaPage() {
     setSelectedFamilia(e.target.value);
   };
 
+  // Función para cambiar la cantidad de productos seleccionados
+  const handleQuantityChange = (productId: number, quantity: number) => {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [productId]: quantity,
+    }));
+  };
+
   // Función para ejecutar la búsqueda manual cuando se da clic en el botón "Buscar"
   const handleSearchClick = () => {
     fetchProducts(selectedBranch, selectedFamilia); // Llamamos a la API para obtener productos basados en la sucursal y la familia seleccionada
+  };
+
+  // Función para agregar o actualizar la cantidad del producto en el carrito
+  const handleAddToCart = (product: Product) => {
+    const quantity = quantities[product.id] || 1; // Cantidad seleccionada o 1 por defecto
+
+    // Verificar si el producto ya está en el carrito
+    const existingCartItem = cartItems.find((item) => item.id === product.id);
+
+    if (existingCartItem) {
+      // Actualizar la cantidad si el producto ya está en el carrito
+      updateCartItemQuantity(product.id, quantity);
+    } else {
+      // Agregar al carrito si no está presente
+      addToCart({
+        ...product,
+        quantity,
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -204,7 +236,9 @@ export default function CartaPage() {
       <main className="flex-grow">
         <section className="container mx-auto p-4">
           {errorMessage ? (
-            <p className="text-center col-span-4 text-gray-700">{errorMessage}</p>
+            <p className="text-center col-span-4 text-gray-700">
+              {errorMessage}
+            </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredProducts.length > 0 ? (
@@ -225,16 +259,52 @@ export default function CartaPage() {
                     <h3 className="text-xl font-bold text-center text-gray-800">
                       {product.name}
                     </h3>
-                    <p className="text-lg font-semibold text-center text-gray-700">
-                      S/ {product.price.toFixed(2)}
-                    </p>
+
+                    {/* Mostrar precios */}
+                    {product.promotional_price ? (
+                      <div className="text-center">
+                        <p className="text-lg font-semibold text-green-600">
+                          S/ {product.promotional_price.toFixed(2)}
+                        </p>
+                        <p className="text-lg text-red-500 line-through">
+                          S/ {product.price.toFixed(2)}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-lg font-semibold text-center text-gray-700">
+                        S/ {product.price.toFixed(2)}
+                      </p>
+                    )}
+
+                    {/* Mostrar observación */}
+                    {product.description && (
+                      <p className="text-sm text-center text-gray-600 mt-2">
+                        {product.description}
+                      </p>
+                    )}
+
+                    {/* Selección de cantidad */}
+                    <div className="mt-4 flex items-center">
+                      <label className="text-sm text-gray-700 mr-2">
+                        Cantidad:
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantities[product.id] || 1}
+                        onChange={(e) =>
+                          handleQuantityChange(
+                            product.id,
+                            parseInt(e.target.value)
+                          )
+                        }
+                        className="w-16 p-2 border rounded-lg text-gray-700"
+                      />
+                    </div>
+
+                    {/* Botón para añadir al carrito */}
                     <button
-                      onClick={() =>
-                        addToCart({
-                          ...product,
-                          quantity: 1, // Añadir la cantidad por defecto cuando se añade al carrito
-                        })
-                      }
+                      onClick={() => handleAddToCart(product)}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg mt-4"
                     >
                       Añadir al carrito

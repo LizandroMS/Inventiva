@@ -13,8 +13,12 @@ const socket = io({
 });
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, clearCart } = useCart(); // Agrega clearCart
+  const { cartItems, removeFromCart, clearCart, updateCartItemQuantity } =
+    useCart(); // Agrega updateCartItemQuantity
   const [user, setUser] = useState<User | null>(null);
+  const [observations, setObservations] = useState<{ [key: number]: string }>(
+    {}
+  ); // Para almacenar observaciones por producto
   const router = useRouter(); // Redireccionar si es necesario
 
   useEffect(() => {
@@ -28,7 +32,10 @@ export default function CartPage() {
     }
   }, []);
 
-  const totalPrice = cartItems.reduce((total, item) => total + item.price, 0);
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  ); // Multiplica el precio por la cantidad
 
   // Función para guardar el pedido
   const handleOrder = async () => {
@@ -45,14 +52,15 @@ export default function CartPage() {
         },
         body: JSON.stringify({
           userId: user.id, // ID del usuario
-          items: cartItems,
+          items: cartItems.map((item) => ({
+            ...item,
+            observation: observations[item.id] || "", // Añadir la observación si la tiene
+          })),
           totalAmount: totalPrice,
         }),
       });
 
       if (response.ok) {
-        // Pedido creado con éxito, limpiar carrito y redirigir a la página de pedidos
-        //const newOrder = await response.json(); // Obtener el pedido creado
         clearCart(); // Limpia el carrito
 
         // Emitir el pedido a través del socket
@@ -65,6 +73,29 @@ export default function CartPage() {
     } catch (error) {
       console.error("Error al crear el pedido:", error);
     }
+  };
+
+  // Manejar el cambio de cantidad a través de los botones
+  const handleIncrement = (id: number) => {
+    const currentItem = cartItems.find(item => item.id === id);
+    if (currentItem) {
+      updateCartItemQuantity(id, currentItem.quantity + 1);
+    }
+  };
+
+  const handleDecrement = (id: number) => {
+    const currentItem = cartItems.find(item => item.id === id);
+    if (currentItem && currentItem.quantity > 1) {
+      updateCartItemQuantity(id, currentItem.quantity - 1);
+    }
+  };
+
+  // Manejar el cambio de observaciones
+  const handleObservationChange = (id: number, value: string) => {
+    setObservations((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
   };
 
   return (
@@ -99,9 +130,58 @@ export default function CartPage() {
                     <h3 className="text-xl font-bold text-center text-gray-800">
                       {item.name}
                     </h3>
-                    <p className="text-lg font-semibold text-center text-gray-600">
-                      S/ {item.price}
-                    </p>
+
+                    {/* Mostrar precios */}
+                    {item.promotional_price ? (
+                      <div className="text-center">
+                        <p className="text-lg font-semibold text-green-600">
+                          S/ {item.promotional_price.toFixed(2)}
+                        </p>
+                        <p className="text-lg text-red-500 line-through">
+                          S/ {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-lg font-semibold text-center text-gray-700">
+                        S/ {item.price.toFixed(2)}
+                      </p>
+                    )}
+                    {item.description && (
+                      <p className="text-sm text-center text-gray-600 mt-2">
+                        {item.description}
+                      </p>
+                    )}
+
+                    {/* Selección de cantidad con botones */}
+                    <div className="mt-4 flex items-center space-x-2">
+                      <button
+                        onClick={() => handleDecrement(item.id)}
+                        className="bg-gray-300 px-3 py-1 rounded-lg"
+                      >
+                        -
+                      </button>
+                      <span className="text-lg font-semibold text-gray-700">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => handleIncrement(item.id)}
+                        className="bg-gray-300 px-3 py-1 rounded-lg"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Campo de observación */}
+                    <textarea
+                      placeholder="Agregar observaciones"
+                      value={observations[item.id] || ""}
+                      onChange={(e) =>
+                        handleObservationChange(item.id, e.target.value)
+                      }
+                      className="mt-4 w-full p-2 border rounded-lg"
+                    ></textarea>
+
+                    {/* Botón Eliminar */}
                     <button
                       onClick={() => removeFromCart(item.id)}
                       className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg mt-4 transition-colors"
