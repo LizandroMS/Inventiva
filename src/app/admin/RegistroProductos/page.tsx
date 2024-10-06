@@ -28,7 +28,7 @@ export default function RegistroProducto() {
     precio: "",
     precioPromocional: "",
     stock: "",
-    estado: "disponible",
+    estado: "Disponible",
     fechaCreacion: new Date().toISOString().split("T")[0], // Fecha actual
     creadoPor: "admin", // Temporalmente estático, puedes cambiarlo según el usuario autenticado
     branchId: "", // Campo para almacenar la sucursal seleccionada
@@ -216,8 +216,8 @@ export default function RegistroProducto() {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
             >
-              <option value="disponible">Disponible</option>
-              <option value="no disponible">No disponible</option>
+              <option value="Disponible">Disponible</option>
+              <option value="Agotado">Agotado</option>
             </select>
           </div>
 
