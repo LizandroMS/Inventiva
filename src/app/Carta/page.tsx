@@ -1,11 +1,12 @@
 "use client";
+
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // Importar 'useSearchParams'
 
-// Definir las interfaces (solo para TypeScript)
+// Definir interfaces si utilizas TypeScript (puedes omitirlas si usas JavaScript)
 interface Product {
   id: number;
   name: string;
@@ -49,11 +50,15 @@ export default function CartaPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const { addToCart, updateCartItemQuantity, cartItems } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams()!; // Obtener los parámetros de consulta
 
-  // Para controlar la cantidad de productos
+  // Capturar el parámetro 'categoria' de la URL
+  const categoria = searchParams.get('categoria');
+
+  // Controlar las cantidades de los productos
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
 
-  // Cargar sucursales y usuario al montar el componente
+  // Cargar sucursales y usuario autenticado al montar el componente
   useEffect(() => {
     const fetchBranches = async () => {
       try {
@@ -88,7 +93,14 @@ export default function CartaPage() {
     }
   }, [router]);
 
-  // Función para cargar productos por sucursal y familia
+  // Actualizar 'selectedFamilia' cuando cambie 'categoria'
+  useEffect(() => {
+    if (categoria) {
+      setSelectedFamilia(categoria.toUpperCase());
+    }
+  }, [categoria]);
+
+  // Función para cargar productos según sucursal y familia
   const fetchProducts = useCallback(
     async (branchId: number | null, familia: string) => {
       try {
