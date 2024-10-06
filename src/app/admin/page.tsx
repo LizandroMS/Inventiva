@@ -124,7 +124,8 @@ export default function AdminPage() {
               Administra y revisa los pedidos en cola para ser preparados y
               entregados.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+            onClick={() => router.push("/admin/ColaPedidos")}>
               Ver Pedidos
             </button>
           </div>
