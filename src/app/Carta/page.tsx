@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
