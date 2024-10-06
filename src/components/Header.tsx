@@ -14,7 +14,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-yellow-500 text-white shadow-md">
+    <header className="bg-gradient-to-r from-yellow-400 via-red-400 to-red-600 text-white shadow-lg">
       <div className="container mx-auto flex items-center justify-between p-4">
         {/* Sección Izquierda: Logo e imagen */}
         <div className="flex items-center">
@@ -23,9 +23,9 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
             alt="Logo"
             width={60}
             height={60}
-            className="mr-2"
+            className="mr-2 rounded-full border-2 border-white"
           />
-          <h1 className="text-lg md:text-xl lg:text-2xl font-bold whitespace-nowrap">
+          <h1 className="text-lg md:text-xl lg:text-2xl font-extrabold whitespace-nowrap tracking-wider">
             Pollería El Sabrosito
           </h1>
         </div>
@@ -71,19 +71,19 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <nav className="flex space-x-6">
             <Link
               href="/"
-              className="text-red-600 hover:text-black transition-colors duration-300 text-base font-semibold uppercase"
+              className="text-white hover:text-yellow-200 transition-all duration-300 text-base font-semibold uppercase"
             >
               Inicio
             </Link>
             <Link
               href="/Carta"
-              className="text-red-600 hover:text-black transition-colors duration-300 text-base font-semibold uppercase animate-pulse"
+              className="text-white hover:text-yellow-200 transition-all duration-300 text-base font-semibold uppercase animate-bounce"
             >
               Carta
             </Link>
             <Link
               href="/Pedidos"
-              className="text-red-600 hover:text-black transition-colors duration-300 text-base font-semibold uppercase"
+              className="text-white hover:text-yellow-200 transition-all duration-300 text-base font-semibold uppercase"
             >
               Pedidos
             </Link>
@@ -92,10 +92,10 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           {/* Botón del carrito */}
           <Link href="/carrito">
             <div className="relative">
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold p-2 rounded-lg flex items-center">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105">
                 <FaShoppingCart className="h-6 w-6" />
                 {cartItems.length > 0 && (
-                  <span className="ml-1 text-lg font-semibold">
+                  <span className="ml-1 text-lg font-semibold bg-yellow-500 text-black px-2 py-1 rounded-full">
                     ({cartItems.length})
                   </span>
                 )}
@@ -106,19 +106,19 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           {/* Controles de usuario */}
           {user ? (
             <>
-              <span className="text-base font-medium text-black">
+              <span className="text-base font-medium text-yellow-100 shadow-lg">
                 Bienvenido, {user.fullName}
               </span>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105"
               >
                 Cerrar Sesión
               </button>
             </>
           ) : (
             <Link href="/login">
-              <button className="bg-white text-yellow-500 font-bold py-1 px-3 rounded-lg">
+              <button className="bg-white text-yellow-600 font-bold py-2 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                 Iniciar Sesión
               </button>
             </Link>
@@ -131,24 +131,24 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
         className={`lg:hidden ${isMobileMenuOpen ? "" : "hidden"}`}
         id="mobile-menu"
       >
-        <nav className="flex flex-col items-center space-y-4 mt-4">
+        <nav className="flex flex-col items-center space-y-4 mt-4 bg-yellow-500 text-white py-4 rounded-lg shadow-lg">
           <Link
             href="/"
-            className="text-white text-lg"
+            className="text-lg hover:bg-yellow-600 px-4 py-2 rounded-lg"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Inicio
           </Link>
           <Link
             href="/Carta"
-            className="text-white text-lg"
+            className="text-lg hover:bg-yellow-600 px-4 py-2 rounded-lg"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Carta
           </Link>
           <Link
             href="/Pedidos"
-            className="text-white text-lg"
+            className="text-lg hover:bg-yellow-600 px-4 py-2 rounded-lg"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Pedidos
@@ -158,12 +158,12 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <Link href="/carrito">
             <div className="relative">
               <button
-                className="bg-red-600 hover:bg-red-700 text-white font-bold p-2 rounded-lg flex items-center"
+                className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <FaShoppingCart className="h-6 w-6" />
                 {cartItems.length > 0 && (
-                  <span className="ml-1 text-lg font-semibold">
+                  <span className="ml-1 text-lg font-semibold bg-yellow-500 text-black px-2 py-1 rounded-full">
                     ({cartItems.length})
                   </span>
                 )}
@@ -175,7 +175,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <div className="flex flex-col items-center space-y-4 mt-4">
             {user ? (
               <>
-                <span className="text-lg font-medium text-black">
+                <span className="text-lg font-medium text-yellow-100">
                   Bienvenido, {user.fullName}
                 </span>
                 <button
@@ -183,7 +183,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
                     handleLogout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg"
                 >
                   Cerrar Sesión
                 </button>
@@ -191,7 +191,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
             ) : (
               <Link href="/login">
                 <button
-                  className="bg-white text-yellow-500 font-bold py-2 px-4 rounded-lg"
+                  className="bg-white text-yellow-600 font-bold py-2 px-4 rounded-lg shadow-lg"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Iniciar Sesión
