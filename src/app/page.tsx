@@ -108,13 +108,13 @@ export default function Home() {
     {
       id: 1,
       nombre: "Pollos a la Brasa",
-      precio: "Desde S/ 12.00",
+      //precio: "Desde S/ 12.00",
       imagen: "/images/PolloEntero.png",
     },
     {
       id: 2,
       nombre: "Chifa",
-      precio: "Desde S/ 15.00",
+      // precio: "Desde S/ 15.00",
       imagen: "/images/OctavoPollo.png",
     },
     // Agrega más categorías según necesites
@@ -177,9 +177,9 @@ export default function Home() {
                   <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
                     {plato.nombre}
                   </h3>
-                  <p className="text-lg font-semibold text-gray-700 text-center">
+                  {/* <p className="text-lg font-semibold text-gray-700 text-center">
                     {plato.precio}
-                  </p>
+                  </p> */}
                 </div>
               </Link>
             ))}
@@ -187,7 +187,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

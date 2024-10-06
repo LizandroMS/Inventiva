@@ -4,10 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
-import { useRouter, useSearchParams } from "next/navigation"; // Importar 'useSearchParams'
 import Footer from "@/components/Footer";
+import { useRouter, useSearchParams } from "next/navigation";
 
-// Definir interfaces si utilizas TypeScript (puedes omitirlas si usas JavaScript)
 interface Product {
   id: number;
   name: string;
@@ -51,10 +50,11 @@ export default function CartaPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const { addToCart, updateCartItemQuantity, cartItems } = useCart();
   const router = useRouter();
-  const searchParams = useSearchParams()!; // Obtener los parámetros de consulta
+  const searchParams = useSearchParams()!;
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // Nuevo estado para el modal
 
   // Capturar el parámetro 'categoria' de la URL
-  const categoria = searchParams.get('categoria');
+  const categoria = searchParams.get("categoria");
 
   // Controlar las cantidades de los productos
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
@@ -88,10 +88,7 @@ export default function CartaPage() {
         } catch (error) {
           console.error("Error al parsear el usuario del localStorage:", error);
         }
-      } 
-      // else {
-      //   router.push("/login");
-      // }
+      }
     }
   }, [router]);
 
@@ -177,6 +174,11 @@ export default function CartaPage() {
 
   // Agregar o actualizar la cantidad del producto en el carrito
   const handleAddToCart = (product: Product) => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
     const quantity = quantities[product.id] || 1;
 
     // Verificar si el producto ya está en el carrito
@@ -203,6 +205,30 @@ export default function CartaPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
+
+      {/* Modal de aviso */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-11/12 sm:w-96">
+            <h2 className="text-xl font-semibold mb-4 text-center text-gray-800">
+              ¡Atención!
+            </h2>
+            <p className="text-gray-700 mb-6 text-center">
+              Para aprovechar nuestras promociones online debe de Iniciar sesión
+              o registrarse.
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto p-4 flex flex-wrap gap-4">
         {/* Buscador */}
         <input
@@ -246,7 +272,7 @@ export default function CartaPage() {
           {errorMessage ? (
             <p className="text-center text-gray-700">{errorMessage}</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <div
@@ -300,7 +326,10 @@ export default function CartaPage() {
                         min="1"
                         value={quantities[product.id] || 1}
                         onChange={(e) => {
-                          const value = Math.max(1, parseInt(e.target.value) || 1);
+                          const value = Math.max(
+                            1,
+                            parseInt(e.target.value) || 1
+                          );
                           handleQuantityChange(product.id, value);
                         }}
                         className="w-16 p-2 border rounded-lg text-gray-700"
@@ -317,7 +346,7 @@ export default function CartaPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-center col-span-4 text-gray-700">
+                <p className="text-center col-span-full text-gray-700">
                   No se encontraron productos.
                 </p>
               )}
@@ -325,7 +354,7 @@ export default function CartaPage() {
           )}
         </section>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
