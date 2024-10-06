@@ -25,10 +25,17 @@ interface Product {
   stock: number;
   status: string;
   familia: string;
+  branchId: number;
+}
+
+interface Branch {
+  id: number;
+  name: string;
 }
 
 export default function EditarProductosPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]); // Cargar las sucursales
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -37,11 +44,13 @@ export default function EditarProductosPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-console.log(router)
+    console.log(router)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`/api/administrador/productslist?page=${page}`);
+        const response = await fetch(
+          `/api/administrador/productslist?page=${page}`
+        );
         const data = await response.json();
         setProducts(data.products);
         setTotalPages(data.totalPages);
@@ -53,7 +62,18 @@ console.log(router)
       }
     };
 
+    const fetchBranches = async () => {
+      try {
+        const response = await fetch(`/api/getBranches`); // Endpoint para obtener las sucursales
+        const data = await response.json();
+        setBranches(data);
+      } catch (error) {
+        console.error("Error al obtener las sucursales:", error);
+      }
+    };
+
     fetchProducts();
+    fetchBranches();
   }, [page]);
 
   const handleEdit = (product: Product) => {
@@ -122,12 +142,16 @@ console.log(router)
                 <th className="py-3 px-4 border-b">Stock</th>
                 <th className="py-3 px-4 border-b">Estado</th>
                 <th className="py-3 px-4 border-b">Familia</th>
+                <th className="py-3 px-4 border-b">Branch</th> {/* Nueva columna para Branch */}
                 <th className="py-3 px-4 border-b">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition-all">
+                <tr
+                  key={product.id}
+                  className="hover:bg-gray-50 transition-all"
+                >
                   <td className="py-2 px-4 border-b">{product.id}</td>
                   <td className="py-2 px-4 border-b">{product.name}</td>
                   <td className="py-2 px-4 border-b">S/ {product.price}</td>
@@ -139,6 +163,11 @@ console.log(router)
                   <td className="py-2 px-4 border-b">{product.stock}</td>
                   <td className="py-2 px-4 border-b">{product.status}</td>
                   <td className="py-2 px-4 border-b">{product.familia}</td>
+                  <td className="py-2 px-4 border-b">
+                    {branches.find((branch) => branch.id === product.branchId)
+                      ?.name || "Sin branch"}
+                  </td>{" "}
+                  {/* Mostrar el nombre de la Branch */}
                   <td className="py-2 px-4 border-b">
                     <button
                       onClick={() => handleEdit(product)}
@@ -174,7 +203,7 @@ console.log(router)
         {/* Modal de edición */}
         {isModalOpen && selectedProduct && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-screen overflow-y-auto">
               <h2 className="text-2xl font-bold mb-4 text-gray-700">
                 Editar Producto #{selectedProduct.id}
               </h2>
@@ -218,7 +247,10 @@ console.log(router)
                   onChange={(e) =>
                     setEditingProduct((prev) =>
                       prev
-                        ? { ...prev, promotional_price: parseFloat(e.target.value) }
+                        ? {
+                            ...prev,
+                            promotional_price: parseFloat(e.target.value),
+                          }
                         : prev
                     )
                   }
@@ -234,7 +266,9 @@ console.log(router)
                   value={editingProduct?.stock || 0}
                   onChange={(e) =>
                     setEditingProduct((prev) =>
-                      prev ? { ...prev, stock: parseInt(e.target.value, 10) } : prev
+                      prev
+                        ? { ...prev, stock: parseInt(e.target.value, 10) }
+                        : prev
                     )
                   }
                   className="w-full p-3 border rounded-lg text-black"
@@ -273,6 +307,28 @@ console.log(router)
                   {familias.map((familia) => (
                     <option key={familia} value={familia}>
                       {familia}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-2">
+                  Branch
+                </label>
+                <select
+                  value={editingProduct?.branchId || ""}
+                  onChange={(e) =>
+                    setEditingProduct((prev) =>
+                      prev
+                        ? { ...prev, branchId: parseInt(e.target.value) }
+                        : prev
+                    )
+                  }
+                  className="w-full p-3 border rounded-lg text-black"
+                >
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
                     </option>
                   ))}
                 </select>

@@ -8,12 +8,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   console.log(" PUT ---> ", req.body)
   if (req.method === "POST") {
-    const { id, name, description, price, promotional_price, stock, status, familia } = req.body;
+    const { id, name, description, price, promotional_price, stock, status, familia, branchId } = req.body;
 
     try {
       const updatedProduct = await prisma.product.update({
         where: { id: Number(id) },
-        data: { name, description, price, promotional_price, stock, status, familia },
+        data: { name, description, price, promotional_price, stock, status, familia, branchId },
       });
 
       res.status(200).json(updatedProduct);
