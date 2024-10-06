@@ -21,8 +21,8 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <Image
             src="/images/logo.png"
             alt="Logo"
-            width={60}
-            height={60}
+            width={100}
+            height={100}
             className="mr-2 rounded-full border-2 border-white"
           />
           <h1 className="text-lg md:text-xl lg:text-2xl font-extrabold whitespace-nowrap tracking-wider">
@@ -92,7 +92,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           {/* Botón del carrito */}
           <Link href="/carrito">
             <div className="relative">
-              <button className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 border-2 border-black">
                 <FaShoppingCart className="h-6 w-6" />
                 {cartItems.length > 0 && (
                   <span className="ml-1 text-lg font-semibold bg-yellow-500 text-black px-2 py-1 rounded-full">
@@ -158,7 +158,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <Link href="/carrito">
             <div className="relative">
               <button
-                className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105"
+                className="bg-red-500 hover:bg-red-600 text-white font-bold p-2 rounded-full flex items-center shadow-lg transition-transform transform hover:scale-105 border-2 border-black"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <FaShoppingCart className="h-6 w-6" />
