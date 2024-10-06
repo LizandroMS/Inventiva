@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import { useRouter, useSearchParams } from "next/navigation"; // Importar 'useSearchParams'
+import Footer from "@/components/Footer";
 
 // Definir interfaces si utilizas TypeScript (puedes omitirlas si usas JavaScript)
 interface Product {
@@ -87,9 +88,10 @@ export default function CartaPage() {
         } catch (error) {
           console.error("Error al parsear el usuario del localStorage:", error);
         }
-      } else {
-        router.push("/login");
-      }
+      } 
+      // else {
+      //   router.push("/login");
+      // }
     }
   }, [router]);
 
@@ -323,6 +325,7 @@ export default function CartaPage() {
           )}
         </section>
       </main>
+      <Footer/>
     </div>
   );
 }

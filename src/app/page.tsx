@@ -9,6 +9,7 @@ import { Product } from "@/context/CartContext";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { User } from "@prisma/client";
+import Footer from "@/components/Footer";
 
 interface ArrowProps {
   className?: string;
@@ -186,20 +187,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-green-700 text-white py-4 text-center">
-        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
-        <div className="flex justify-center space-x-4 mt-2">
-          <a href="#" className="hover:underline">
-            Términos y condiciones
-          </a>
-          <a href="#" className="hover:underline">
-            Políticas de privacidad
-          </a>
-          <a href="#" className="hover:underline">
-            Locales
-          </a>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
