@@ -44,7 +44,7 @@ export default function EditarProductosPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
-    console.log(router)
+console.log(router)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -108,6 +108,29 @@ export default function EditarProductosPage() {
     }
   };
 
+//   const handleDelete = async (id: number) => {
+//     const confirmed = confirm("¿Estás seguro de que deseas eliminar este producto?");
+//     if (!confirmed) return;
+
+//     try {
+//       const response = await fetch(`/api/administrador/productsdelete`, {
+//         method: "DELETE",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ id }),
+//       });
+
+//       if (response.ok) {
+//         setProducts((prev) => prev.filter((product) => product.id !== id));
+//       } else {
+//         setErrorMessage("Error al eliminar el producto.");
+//       }
+//     } catch (error) {
+//       console.error("Error al eliminar el producto:", error);
+//     }
+//   };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
@@ -168,13 +191,19 @@ export default function EditarProductosPage() {
                       ?.name || "Sin branch"}
                   </td>{" "}
                   {/* Mostrar el nombre de la Branch */}
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-4 border-b space-x-2">
                     <button
                       onClick={() => handleEdit(product)}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-3 rounded-lg"
                     >
                       Editar
                     </button>
+                    {/* <button
+                      onClick={() => handleDelete(product.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg"
+                    >
+                      Eliminar
+                    </button> */}
                   </td>
                 </tr>
               ))}
@@ -231,7 +260,9 @@ export default function EditarProductosPage() {
                   value={editingProduct?.price || 0}
                   onChange={(e) =>
                     setEditingProduct((prev) =>
-                      prev ? { ...prev, price: parseFloat(e.target.value) } : prev
+                      prev
+                        ? { ...prev, price: parseFloat(e.target.value) }
+                        : prev
                     )
                   }
                   className="w-full p-3 border rounded-lg text-black"
