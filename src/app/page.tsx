@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import Slider from "react-slick";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Product } from "@/context/CartContext";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { User } from "@prisma/client";
-import Footer from "@/components/Footer";
 
 interface ArrowProps {
   className?: string;
@@ -22,7 +21,12 @@ const NextArrow = (props: ArrowProps) => {
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", right: "10px", zIndex: 1 }}
+      style={{
+        ...style,
+        display: "block",
+        right: "10px",
+        zIndex: 1,
+      }}
       onClick={onClick}
     />
   );
@@ -33,7 +37,12 @@ const PrevArrow = (props: ArrowProps) => {
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", left: "10px", zIndex: 1 }}
+      style={{
+        ...style,
+        display: "block",
+        left: "10px",
+        zIndex: 1,
+      }}
       onClick={onClick}
     />
   );
@@ -41,7 +50,7 @@ const PrevArrow = (props: ArrowProps) => {
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -108,13 +117,21 @@ export default function Home() {
     {
       id: 1,
       nombre: "Pollos a la Brasa",
-      //precio: "Desde S/ 12.00",
       imagen: "/images/PolloEntero.png",
     },
     {
       id: 2,
       nombre: "Chifa",
-      // precio: "Desde S/ 15.00",
+      imagen: "/images/OctavoPollo.png",
+    },
+    {
+      id: 3,
+      nombre: "Platos a la Carta",
+      imagen: "/images/PolloEntero.png",
+    },
+    {
+      id: 4,
+      nombre: "Parrillas",
       imagen: "/images/OctavoPollo.png",
     },
     // Agrega más categorías según necesites
@@ -125,19 +142,19 @@ export default function Home() {
       <Header user={user} cartItems={cartItems} handleLogout={handleLogout} />
 
       {isClient && (
-        <section className="bg-gray-100">
-          <div className="container mx-auto p-4">
+        <section className="bg-gray-100 pt-6">
+          <div className="container mx-auto px-4">
             <Slider {...settings}>
               {Slider_Data.map((item) => (
                 <div
                   key={item.id}
-                  className="relative w-full overflow-hidden h-[200px] sm:h-[200px] md:h-[450px]"
+                  className="relative w-full overflow-hidden h-[200px] sm:h-[300px] md:h-[450px]"
                 >
                   <Image
                     src={item.imagen}
                     alt={item.nombre}
                     layout="fill"
-                    objectFit="contain"
+                    objectFit="cover"
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
@@ -151,7 +168,7 @@ export default function Home() {
       )}
 
       <section className="py-10 bg-gray-100">
-        <div className="container mx-auto">
+        <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
             Nuestro Menú
           </h2>
@@ -164,22 +181,22 @@ export default function Home() {
                   query: { categoria: plato.nombre },
                 }}
               >
-                <div className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105 cursor-pointer">
-                  <div className="relative w-full mb-4 h-[200px]">
+                <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 cursor-pointer">
+                  {/* Nombre en la parte superior */}
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold text-gray-700 text-center">
+                      {plato.nombre}
+                    </h3>
+                  </div>
+                  {/* Imagen */}
+                  <div className="relative w-full h-48 md:h-56 lg:h-64 overflow-hidden">
                     <Image
                       src={plato.imagen}
                       alt={plato.nombre}
                       layout="fill"
                       objectFit="cover"
-                      className="rounded-lg"
                     />
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
-                    {plato.nombre}
-                  </h3>
-                  {/* <p className="text-lg font-semibold text-gray-700 text-center">
-                    {plato.precio}
-                  </p> */}
                 </div>
               </Link>
             ))}
