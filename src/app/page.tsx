@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Slider from "react-slick"; // Importar el componente Slider de react-slick
-import Header from "@/components/Header"; // Asegúrate de importar el Header correctamente
-import { Product } from "@/context/CartContext"; // Importa el tipo Product
+import Link from "next/link";
+import Slider from "react-slick";
+import Header from "@/components/Header";
+import { Product } from "@/context/CartContext";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { User } from "@prisma/client"; // Importa el tipo User desde Prisma si estás usando Prisma
+import { User } from "@prisma/client";
 
-// Definir tipos de las flechas personalizadas
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -39,34 +39,29 @@ const PrevArrow = (props: ArrowProps) => {
 };
 
 export default function Home() {
-  // Estados para manejar el usuario y el carrito de compras
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // Estado para almacenar el usuario
-  const [cartItems, setCartItems] = useState<Product[]>([]); // Estado para almacenar los ítems en el carrito
+  const [user, setUser] = useState<User | null>(null);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
 
   useEffect(() => {
     setIsClient(true);
 
-    // Cargar usuario desde localStorage
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
 
-    // Cargar carrito desde localStorage
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-      setCartItems(JSON.parse(storedCart)); // Asegúrate de que storedCart sea un array de productos
+      setCartItems(JSON.parse(storedCart));
     }
   }, []);
 
-  // Función para manejar el logout
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiar datos del usuario
-    setUser(null); // Limpiar el estado del usuario
+    localStorage.removeItem("user");
+    setUser(null);
   };
 
-  // Configuración del carrusel
   const settings = {
     dots: true,
     infinite: true,
@@ -81,7 +76,6 @@ export default function Home() {
     prevArrow: <PrevArrow />,
   };
 
-  // Lista de productos o platos para mostrar en el carrusel y en la sección de platos
   const Slider_Data = [
     {
       id: 1,
@@ -112,24 +106,23 @@ export default function Home() {
   const platos = [
     {
       id: 1,
-      nombre: "1 Pollo a la Brasa",
-      precio: "S/ 45.00",
+      nombre: "Pollos a la Brasa",
+      precio: "Desde S/ 12.00",
       imagen: "/images/PolloEntero.png",
     },
     {
       id: 2,
-      nombre: "1/8 Pollo a la Brasa",
-      precio: "S/ 12.00",
+      nombre: "Chifa",
+      precio: "Desde S/ 15.00",
       imagen: "/images/OctavoPollo.png",
     },
+    // Agrega más categorías según necesites
   ];
 
   return (
     <div>
-      {/* Aquí pasamos el usuario, el carrito (array de productos) y el handleLogout al Header */}
       <Header user={user} cartItems={cartItems} handleLogout={handleLogout} />
 
-      {/* Carrusel que cubre todo el ancho */}
       {isClient && (
         <section className="bg-gray-100">
           <div className="container mx-auto p-4">
@@ -143,7 +136,7 @@ export default function Home() {
                     src={item.imagen}
                     alt={item.nombre}
                     layout="fill"
-                    objectFit="contain" // Cambiado a "contain"
+                    objectFit="contain"
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
@@ -156,7 +149,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Sección de platos */}
       <section className="py-10 bg-gray-100">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
@@ -164,32 +156,36 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {platos.map((plato) => (
-              <div
+              <Link
                 key={plato.id}
-                className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
+                href={{
+                  pathname: "/Carta",
+                  query: { categoria: plato.nombre },
+                }}
               >
-                <div className="relative w-full mb-4 h-[200px]">
-                  <Image
-                    src={plato.imagen}
-                    alt={plato.nombre}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                  />
+                <div className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105 cursor-pointer">
+                  <div className="relative w-full mb-4 h-[200px]">
+                    <Image
+                      src={plato.imagen}
+                      alt={plato.nombre}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-lg"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
+                    {plato.nombre}
+                  </h3>
+                  <p className="text-lg font-semibold text-gray-700 text-center">
+                    {plato.precio}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
-                  {plato.nombre}
-                </h3>
-                <p className="text-lg font-semibold text-gray-700 text-center">
-                  {plato.precio}
-                </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-green-700 text-white py-4 text-center">
         <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
         <div className="flex justify-center space-x-4 mt-2">

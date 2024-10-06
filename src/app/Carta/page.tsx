@@ -5,9 +5,8 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
 
-
-// Definir la interfaz del producto
-export interface Product {
+// Definir las interfaces (solo para TypeScript)
+interface Product {
   id: number;
   name: string;
   price: number;
@@ -15,10 +14,9 @@ export interface Product {
   imagenUrl: string;
   quantity: number;
   familia: string;
-  promotional_price?: number; // Hacer que sea opcional
+  promotional_price?: number;
   description: string;
 }
-
 
 interface Branch {
   id: number;
@@ -44,19 +42,19 @@ export default function CartaPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<number | "">("");
-  const [selectedFamilia, setSelectedFamilia] = useState<string>(""); // Nueva variable para familia
+  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
+  const [selectedFamilia, setSelectedFamilia] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState<User | null>(null);
-  const [errorMessage, setErrorMessage] = useState(""); // Para manejar el mensaje de error
-  const { addToCart, updateCartItemQuantity, cartItems } = useCart(); // Añadido `updateCartItemQuantity`
+  const [errorMessage, setErrorMessage] = useState("");
+  const { addToCart, updateCartItemQuantity, cartItems } = useCart();
   const router = useRouter();
-  console.log(products);
+
   // Para controlar la cantidad de productos
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
 
+  // Cargar sucursales y usuario al montar el componente
   useEffect(() => {
-    // Cargar sucursales
     const fetchBranches = async () => {
       try {
         const res = await fetch("/api/getBranches");
@@ -64,7 +62,7 @@ export default function CartaPage() {
           const data: Branch[] = await res.json();
           setBranches(data);
           if (data.length > 0) {
-            setSelectedBranch(data[0].id); // Selecciona la primera sucursal por defecto
+            setSelectedBranch(data[0].id);
           }
         }
       } catch (error) {
@@ -75,42 +73,47 @@ export default function CartaPage() {
     fetchBranches();
 
     // Cargar usuario autenticado
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error al parsear el usuario del localStorage:", error);
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error("Error al parsear el usuario del localStorage:", error);
+        }
+      } else {
+        router.push("/login");
       }
-    } else {
-      router.push("/login");
     }
-  }, []);
+  }, [router]);
 
   // Función para cargar productos por sucursal y familia
   const fetchProducts = useCallback(
-    async (branchId: number | "", familia: string) => {
+    async (branchId: number | null, familia: string) => {
       try {
         const res = await fetch("/api/getProducts", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ branchId, familia }), // Enviar familia al backend
+          body: JSON.stringify({ branchId, familia }),
         });
 
-        const data = await res.json();
+        const data: Product[] = await res.json();
 
-        if (!res.ok || data.message) {
-          // Si la respuesta no es correcta o contiene un mensaje, limpiar la vista y mostrar error
+        if (!res.ok || data.length === 0) {
           setProducts([]);
           setFilteredProducts([]);
-          setErrorMessage(data.message || "No se encontraron productos.");
+          setErrorMessage("No se encontraron productos.");
         } else {
           setProducts(data);
-          filterProducts(data, searchTerm, branchId, familia); // Aplicar el filtro cuando se obtienen los productos
-          setErrorMessage(""); // Limpiar el mensaje de error si se encuentran productos
+          // Filtrar productos por término de búsqueda
+          const filtered = data.filter((product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setFilteredProducts(filtered);
+          setErrorMessage("");
         }
       } catch (error) {
         console.error("Error al cargar los productos:", error);
@@ -122,28 +125,27 @@ export default function CartaPage() {
     [searchTerm]
   );
 
-  // Función para filtrar los productos según el término de búsqueda, la sucursal y la familia seleccionada
-  const filterProducts = (
-    productList: Product[],
-    searchTerm: string,
-    branchId: number | "",
-    familia: string
-  ) => {
-    const filtered = productList.filter((product) => {
-      const matchesBranch = branchId === "" || product.branchId === branchId;
-      const matchesFamilia = familia === "" || product.familia === familia;
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm);
-      return matchesBranch && matchesFamilia && matchesSearch;
-    });
+  // Efecto para cargar productos cuando cambian los filtros
+  useEffect(() => {
+    if (selectedBranch !== null) {
+      fetchProducts(selectedBranch, selectedFamilia);
+    }
+  }, [selectedBranch, selectedFamilia, fetchProducts]);
+
+  // Actualizar productos filtrados cuando cambia el término de búsqueda
+  useEffect(() => {
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     setFilteredProducts(filtered);
-  };
+  }, [searchTerm, products]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value.toLowerCase());
+    setSearchTerm(e.target.value);
   };
 
   const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const branchId = e.target.value === "" ? "" : parseInt(e.target.value);
+    const branchId = e.target.value === "" ? null : parseInt(e.target.value);
     setSelectedBranch(branchId);
   };
 
@@ -151,7 +153,7 @@ export default function CartaPage() {
     setSelectedFamilia(e.target.value);
   };
 
-  // Función para cambiar la cantidad de productos seleccionados
+  // Cambiar la cantidad de productos seleccionados
   const handleQuantityChange = (productId: number, quantity: number) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -159,56 +161,49 @@ export default function CartaPage() {
     }));
   };
 
-  // Función para ejecutar la búsqueda manual cuando se da clic en el botón "Buscar"
-  const handleSearchClick = () => {
-    fetchProducts(selectedBranch, selectedFamilia); // Llamamos a la API para obtener productos basados en la sucursal y la familia seleccionada
-  };
-
-  // Función para agregar o actualizar la cantidad del producto en el carrito
+  // Agregar o actualizar la cantidad del producto en el carrito
   const handleAddToCart = (product: Product) => {
     const quantity = quantities[product.id] || 1;
-  
+
     // Verificar si el producto ya está en el carrito
     const existingCartItem = cartItems.find((item) => item.id === product.id);
-  
+
     if (existingCartItem) {
-      // Actualizar la cantidad si el producto ya está en el carrito
+      // Actualizar la cantidad
       updateCartItemQuantity(product.id, quantity);
     } else {
-      // Asegurarse de que promotional_price siempre tenga un valor
       addToCart({
         ...product,
         quantity,
-        promotional_price: product.promotional_price || product.price, // Si no hay promotional_price, usar el precio regular
+        promotional_price: product.promotional_price || product.price,
       });
     }
   };
-  
 
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiar datos del usuario
-    setUser(null); // Limpiar el estado del usuario
+    localStorage.removeItem("user");
+    setUser(null);
     router.push("/");
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
-      <div className="container mx-auto p-4 flex space-x-4">
+      <div className="container mx-auto p-4 flex flex-wrap gap-4">
         {/* Buscador */}
         <input
           type="text"
           value={searchTerm}
           onChange={handleSearch}
           placeholder="Buscar producto..."
-          className="w-3/6 p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
+          className="flex-grow p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
         />
 
         {/* Selector de sucursales */}
         <select
-          value={selectedBranch}
+          value={selectedBranch !== null ? selectedBranch : ""}
           onChange={handleBranchChange}
-          className="w-1/6 p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
+          className="w-full sm:w-auto p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
         >
           {branches.map((branch) => (
             <option key={branch.id} value={branch.id}>
@@ -221,7 +216,7 @@ export default function CartaPage() {
         <select
           value={selectedFamilia}
           onChange={handleFamiliaChange}
-          className="w-1/6 p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
+          className="w-full sm:w-auto p-3 border rounded-lg focus:outline-none focus:border-yellow-500 text-gray-700"
         >
           <option value="">Todas las familias</option>
           {familias.map((familia) => (
@@ -230,22 +225,12 @@ export default function CartaPage() {
             </option>
           ))}
         </select>
-
-        {/* Botón Buscar */}
-        <button
-          onClick={handleSearchClick}
-          className="w-1/6 bg-yellow-500 hover:bg-yellow-600 text-gray-700 font-bold py-2 px-4 rounded-lg"
-        >
-          Buscar
-        </button>
       </div>
 
       <main className="flex-grow">
         <section className="container mx-auto p-4">
           {errorMessage ? (
-            <p className="text-center col-span-4 text-gray-700">
-              {errorMessage}
-            </p>
+            <p className="text-center text-gray-700">{errorMessage}</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredProducts.length > 0 ? (
@@ -261,6 +246,7 @@ export default function CartaPage() {
                         layout="fill"
                         objectFit="cover"
                         className="rounded-lg"
+                        unoptimized
                       />
                     </div>
                     <h3 className="text-xl font-bold text-center text-gray-800">
@@ -283,7 +269,7 @@ export default function CartaPage() {
                       </p>
                     )}
 
-                    {/* Mostrar observación */}
+                    {/* Mostrar descripción */}
                     {product.description && (
                       <p className="text-sm text-center text-gray-600 mt-2">
                         {product.description}
@@ -299,12 +285,10 @@ export default function CartaPage() {
                         type="number"
                         min="1"
                         value={quantities[product.id] || 1}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            product.id,
-                            parseInt(e.target.value)
-                          )
-                        }
+                        onChange={(e) => {
+                          const value = Math.max(1, parseInt(e.target.value) || 1);
+                          handleQuantityChange(product.id, value);
+                        }}
                         className="w-16 p-2 border rounded-lg text-gray-700"
                       />
                     </div>
