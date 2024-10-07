@@ -8,6 +8,7 @@ interface HeaderProps {
   user: { fullName: string } | null;
   handleLogout: () => void;
   cartItems: Product[];
+  
 }
 
 export default function Header({ user, handleLogout, cartItems }: HeaderProps) {

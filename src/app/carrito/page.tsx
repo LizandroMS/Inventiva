@@ -103,7 +103,9 @@ export default function CartPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiar datos del usuario
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
     router.push("/");
   };

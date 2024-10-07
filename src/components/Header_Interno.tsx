@@ -27,6 +27,7 @@ export default function Header() {
     // Limpiar el localStorage (o cookies si fuera el caso)
     localStorage.removeItem("userToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     router.push("/login"); // Redirigir al login
   };
 

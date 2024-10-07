@@ -68,7 +68,9 @@ export default function Home() {
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("userToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     setUser(null);
   };
 

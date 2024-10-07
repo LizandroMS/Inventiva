@@ -196,7 +196,9 @@ export default function CartaPage() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("userToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     setUser(null);
     router.push("/");
   };
