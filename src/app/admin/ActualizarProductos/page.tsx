@@ -1,10 +1,11 @@
-// src/pages/admin/EditarProductos.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
+import imageCompression from "browser-image-compression"; // Para la compresión de imágenes
+import { replaceImage } from "@/pages/api/api_firebase/firebaseUpload"; // Función para reemplazar imagen en Firebase
 
 const familias = [
   "Pollos a la brasa",
@@ -26,6 +27,7 @@ interface Product {
   status: string;
   familia: string;
   branchId: number;
+  imagenUrl?: string;
 }
 
 interface Branch {
@@ -43,8 +45,10 @@ export default function EditarProductosPage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null); // Para el archivo de imagen
   const router = useRouter();
-console.log(router)
+  console.log(router);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -82,16 +86,42 @@ console.log(router)
     setIsModalOpen(true); // Abrir el modal
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]); // Guardar el archivo de imagen
+    }
+  };
+
   const handleSave = async () => {
     if (!editingProduct) return;
 
     try {
+      let imagenUrl = editingProduct.imagenUrl;
+
+      // Si se seleccionó una nueva imagen, comprimirla y reemplazarla
+      if (file) {
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 500,
+          useWebWorker: true,
+          fileType: "image/webp",
+          initialQuality: 0.6,
+        };
+
+        // Comprimir la imagen seleccionada a WebP
+        const compressedFile = await imageCompression(file, options);
+
+        // Reemplazar la imagen existente en Firebase y obtener la nueva URL
+        imagenUrl = await replaceImage(compressedFile, editingProduct.imagenUrl);
+      }
+
+      // Actualizar el producto con la nueva imagen (si la hay) y los demás datos
       const response = await fetch(`/api/administrador/productsedit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(editingProduct),
+        body: JSON.stringify({ ...editingProduct, imagenUrl }), // Actualizamos el campo imagenUrl
       });
 
       if (response.ok) {
@@ -108,33 +138,11 @@ console.log(router)
     }
   };
 
-//   const handleDelete = async (id: number) => {
-//     const confirmed = confirm("¿Estás seguro de que deseas eliminar este producto?");
-//     if (!confirmed) return;
-
-//     try {
-//       const response = await fetch(`/api/administrador/productsdelete`, {
-//         method: "DELETE",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({ id }),
-//       });
-
-//       if (response.ok) {
-//         setProducts((prev) => prev.filter((product) => product.id !== id));
-//       } else {
-//         setErrorMessage("Error al eliminar el producto.");
-//       }
-//     } catch (error) {
-//       console.error("Error al eliminar el producto:", error);
-//     }
-//   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProduct(null);
     setEditingProduct(null);
+    setFile(null); // Reiniciar el archivo de imagen
   };
 
   if (loading) {
@@ -165,7 +173,8 @@ console.log(router)
                 <th className="py-3 px-4 border-b">Stock</th>
                 <th className="py-3 px-4 border-b">Estado</th>
                 <th className="py-3 px-4 border-b">Familia</th>
-                <th className="py-3 px-4 border-b">Branch</th> {/* Nueva columna para Branch */}
+                <th className="py-3 px-4 border-b">Branch</th>{" "}
+                {/* Nueva columna para Branch */}
                 <th className="py-3 px-4 border-b">Acciones</th>
               </tr>
             </thead>
@@ -198,12 +207,6 @@ console.log(router)
                     >
                       Editar
                     </button>
-                    {/* <button
-                      onClick={() => handleDelete(product.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg"
-                    >
-                      Eliminar
-                    </button> */}
                   </td>
                 </tr>
               ))}
@@ -342,6 +345,20 @@ console.log(router)
                   ))}
                 </select>
               </div>
+
+              {/* Añadir campo para seleccionar la imagen */}
+              <div className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-2">
+                  Imagen del Producto
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="w-full p-3 border rounded-lg text-black"
+                />
+              </div>
+
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
                   Branch

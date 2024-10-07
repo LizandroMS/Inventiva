@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadImage } from "@/pages/api/api_firebase/firebaseUpload";
+import { uploadNewImage } from "@/pages/api/api_firebase/firebaseUpload";
 import imageCompression from "browser-image-compression"; // Importa la librería
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
@@ -103,7 +103,7 @@ export default function RegistroProducto() {
       const compressedFile = await imageCompression(file, options);
 
       // Subir la imagen comprimida a Firebase y obtener la URL
-      const imagenUrl: string = await uploadImage(compressedFile);
+      const imagenUrl: string = await uploadNewImage(compressedFile);
       console.log("imageUrl", imagenUrl);
 
       // Realizar la solicitud para registrar el producto junto con la URL de la imagen
