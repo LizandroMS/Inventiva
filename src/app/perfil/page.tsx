@@ -1,7 +1,7 @@
 "use client"; // Asegura que este componente se ejecute en el cliente
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { FaCheckCircle, FaUserCircle, FaPlusCircle } from "react-icons/fa";
 
 interface Address {
@@ -27,7 +27,7 @@ export default function Perfil() {
   const [newAddress, setNewAddress] = useState("");
   const [newReferencia, setNewReferencia] = useState("");
   const router = useRouter();
-
+  console.log(router);
   // Cargar los datos del usuario al montar el componente
   useEffect(() => {
     const fetchUser = async () => {
@@ -147,7 +147,9 @@ export default function Perfil() {
 
         {/* Formulario para agregar nueva dirección */}
         <div className="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 max-w-3xl mx-auto text-white">
-          <h2 className="text-3xl font-semibold mb-4">Añadir Nueva Dirección</h2>
+          <h2 className="text-3xl font-semibold mb-4">
+            Añadir Nueva Dirección
+          </h2>
           <div className="grid gap-4 sm:grid-cols-1">
             <input
               type="text"

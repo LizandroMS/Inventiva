@@ -45,7 +45,7 @@ interface Pedido {
   User: {
     fullName: string;
     phone: string;
-    addresses: Address[]; 
+    addresses: Address[];
   };
 }
 
@@ -64,7 +64,7 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
-
+  console.log(branchId);
   // Mantener la referencia actualizada
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
@@ -152,7 +152,7 @@ export default function PersonalPage() {
             }
             return pedido;
           })
-          .filter((pedido) => pedido.status !== "ENTREGADO"); 
+          .filter((pedido) => pedido.status !== "ENTREGADO");
 
         setPedidos(updatedPedidos);
 
