@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaUser } from "react-icons/fa"; // Importa el ícono de usuario
 import Image from "next/image";
 import { Product } from "@/context/CartContext";
 
@@ -8,7 +8,6 @@ interface HeaderProps {
   user: { fullName: string } | null;
   handleLogout: () => void;
   cartItems: Product[];
-  
 }
 
 export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
@@ -107,9 +106,14 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           {/* Controles de usuario */}
           {user ? (
             <>
-              <span className="text-base font-medium text-yellow-100 shadow-lg">
-                Bienvenido, {user.fullName}
-              </span>
+              <Link href="/perfil">
+                <button className="bg-transparent text-white flex items-center space-x-2 hover:text-yellow-200 transition-transform transform hover:scale-105">
+                  <FaUser className="h-6 w-6" /> {/* Icono de perfil */}
+                  <span className="text-base font-medium">
+                    {user.fullName}
+                  </span>
+                </button>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105"
@@ -176,9 +180,15 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
           <div className="flex flex-col items-center space-y-4 mt-4">
             {user ? (
               <>
-                <span className="text-lg font-medium text-yellow-100">
-                  Bienvenido, {user.fullName}
-                </span>
+                <Link href="/perfil">
+                  <button
+                    className="bg-transparent text-white flex items-center space-x-2 hover:text-yellow-200 transition-transform transform hover:scale-105"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <FaUser className="h-6 w-6" /> {/* Icono de perfil */}
+                    <span className="text-lg font-medium">{user.fullName}</span>
+                  </button>
+                </Link>
                 <button
                   onClick={() => {
                     handleLogout();
