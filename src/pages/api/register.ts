@@ -6,40 +6,68 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fullName, email, password, address, phone, dni, birthDate, Referencia } = req.body;
+    const { fullName, email, password, phone, dni, birthDate, addresses } = req.body;
 
-    if (!fullName || !email || !password || !address || !phone || !dni || !birthDate || !Referencia) {
-      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    if (!fullName || !email || !password || !phone || !dni || !birthDate || !addresses || addresses.length === 0) {
+      return res.status(400).json({ error: 'Faltan campos requeridos o no se ha proporcionado ninguna dirección' });
     }
 
     try {
-      // Hashear la contraseña antes de almacenarla
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Intentar crear un nuevo usuario
+      // Crear el nuevo usuario con direcciones
       const newUser = await prisma.user.create({
         data: {
           fullName,
           email,
           password: hashedPassword,
-          address,
           phone,
           dni,
           birthDate: new Date(birthDate),
-          Referencia: Referencia
+          addresses: {
+            create: addresses.map((addr: { address: string; referencia: string; isActive: boolean }) => ({
+              address: addr.address,
+              referencia: addr.referencia,
+              isActive: addr.isActive || false, // Marca todas como no activas por defecto
+            })),
+          },
+        },
+        include: {
+          addresses: true,
         },
       });
 
+      // Si se ha marcado una dirección como activa, desactivar todas las demás y actualizar solo esa
+      const activeAddress = addresses.find((addr: { isActive: boolean }) => addr.isActive);
+      if (activeAddress) {
+        await prisma.address.updateMany({
+          where: {
+            userId: newUser.id,
+            isActive: true, // Desactiva todas las demás direcciones activas
+          },
+          data: { isActive: false },
+        });
+
+        // Activar la dirección correspondiente
+        const activeAddressInDb = newUser.addresses.find(
+          (addr) => addr.address === activeAddress.address && addr.referencia === activeAddress.referencia
+        );
+        
+        if (activeAddressInDb) {
+          await prisma.address.update({
+            where: { id: activeAddressInDb.id },
+            data: { isActive: true },
+          });
+        }
+      }
+
       return res.status(201).json(newUser);
     } catch (error) {
-      // Capturamos el error de unicidad (correo ya registrado)
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002' && error.meta?.target === 'User_email_key') {
           return res.status(409).json({ error: 'Este correo ya está registrado' });
         }
       }
-
-      console.error("Error al crear el usuario:", error);
       return res.status(500).json({ error: 'Error al registrar el usuario' });
     }
   } else {
