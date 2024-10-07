@@ -9,6 +9,9 @@ import {
   FaBoxes,
   FaHistory,
   FaClipboardList,
+  FaSyncAlt, // Icono para actualizar productos
+  FaBuilding, // Icono para branch
+  FaUserShield, // Icono para editar acceso al personal
 } from "react-icons/fa"; // Íconos
 import Footer from "@/components/Footer";
 
@@ -88,9 +91,30 @@ export default function AdminPage() {
               Registra los nuevos platos y productos disponibles para la venta.
               Mantén tu inventario actualizado.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-            onClick={() => router.push("/admin/RegistroProductos")}>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/RegistroProductos")}
+            >
               Gestionar Productos
+            </button>
+          </div>
+
+          {/* Card: Actualizar Productos */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-orange-500">
+              <FaSyncAlt size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Actualizar Productos
+            </h2>
+            <p className="text-gray-600 text-center">
+              Actualiza los precios y el stock de tus productos de manera rápida.
+            </p>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/ActualizarProductos")}
+            >
+              Actualizar Productos
             </button>
           </div>
 
@@ -106,8 +130,10 @@ export default function AdminPage() {
               Revisa el historial de operaciones realizadas en el sistema,
               incluyendo ventas y modificaciones.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-            onClick={() => router.push("/admin/HistorialActividades")}>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/HistorialActividades")}
+            >
               Ver Historial
             </button>
           </div>
@@ -124,13 +150,54 @@ export default function AdminPage() {
               Administra y revisa los pedidos en cola para ser preparados y
               entregados.
             </p>
-            <button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/ColaPedidos")}
+            >
               Ver Pedidos
+            </button>
+          </div>
+
+          {/* Card: Agregar Branch */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-blue-500">
+              <FaBuilding size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Agregar Sucursal
+            </h2>
+            <p className="text-gray-600 text-center">
+              Añade una nueva sucursal a tu sistema de gestión de establecimientos.
+            </p>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/AgregarBranch")}
+            >
+              Agregar Sucursal
+            </button>
+          </div>
+
+          {/* Card: Editar Acceso al Personal */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-teal-500">
+              <FaUserShield size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Editar Acceso al Personal
+            </h2>
+            <p className="text-gray-600 text-center">
+              Modifica los permisos de acceso para los roles de personal.
+            </p>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/EditarAccesoPersonal")}
+            >
+              Editar Acceso
             </button>
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

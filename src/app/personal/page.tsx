@@ -11,6 +11,13 @@ const socket = io({
   path: "/api/socket",
 });
 
+interface Address {
+  id: number;
+  address: string;
+  referencia: string | null;
+  isActive: boolean;
+}
+
 interface PedidoItem {
   id: number;
   productId: number;
@@ -37,10 +44,9 @@ interface Pedido {
   items: PedidoItem[];
   User: {
     fullName: string;
-    address: string;
     phone: string;
-    Referencia: string;
-  }; // Datos del usuario asociados con el pedido
+    addresses: Address[]; 
+  };
 }
 
 interface DecodedToken {
@@ -57,7 +63,6 @@ export default function PersonalPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
-  console.log(branchId);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
 
   // Mantener la referencia actualizada
@@ -147,7 +152,7 @@ export default function PersonalPage() {
             }
             return pedido;
           })
-          .filter((pedido) => pedido.status !== "ENTREGADO");//verificar si funciona con eficacia
+          .filter((pedido) => pedido.status !== "ENTREGADO"); 
 
         setPedidos(updatedPedidos);
 
@@ -226,7 +231,7 @@ export default function PersonalPage() {
                 </p>
 
                 {/* Mostrar datos del usuario */}
-                <div className="mt-4 bg-yellow-100 p-4 rounded-lg">
+                <div className="mt-4 p-4 rounded-lg bg-gray-50">
                   <h3 className="font-semibold text-gray-800">
                     Datos del Cliente
                   </h3>
@@ -235,50 +240,74 @@ export default function PersonalPage() {
                     <span className="font-bold">{pedido.User.fullName}</span>
                   </p>
                   <p className="text-gray-600">
-                    Dirección:{" "}
-                    <span className="font-bold">{pedido.User.address}</span>
-                  </p>
-                  <p className="text-gray-600">
-                    Referencia:{" "}
-                    <span className="font-bold">{pedido.User.Referencia}</span>
-                  </p>
-                  <p className="text-gray-600">
                     Número:{" "}
                     <span className="font-bold">{pedido.User.phone}</span>
                   </p>
+                  <p className="font-semibold mt-2 text-black">Direcciones:</p>
+                  <ul className="mt-2">
+                    {pedido.User.addresses.map((address) => (
+                      <li
+                        key={address.id}
+                        className={`p-2 mb-2 rounded-lg transition-all duration-300 text-black ${
+                          address.isActive
+                            ? "bg-yellow-200 border-yellow-500"
+                            : "bg-gray-200"
+                        }`}
+                      >
+                        <p>
+                          📍 {address.address}{" "}
+                          {address.isActive && (
+                            <span className="text-green-600">[Activa]</span>
+                          )}
+                        </p>
+                        {address.referencia && (
+                          <p className="text-gray-500 text-sm">
+                            Referencia: {address.referencia}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
                 <h3 className="font-bold text-gray-800 mt-4 mb-2">
                   Productos ({pedido.items.length})
                 </h3>
                 <ul className="space-y-2">
-                  {pedido.items.map((item) => (
-                    <li
-                      key={item.id}
-                      className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
-                    >
-                      <p className="font-semibold text-gray-700">
-                        {item.Product.name}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        {item.Product.description}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Observacion: {item.observation}
-                      </p>
-                      <div className="flex justify-between items-center mt-2">
-                        <p className="text-gray-600">
-                          Cantidad: {item.quantity}
+                  {pedido.items.map((item) => {
+                    // Determinar qué precio mostrar: el promocional o el regular
+                    const precioFinal =
+                      item.Product.promotional_price ?? item.Product.price;
+
+                    return (
+                      <li
+                        key={item.id}
+                        className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
+                      >
+                        <p className="font-semibold text-gray-700">
+                          {item.Product.name}
                         </p>
-                        <p className="text-gray-600">
-                          Precio: S/ {item.price.toFixed(2)}
+                        <p className="text-gray-600 text-sm">
+                          {item.Product.description}
                         </p>
-                      </div>
-                      <p className="text-gray-600 text-sm">
-                        Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
-                      </p>
-                    </li>
-                  ))}
+                        <p className="text-gray-600 text-sm">
+                          Observación: {item.observation}
+                        </p>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-gray-600">
+                            Cantidad: {item.quantity}
+                          </p>
+                          <p className="text-gray-600">
+                            Precio: S/ {precioFinal.toFixed(2)}
+                          </p>
+                        </div>
+                        <p className="text-gray-600 text-sm">
+                          Subtotal: S/{" "}
+                          {(precioFinal * item.quantity).toFixed(2)}
+                        </p>
+                      </li>
+                    );
+                  })}
                 </ul>
 
                 <p className="text-lg font-bold text-gray-800 mt-4">

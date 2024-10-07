@@ -4,8 +4,6 @@ CREATE TABLE `User` (
     `fullName` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `Referencia` VARCHAR(191) NULL,
     `phone` VARCHAR(191) NOT NULL,
     `dni` VARCHAR(191) NOT NULL,
     `birthDate` DATETIME(3) NOT NULL,
@@ -15,6 +13,17 @@ CREATE TABLE `User` (
     `branchId` INTEGER NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Address` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `address` VARCHAR(191) NOT NULL,
+    `referencia` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `userId` INTEGER NOT NULL,
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -82,6 +91,9 @@ CREATE TABLE `OrderItem` (
 
 -- AddForeignKey
 ALTER TABLE `User` ADD CONSTRAINT `User_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Address` ADD CONSTRAINT `Address_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Product` ADD CONSTRAINT `Product_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

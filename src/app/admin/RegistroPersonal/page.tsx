@@ -6,18 +6,24 @@ import { Branch } from "@prisma/client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header_Interno";
 
+// Interfaz para las direcciones
+interface Address {
+  address: string;
+  referencia: string;
+  isActive: boolean;
+}
+
 export default function RegistroPersonal() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
-    address: "",
     phone: "",
     dni: "",
     birthDate: "",
     role: "cliente", // Valor por defecto "cliente"
     branchId: "", // Sucursal seleccionada (si es personal)
-    Referencia: "",
+    addresses: [{ address: "", referencia: "", isActive: false }], // Múltiples direcciones
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -29,7 +35,7 @@ export default function RegistroPersonal() {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const res = await fetch("/api/getBranches"); // Asegúrate de tener esta API implementada
+        const res = await fetch("/api/getBranches");
         if (res.ok) {
           const data = await res.json();
           setBranches(data);
@@ -43,12 +49,49 @@ export default function RegistroPersonal() {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    index?: number,
+    field?: keyof Address
   ) => {
+    if (typeof index === "number" && field) {
+      // Actualizar una dirección específica
+      const newAddresses = [...formData.addresses];
+      newAddresses[index] = {
+        ...newAddresses[index],
+        [field]: e.target.value,
+      };
+      setFormData({ ...formData, addresses: newAddresses });
+    } else {
+      // Actualizar otros campos (no direcciones)
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const handleAddAddress = () => {
+    // Agregar una nueva dirección vacía
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      addresses: [...formData.addresses, { address: "", referencia: "", isActive: false }],
     });
+  };
+
+  const handleRemoveAddress = (index: number) => {
+    // Eliminar una dirección específica
+    const newAddresses = [...formData.addresses];
+    newAddresses.splice(index, 1);
+    setFormData({ ...formData, addresses: newAddresses });
+  };
+
+  const handleSetActiveAddress = (index: number) => {
+    // Marcar una dirección como activa y desmarcar el resto
+    const newAddresses = formData.addresses.map((addr, idx) => ({
+      ...addr,
+      isActive: idx === index, // Solo la dirección seleccionada es activa
+    }));
+    setFormData({ ...formData, addresses: newAddresses });
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -56,9 +99,9 @@ export default function RegistroPersonal() {
     setError("");
     setSuccessMessage(""); // Limpiar mensajes anteriores
     setLoading(true);
-    console.log("formData", formData);
+
     try {
-      const res = await fetch("/api/registerPersonal", {
+      const res = await fetch("/api/administrador/registerPersonal", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,16 +123,14 @@ export default function RegistroPersonal() {
         fullName: "",
         email: "",
         password: "",
-        address: "",
         phone: "",
         dni: "",
         birthDate: "",
         role: "cliente",
         branchId: "",
-        Referencia: "",
+        addresses: [{ address: "", referencia: "", isActive: false }], // Reiniciar las direcciones
       });
 
-      // Redirigir o hacer cualquier acción adicional si lo deseas
       setTimeout(() => {
         setLoading(false);
         router.push("/admin"); // Redirigir a la página principal del admin
@@ -109,19 +150,13 @@ export default function RegistroPersonal() {
             Registro de {formData.role === "personal" ? "Personal" : "Usuario"}
           </h1>
 
-          {loading && (
-            <p className="text-center text-blue-500 mb-4">Registrando...</p>
-          )}
+          {loading && <p className="text-center text-blue-500 mb-4">Registrando...</p>}
           {error && <p className="text-center text-red-500 mb-4">{error}</p>}
-          {successMessage && (
-            <p className="text-center text-green-500 mb-4">{successMessage}</p>
-          )}
+          {successMessage && <p className="text-center text-green-500 mb-4">{successMessage}</p>}
 
           <form onSubmit={handleRegisterSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-700 font-medium">
-                Nombre Completo
-              </label>
+              <label className="block text-gray-700 font-medium">Nombre Completo</label>
               <input
                 type="text"
                 name="fullName"
@@ -133,9 +168,7 @@ export default function RegistroPersonal() {
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium">
-                Correo Electrónico
-              </label>
+              <label className="block text-gray-700 font-medium">Correo Electrónico</label>
               <input
                 type="email"
                 name="email"
@@ -147,9 +180,7 @@ export default function RegistroPersonal() {
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium">
-                Contraseña
-              </label>
+              <label className="block text-gray-700 font-medium">Contraseña</label>
               <input
                 type="password"
                 name="password"
@@ -161,37 +192,7 @@ export default function RegistroPersonal() {
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium">
-                Dirección
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Ingresa la dirección"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 font-medium">
-                Referencia
-              </label>
-              <input
-                type="text"
-                name="Referencia"
-                value={formData.Referencia}
-                onChange={handleChange}
-                placeholder="Ingresa la dirección"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-gray-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 font-medium">
-                Teléfono
-              </label>
+              <label className="block text-gray-700 font-medium">Teléfono</label>
               <input
                 type="tel"
                 name="phone"
@@ -215,9 +216,7 @@ export default function RegistroPersonal() {
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-medium">
-                Fecha de Nacimiento
-              </label>
+              <label className="block text-gray-700 font-medium">Fecha de Nacimiento</label>
               <input
                 type="date"
                 name="birthDate"
@@ -227,6 +226,48 @@ export default function RegistroPersonal() {
                 required
               />
             </div>
+
+            {/* Múltiples direcciones */}
+            <h3 className="text-xl font-bold text-gray-700 mb-4">Direcciones</h3>
+            {formData.addresses.map((address, index) => (
+              <div key={index} className="mb-4 border p-4 rounded-lg bg-gray-50">
+                <label className="block text-gray-700">Dirección {index + 1}</label>
+                <input
+                  type="text"
+                  placeholder="Ingresa la dirección"
+                  value={address.address}
+                  onChange={(e) => handleChange(e, index, "address")}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white mb-2"
+                />
+                <label className="block text-gray-700">Referencia {index + 1}</label>
+                <input
+                  type="text"
+                  placeholder="Ingresa la referencia"
+                  value={address.referencia}
+                  onChange={(e) => handleChange(e, index, "referencia")}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white mb-2"
+                />
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAddress(index)}
+                    className="text-red-500 hover:underline mt-2"
+                  >
+                    Eliminar Dirección
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSetActiveAddress(index)}
+                    className={`text-sm ${address.isActive ? "text-green-500" : "text-gray-500"} hover:underline`}
+                  >
+                    {address.isActive ? "Dirección Activa" : "Marcar como Activa"}
+                  </button>
+                </div>
+              </div>
+            ))}
+            <button type="button" onClick={handleAddAddress} className="text-blue-500 hover:underline mb-6">
+              Agregar otra dirección
+            </button>
 
             <div>
               <label className="block text-gray-700 font-medium">Rol</label>
@@ -244,9 +285,7 @@ export default function RegistroPersonal() {
             {/* Mostrar el campo de selección de sucursal solo si es personal */}
             {formData.role === "personal" && (
               <div>
-                <label className="block text-gray-700 font-medium">
-                  Sucursal
-                </label>
+                <label className="block text-gray-700 font-medium">Sucursal</label>
                 <select
                   name="branchId"
                   value={formData.branchId}

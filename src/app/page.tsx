@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Slider from "react-slick"; // Importar el componente Slider de react-slick
-import Header from "@/components/Header"; // Asegúrate de importar el Header correctamente
-import { Product } from "@/context/CartContext"; // Importa el tipo Product
-
+import Link from "next/link";
+import Slider from "react-slick";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Product } from "@/context/CartContext";
+import { useRouter } from "next/navigation"; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { User } from "@prisma/client"; // Importa el tipo User desde Prisma si estás usando Prisma
 
-// Definir tipos de las flechas personalizadas
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -21,7 +21,12 @@ const NextArrow = (props: ArrowProps) => {
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", right: "10px", zIndex: 1 }}
+      style={{
+        ...style,
+        display: "block",
+        right: "10px",
+        zIndex: 1,
+      }}
       onClick={onClick}
     />
   );
@@ -32,41 +37,45 @@ const PrevArrow = (props: ArrowProps) => {
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", left: "10px", zIndex: 1 }}
+      style={{
+        ...style,
+        display: "block",
+        left: "10px",
+        zIndex: 1,
+      }}
       onClick={onClick}
     />
   );
 };
 
 export default function Home() {
-  // Estados para manejar el usuario y el carrito de compras
   const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User | null>(null); // Estado para almacenar el usuario
-  const [cartItems, setCartItems] = useState<Product[]>([]); // Estado para almacenar los ítems en el carrito
-
+  const [user, setUser] = useState(null);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const router = useRouter();
   useEffect(() => {
     setIsClient(true);
 
-    // Cargar usuario desde localStorage
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
 
-    // Cargar carrito desde localStorage
-    const storedCart = localStorage.getItem("cart");
+    const storedCart = localStorage.getItem("cartItems");
     if (storedCart) {
-      setCartItems(JSON.parse(storedCart)); // Asegúrate de que storedCart sea un array de productos
+      setCartItems(JSON.parse(storedCart));
     }
   }, []);
 
-  // Función para manejar el logout
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiar datos del usuario
-    setUser(null); // Limpiar el estado del usuario
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
+    setUser(null);
+    router.push("/");
+    window.location.reload(); 
   };
 
-  // Configuración del carrusel
   const settings = {
     dots: true,
     infinite: true,
@@ -81,7 +90,6 @@ export default function Home() {
     prevArrow: <PrevArrow />,
   };
 
-  // Lista de productos o platos para mostrar en el carrusel y en la sección de platos
   const Slider_Data = [
     {
       id: 1,
@@ -112,38 +120,45 @@ export default function Home() {
   const platos = [
     {
       id: 1,
-      nombre: "1 Pollo a la Brasa",
-      precio: "S/ 45.00",
+      nombre: "Pollos a la Brasa",
       imagen: "/images/PolloEntero.png",
     },
     {
       id: 2,
-      nombre: "1/8 Pollo a la Brasa",
-      precio: "S/ 12.00",
+      nombre: "Chifa",
       imagen: "/images/OctavoPollo.png",
     },
+    {
+      id: 3,
+      nombre: "Platos a la Carta",
+      imagen: "/images/PolloEntero.png",
+    },
+    {
+      id: 4,
+      nombre: "Parrillas",
+      imagen: "/images/OctavoPollo.png",
+    },
+    // Agrega más categorías según necesites
   ];
 
   return (
     <div>
-      {/* Aquí pasamos el usuario, el carrito (array de productos) y el handleLogout al Header */}
       <Header user={user} cartItems={cartItems} handleLogout={handleLogout} />
 
-      {/* Carrusel que cubre todo el ancho */}
       {isClient && (
-        <section className="bg-gray-100">
-          <div className="container mx-auto p-4">
+        <section className="bg-gray-100 pt-6">
+          <div className="container mx-auto px-4">
             <Slider {...settings}>
               {Slider_Data.map((item) => (
                 <div
                   key={item.id}
-                  className="relative w-full overflow-hidden h-[200px] sm:h-[200px] md:h-[450px]"
+                  className="relative w-full overflow-hidden h-[200px] sm:h-[300px] md:h-[450px]"
                 >
                   <Image
                     src={item.imagen}
                     alt={item.nombre}
                     layout="fill"
-                    objectFit="contain" // Cambiado a "contain"
+                    objectFit="cover"
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
@@ -156,54 +171,44 @@ export default function Home() {
         </section>
       )}
 
-      {/* Sección de platos */}
       <section className="py-10 bg-gray-100">
-        <div className="container mx-auto">
+        <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
             Nuestro Menú
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {platos.map((plato) => (
-              <div
+              <Link
                 key={plato.id}
-                className="bg-white p-6 rounded-lg shadow-md transition-transform hover:scale-105"
+                href={{
+                  pathname: "/Carta",
+                  query: { categoria: plato.nombre },
+                }}
               >
-                <div className="relative w-full mb-4 h-[200px]">
-                  <Image
-                    src={plato.imagen}
-                    alt={plato.nombre}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                  />
+                <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 cursor-pointer">
+                  {/* Nombre en la parte superior */}
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold text-gray-700 text-center">
+                      {plato.nombre}
+                    </h3>
+                  </div>
+                  {/* Imagen */}
+                  <div className="relative w-full h-48 md:h-56 lg:h-64 overflow-hidden">
+                    <Image
+                      src={plato.imagen}
+                      alt={plato.nombre}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-gray-700 text-center">
-                  {plato.nombre}
-                </h3>
-                <p className="text-lg font-semibold text-gray-700 text-center">
-                  {plato.precio}
-                </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-green-700 text-white py-4 text-center">
-        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
-        <div className="flex justify-center space-x-4 mt-2">
-          <a href="#" className="hover:underline">
-            Términos y condiciones
-          </a>
-          <a href="#" className="hover:underline">
-            Políticas de privacidad
-          </a>
-          <a href="#" className="hover:underline">
-            Locales
-          </a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

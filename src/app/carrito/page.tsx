@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Para redirigir al usuario
 import { User } from "@prisma/client";
 import { io } from "socket.io-client";
+import Footer from "@/components/Footer";
 
 // Inicializar el socket
 const socket = io({
@@ -49,7 +50,6 @@ export default function CartPage() {
     }
 
     try {
-      console.log("cartItems ",cartItems)
       const response = await fetch("/api/createOrder", {
         method: "POST",
         headers: {
@@ -70,7 +70,6 @@ export default function CartPage() {
 
         // Emitir el pedido a través del socket
         socket.emit("newOrder");
-        console.log("newOrder");
         router.push("/Pedidos");
       } else {
         console.error("Error al crear el pedido.");
@@ -102,27 +101,28 @@ export default function CartPage() {
       [id]: value,
     }));
   };
+
   const handleLogout = () => {
-    localStorage.removeItem("user"); // Limpiar datos del usuario
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
     router.push("/");
+    window.location.reload(); 
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Header reutilizable */}
-      <Header
-        user={user}
-        handleLogout={handleLogout}
-        cartItems={cartItems}
-      />
+      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
       {/* Contenido del carrito */}
       <main className="flex-grow">
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-8 px-4 md:px-8 lg:px-16">
           {cartItems.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* Grid responsivo */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
@@ -222,9 +222,7 @@ export default function CartPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-green-700 text-white py-4 text-center mt-auto">
-        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

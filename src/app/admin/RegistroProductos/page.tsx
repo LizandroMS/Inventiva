@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadImage } from "@/pages/api/api_firebase/firebaseUpload";
+import { uploadNewImage } from "@/pages/api/api_firebase/firebaseUpload";
 import imageCompression from "browser-image-compression"; // Importa la librería
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
@@ -28,7 +28,7 @@ export default function RegistroProducto() {
     precio: "",
     precioPromocional: "",
     stock: "",
-    estado: "disponible",
+    estado: "Disponible",
     fechaCreacion: new Date().toISOString().split("T")[0], // Fecha actual
     creadoPor: "admin", // Temporalmente estático, puedes cambiarlo según el usuario autenticado
     branchId: "", // Campo para almacenar la sucursal seleccionada
@@ -103,7 +103,7 @@ export default function RegistroProducto() {
       const compressedFile = await imageCompression(file, options);
 
       // Subir la imagen comprimida a Firebase y obtener la URL
-      const imagenUrl: string = await uploadImage(compressedFile);
+      const imagenUrl: string = await uploadNewImage(compressedFile);
       console.log("imageUrl", imagenUrl);
 
       // Realizar la solicitud para registrar el producto junto con la URL de la imagen
@@ -216,8 +216,8 @@ export default function RegistroProducto() {
               onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
             >
-              <option value="disponible">Disponible</option>
-              <option value="no disponible">No disponible</option>
+              <option value="Disponible">Disponible</option>
+              <option value="Agotado">Agotado</option>
             </select>
           </div>
 

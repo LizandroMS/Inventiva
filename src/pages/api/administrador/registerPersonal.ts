@@ -6,12 +6,12 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fullName, email, password, address, phone, dni, birthDate, branchId, Referencia } = req.body;
+    const { fullName, email, password, phone, dni, birthDate, branchId, addresses } = req.body;
 
-    if (!fullName || !email || !password || !address || !phone || !dni || !birthDate || !Referencia) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    if (!fullName || !email || !password || !phone || !dni || !birthDate || !addresses || addresses.length === 0) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios, incluidas las direcciones' });
     }
-    console.log("personal ", req.body)
+
     try {
       // Verificar si el usuario ya existe
       const existingUser = await prisma.user.findUnique({
@@ -25,21 +25,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Encriptar la contraseña
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Crear el nuevo personal en la base de datos
+      // Crear el nuevo personal en la base de datos junto con las direcciones
       const newUser = await prisma.user.create({
         data: {
           fullName,
           email,
           password: hashedPassword,
-          address,
           phone,
           dni,
           birthDate: new Date(birthDate), // Asegurarnos de que la fecha se almacene como objeto Date
           role: 'personal', // Asignar el rol automáticamente como 'personal'
           branchId: parseInt(branchId, 10),
-          Referencia: Referencia,
+          addresses: {
+            create: addresses.map((addr: { address: string; referencia: string; isActive: boolean }) => ({
+              address: addr.address,
+              referencia: addr.referencia,
+              isActive: addr.isActive,
+            })),
+          },
+        },
+        include: {
+          addresses: true,
         },
       });
+
+      // Si hay una dirección marcada como activa, asegurarnos de desactivar las demás
+      const activeAddress = addresses.find((addr: { isActive: boolean }) => addr.isActive);
+      if (activeAddress) {
+        await prisma.address.updateMany({
+          where: { userId: newUser.id, NOT: { address: activeAddress.address } },
+          data: { isActive: false },
+        });
+      }
 
       return res.status(201).json({
         message: 'Personal registrado correctamente',

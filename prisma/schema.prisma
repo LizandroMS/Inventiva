@@ -16,21 +16,20 @@ generator client {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  fullName   String
-  email      String   @unique
-  password   String
-  address    String
-  Referencia String?
-  phone      String
-  dni        String
-  birthDate  DateTime
-  role       String   @default("cliente") // Añadimos el campo de rol
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  orders     Pedido[]
-  branchId   Int?
-  branch     Branch?  @relation(fields: [branchId], references: [id])
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  email     String    @unique
+  password  String
+  phone     String
+  dni       String
+  birthDate DateTime
+  role      String    @default("cliente") // Añadimos el campo de rol
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  orders    Pedido[]
+  branchId  Int?
+  branch    Branch?   @relation(fields: [branchId], references: [id])
+  addresses Address[]
 }
 
 model Branch {
@@ -90,6 +89,15 @@ model OrderItem {
   observation String?
 }
 
+model Address {
+  id         Int      @id @default(autoincrement())
+  address    String // Dirección del usuario
+  referencia String? // Campo opcional para la referencia
+  createdAt  DateTime @default(now())
+  userId     Int // Relación con el usuario
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Eliminación en cascada
+  isActive   Boolean  @default(false)
+}
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
 //cada ves que se agrege datos se debe ejecutar     npx prisma generate
 //npx prisma migrate dev --name add_branch_to_user_relation

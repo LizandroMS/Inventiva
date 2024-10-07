@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaArrowLeft, FaSignOutAlt } from "react-icons/fa"; // Íconos para mejorar la UI
+import { FaArrowLeft, FaSignOutAlt } from "react-icons/fa"; // Íconos para la UI
 
 interface User {
   fullName: string;
   email: string;
-  // Añade cualquier otra propiedad del usuario que necesites
 }
 
 export default function Header() {
@@ -18,8 +17,7 @@ export default function Header() {
     const token = localStorage.getItem("userToken");
 
     if (!token || !storedName) {
-      // Si no hay token o nombre, redirigir al login
-      router.push("/login");
+      router.push("/login"); // Si no hay token o nombre, redirigir al login
     } else {
       setUserName(JSON.parse(storedName)); // Almacena el nombre del usuario en el estado
     }
@@ -29,9 +27,9 @@ export default function Header() {
     // Limpiar el localStorage (o cookies si fuera el caso)
     localStorage.removeItem("userToken");
     localStorage.removeItem("user");
-
-    // Redirigir al login
-    router.push("/login");
+    localStorage.removeItem("cartItems");
+    router.push("/login"); // Redirigir al login
+    window.location.reload(); 
   };
 
   const handleGoBack = () => {
@@ -39,25 +37,25 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-blue-500 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white py-4 shadow-md">
+      <div className="container mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
         {/* Título de la aplicación */}
         <h1 className="text-2xl font-bold text-center sm:text-left">
-          Aplicación de Gestión
+          Gestión del Personal
         </h1>
 
         {/* Botones y nombre de usuario */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           {userName && (
             <p className="hidden sm:block font-semibold text-lg">
-              Bienvenido, {userName.fullName}
+              Hola, {userName.fullName}
             </p>
           )}
 
           {/* Botón de retroceso */}
           <button
             onClick={handleGoBack}
-            className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
+            className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 focus:outline-none"
           >
             <FaArrowLeft className="h-5 w-5" />
             <span className="hidden md:inline-block">Volver</span>
@@ -66,7 +64,7 @@ export default function Header() {
           {/* Botón de cerrar sesión */}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
+            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300 focus:outline-none"
           >
             <FaSignOutAlt className="h-5 w-5" />
             <span className="hidden md:inline-block">Cerrar Sesión</span>
@@ -77,7 +75,7 @@ export default function Header() {
       {/* Separador para pantallas pequeñas con nombre de usuario */}
       {userName && (
         <div className="sm:hidden text-center mt-4 text-lg font-semibold">
-          Bienvenido, {userName.fullName}
+          Hola, {userName.fullName}
         </div>
       )}
     </header>

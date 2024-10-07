@@ -14,9 +14,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         try {
-            // Buscar al usuario por correo
+            // Buscar al usuario por correo, incluyendo las direcciones
             const user = await prisma.user.findUnique({
                 where: { email },
+                include: {
+                    addresses: true, // Incluir las direcciones del usuario
+                },
             });
 
             if (!user) {
@@ -24,7 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // Verificar la contraseña
-            console.log("Comapracion de password ",password, user.password)
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
             if (!isPasswordValid) {
@@ -38,13 +40,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 { expiresIn: '1h' } // Expiración del token
             );
 
-            // Enviar el token junto con los datos del usuario
+            // Enviar el token junto con los datos del usuario, incluyendo direcciones
             return res.status(200).json({
                 id: user.id,
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role,
+                branchId: user.branchId,
                 token, // Incluir el token en la respuesta
+                addresses: user.addresses, // Incluir las direcciones en la respuesta
+                birthDate:user.birthDate,
+                dni:user.dni,
+                phone:user.phone
             });
         } catch (error) {
             console.error("Error al iniciar sesión:", error);
