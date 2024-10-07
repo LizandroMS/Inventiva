@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Calcular los rangos de fechas (hoy y mañana)
     const today = startOfDay(new Date()); // Inicio del día actual
-    const tomorrow = endOfDay(addDays(today, 1)); // Final del día siguiente
+    const tomorrow = endOfDay(addDays(today, 1)); // Final del día de mañana
 
     try {
       const pedidos = await prisma.pedido.findMany({
@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             },
           },
           status: {
-            notIn: ["CANCELADO", "ENTREGADO"], // Excluir los pedidos cancelados
+            notIn: ["CANCELADO", "ENTREGADO"], // Excluir los pedidos cancelados y entregados
           },
           createdAt: {
             gte: today, // Fecha mayor o igual al inicio del día de hoy
@@ -41,8 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             select: {
               fullName: true,
               phone: true,
-              address: true,
-              Referencia: true,
+              addresses: { // Incluir las direcciones del usuario
+                select: {
+                  address: true,
+                  referencia: true,
+                  isActive: true, // Mostrar cuál es la dirección activa
+                },
+              },
             },
           },
         },
