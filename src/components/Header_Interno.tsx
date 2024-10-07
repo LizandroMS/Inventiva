@@ -29,6 +29,7 @@ export default function Header() {
     localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
     router.push("/login"); // Redirigir al login
+    window.location.reload(); 
   };
 
   const handleGoBack = () => {

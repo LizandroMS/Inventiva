@@ -6,7 +6,7 @@ import Slider from "react-slick";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Product } from "@/context/CartContext";
-
+import { useRouter } from "next/navigation"; 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -52,7 +52,7 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [user, setUser] = useState(null);
   const [cartItems, setCartItems] = useState<Product[]>([]);
-
+  const router = useRouter();
   useEffect(() => {
     setIsClient(true);
 
@@ -61,7 +61,7 @@ export default function Home() {
       setUser(JSON.parse(storedUser));
     }
 
-    const storedCart = localStorage.getItem("cart");
+    const storedCart = localStorage.getItem("cartItems");
     if (storedCart) {
       setCartItems(JSON.parse(storedCart));
     }
@@ -72,6 +72,8 @@ export default function Home() {
     localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
     setUser(null);
+    router.push("/");
+    window.location.reload(); 
   };
 
   const settings = {

@@ -108,6 +108,7 @@ export default function CartPage() {
     localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
     router.push("/");
+    window.location.reload(); 
   };
 
   return (
@@ -221,7 +222,7 @@ export default function CartPage() {
       </main>
 
       {/* Footer */}
-      <Footer/>
+      <Footer />
     </div>
   );
 }

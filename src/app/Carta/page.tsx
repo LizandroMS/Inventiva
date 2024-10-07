@@ -201,6 +201,8 @@ export default function CartaPage() {
     localStorage.removeItem("cartItems");
     setUser(null);
     router.push("/");
+    console.log("se debe reiniciar")
+    window.location.reload(); 
   };
 
   return (
