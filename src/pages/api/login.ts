@@ -49,6 +49,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 branchId: user.branchId,
                 token, // Incluir el token en la respuesta
                 addresses: user.addresses, // Incluir las direcciones en la respuesta
+                birthDate:user.birthDate,
+                dni:user.dni,
+                phone:user.phone
             });
         } catch (error) {
             console.error("Error al iniciar sesión:", error);
