@@ -21,10 +21,12 @@ interface UserWithAddresses extends User {
 export default function EditarAccesoPersonal() {
   const [users, setUsers] = useState<UserWithAddresses[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserWithAddresses | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithAddresses | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  console.log(branches, router,setBranches);
   // Cargar usuarios al cargar el componente
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,10 +50,17 @@ export default function EditarAccesoPersonal() {
     setSelectedUser(user); // Establecer el usuario seleccionado para edición
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index?: number, field?: keyof Address) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index?: number,
+    field?: keyof Address
+  ) => {
     if (typeof index === "number" && field) {
       const updatedAddresses = [...selectedUser!.addresses];
-      updatedAddresses[index] = { ...updatedAddresses[index], [field]: e.target.value };
+      updatedAddresses[index] = {
+        ...updatedAddresses[index],
+        [field]: e.target.value,
+      };
       setSelectedUser({ ...selectedUser!, addresses: updatedAddresses });
     } else {
       setSelectedUser({ ...selectedUser!, [e.target.name]: e.target.value });
@@ -90,7 +99,9 @@ export default function EditarAccesoPersonal() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
       <div className="container mx-auto p-8 bg-white">
-        <h1 className="text-3xl font-bold mb-6 text-center">Editar Acceso del Personal</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Editar Acceso del Personal
+        </h1>
 
         {/* Mostrar tabla de usuarios */}
         <table className="table-auto w-full bg-white rounded-lg shadow-lg mb-8">
@@ -133,7 +144,9 @@ export default function EditarAccesoPersonal() {
             <h2 className="text-xl font-bold mb-4">Editar Usuario</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-700 font-medium">Nombre Completo</label>
+                <label className="block text-gray-700 font-medium">
+                  Nombre Completo
+                </label>
                 <input
                   type="text"
                   name="fullName"
@@ -143,7 +156,9 @@ export default function EditarAccesoPersonal() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">Correo Electrónico</label>
+                <label className="block text-gray-700 font-medium">
+                  Correo Electrónico
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -153,7 +168,9 @@ export default function EditarAccesoPersonal() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-medium">Teléfono</label>
+                <label className="block text-gray-700 font-medium">
+                  Teléfono
+                </label>
                 <input
                   type="tel"
                   name="phone"

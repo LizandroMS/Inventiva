@@ -1,10 +1,11 @@
 "use client";
+
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -49,11 +50,7 @@ export default function CartaPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const { addToCart, updateCartItemQuantity, cartItems } = useCart();
   const router = useRouter();
-  const searchParams = useSearchParams()!;
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false); // Nuevo estado para el modal
-
-  // Capturar el parámetro 'categoria' de la URL
-  const categoria = searchParams.get("categoria");
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // Controlar las cantidades de los productos
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
@@ -93,10 +90,14 @@ export default function CartaPage() {
 
   // Actualizar 'selectedFamilia' cuando cambie 'categoria'
   useEffect(() => {
-    if (categoria) {
-      setSelectedFamilia(categoria.toUpperCase());
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const categoriaParam = params.get("categoria");
+      if (categoriaParam) {
+        setSelectedFamilia(categoriaParam.toUpperCase());
+      }
     }
-  }, [categoria]);
+  }, []);
 
   // Función para cargar productos según sucursal y familia
   const fetchProducts = useCallback(
@@ -118,7 +119,6 @@ export default function CartaPage() {
           setErrorMessage("No se encontraron productos.");
         } else {
           setProducts(data);
-          // Filtrar productos por término de búsqueda
           const filtered = data.filter((product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
           );
@@ -163,7 +163,6 @@ export default function CartaPage() {
     setSelectedFamilia(e.target.value);
   };
 
-  // Cambiar la cantidad de productos seleccionados
   const handleQuantityChange = (productId: number, quantity: number) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -171,7 +170,6 @@ export default function CartaPage() {
     }));
   };
 
-  // Agregar o actualizar la cantidad del producto en el carrito
   const handleAddToCart = (product: Product) => {
     if (!user) {
       setShowLoginPrompt(true);
@@ -180,11 +178,9 @@ export default function CartaPage() {
 
     const quantity = quantities[product.id] || 1;
 
-    // Verificar si el producto ya está en el carrito
     const existingCartItem = cartItems.find((item) => item.id === product.id);
 
     if (existingCartItem) {
-      // Actualizar la cantidad
       updateCartItemQuantity(product.id, quantity);
     } else {
       addToCart({
@@ -201,15 +197,13 @@ export default function CartaPage() {
     localStorage.removeItem("cartItems");
     setUser(null);
     router.push("/");
-    console.log("se debe reiniciar")
-    window.location.reload(); 
+    window.location.reload();
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
-      {/* Modal de aviso */}
       {showLoginPrompt && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-11/12 sm:w-96">
@@ -217,8 +211,8 @@ export default function CartaPage() {
               ¡Atención!
             </h2>
             <p className="text-gray-700 mb-6 text-center">
-              Para aprovechar nuestras promociones online debe de Iniciar sesión
-              o registrarse.
+              Para aprovechar nuestras promociones online debe de Iniciar
+              sesión o registrarse.
             </p>
             <div className="flex justify-center">
               <button
