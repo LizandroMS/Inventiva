@@ -158,7 +158,7 @@ export default function Home() {
                     src={item.imagen}
                     alt={item.nombre}
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain"  // Cambiado para que no se recorte
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
@@ -198,7 +198,7 @@ export default function Home() {
                       src={plato.imagen}
                       alt={plato.nombre}
                       layout="fill"
-                      objectFit="cover"
+                      objectFit="contain"  // Ajustado para que no se recorte
                     />
                   </div>
                 </div>
