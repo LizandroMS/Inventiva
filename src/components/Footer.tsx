@@ -43,14 +43,14 @@ export default function Footer() {
                 Política de privacidad
               </a>
             </li>
-            <li>
+            {/* <li>
               <a
                 href="/contact"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
                 Contáctanos
               </a>
-            </li>
+            </li> */}
           </ul>
         </nav>
 

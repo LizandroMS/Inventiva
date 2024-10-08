@@ -65,6 +65,8 @@ export default function Locales() {
     localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
+   
+    
     router.push("/");
     window.location.reload(); 
   };

@@ -79,13 +79,13 @@ model Pedido {
 }
 
 model OrderItem {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   orderId     Int
-  productId   Int
+  productId   Int?
   quantity    Int
   price       Float
-  order       Pedido  @relation(fields: [orderId], references: [id])
-  Product     Product @relation(fields: [productId], references: [id])
+  order       Pedido   @relation(fields: [orderId], references: [id])
+  Product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   observation String?
 }
 
@@ -98,6 +98,7 @@ model Address {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Eliminación en cascada
   isActive   Boolean  @default(false)
 }
+
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
 //cada ves que se agrege datos se debe ejecutar     npx prisma generate
 //npx prisma migrate dev --name add_branch_to_user_relation
