@@ -21,7 +21,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="/locales"
+                href="/footer/locales"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
                 Locales
