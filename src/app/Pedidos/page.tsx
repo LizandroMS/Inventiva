@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Importar jwtDecode
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { io } from "socket.io-client";
 import { User } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { io } from "socket.io-client";
+import Image from "next/image"; // Mantener el uso de Image de Next.js
 
 // Inicializar el socket
 const socket = io({
@@ -15,16 +15,23 @@ const socket = io({
 });
 
 interface PedidoItem {
-  productId: number;
-  quantity: number;
+  productId: number | null;
+  productName: string;
   price: number;
+  promotional_price: number | null;
+  familia: string;
+  quantity: number;
+  totalPrice: number;
+  observation: string;
+  imagenUrl: string;
+  description: string;
   Product: {
     name: string;
     description: string;
     imagenUrl: string;
-    promotional_price: number | null; // Añadimos el campo de precio promocional
-  };
-  observation:string
+    promotional_price: number | null;
+    price: number;
+  } | null;
 }
 
 interface Pedido {
@@ -32,7 +39,6 @@ interface Pedido {
   status: string;
   totalAmount: number;
   items: PedidoItem[];
-  observation:string
 }
 
 interface DecodedToken {
@@ -44,9 +50,9 @@ interface DecodedToken {
 export default function PedidosPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [user, setUser] = useState<User | null>(null);
-  const { addToCart, cartItems } = useCart();
+  const { cartItems } = useCart();
   const router = useRouter();
-  console.log(addToCart);
+
   // Función para devolver etiquetas de estado según el estado del pedido
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -55,7 +61,7 @@ export default function PedidosPage() {
       case "PREPARANDO":
         return "PREPARANDO";
       case "DRIVER":
-        return "DRIVER";
+        return "EN CAMINO";
       case "ENTREGADO":
         return "ENTREGADO";
       case "CANCELADO":
@@ -83,28 +89,10 @@ export default function PedidosPage() {
     }
   };
 
-  // Función para obtener el índice del estado actual
-  const getStatusIndex = (status: string) => {
-    switch (status) {
-      case "PENDIENTE":
-        return 0;
-      case "PREPARANDO":
-        return 1;
-      case "DRIVER":
-        return 2;
-      case "ENTREGADO":
-        return 3;
-      case "CANCELADO":
-        return -1;
-      default:
-        return 0;
-    }
-  };
-
   // Barra de progreso visual del pedido
   const PedidoProgress = ({ status }: { status: string }) => {
     const steps = ["Pendiente", "Preparando", "En camino", "Entregado"];
-    const currentStep = getStatusIndex(status);
+    const currentStep = steps.indexOf(status);
 
     return (
       <div className="flex items-center space-x-4 my-4">
@@ -132,41 +120,33 @@ export default function PedidosPage() {
 
   useEffect(() => {
     const fetchPedidos = async () => {
-      const token = localStorage.getItem("userToken");
+      const token = localStorage.getItem("userToken"); // Obtener el token del localStorage
       if (!token) {
         console.error("Usuario no autenticado");
+        router.push("/login"); // Redirigir al login si no hay token
         return;
       }
 
       try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        const res = await fetch(`/api/getOrders?id=${decoded.id}`);
+        const decoded = jwtDecode<DecodedToken>(token); // Decodificar el token JWT para obtener el userId
+
+        const res = await fetch(`/api/getOrders?id=${decoded.id}`); // Enviar el id del usuario autenticado a la API
 
         if (res.ok) {
           const data = await res.json();
-          setPedidos(data);
+          console.log("RESPUESTA ", data);
+          setPedidos(data); // Guardar los pedidos obtenidos en el estado
+        } else {
+          console.error("Error al obtener pedidos");
         }
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
       }
     };
 
-    fetchPedidos();
+    fetchPedidos(); // Llamar a la función que obtiene los pedidos cuando se monta el componente
 
-    // Cargar usuario autenticado
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error al parsear el usuario del localStorage:", error);
-      }
-    } else {
-      router.push("/login");
-    }
-
-    // Escuchar eventos de actualización de estado de pedido
+    // Escuchar eventos de actualización de estado de pedido a través del socket
     socket.on("orderStatusUpdated", (data) => {
       setPedidos((prevPedidos) =>
         prevPedidos.map((pedido) =>
@@ -178,24 +158,19 @@ export default function PedidosPage() {
     return () => {
       socket.off("orderStatusUpdated");
     };
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("user");
-    localStorage.removeItem("cartItems");
-    setUser(null); // Limpiar el estado del usuario
-    router.push("/");
-    window.location.reload(); 
+    setUser(null);
+    router.push("/login");
+    window.location.reload();
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header
-        user={user}
-        handleLogout={handleLogout}
-        cartItems={cartItems}
-      />
+      <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
       <div className="container mx-auto py-8 px-4 md:px-0">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
@@ -231,13 +206,16 @@ export default function PedidosPage() {
 
                 <ul className="divide-y divide-gray-200">
                   {pedido.items.map((item) => (
-                    <li key={item.productId} className="py-4">
+                    <li
+                      key={item.productId || item.productName}
+                      className="py-4"
+                    >
                       <div className="flex flex-col sm:flex-row justify-between">
                         <div className="flex items-center mb-4 sm:mb-0">
                           <div className="mr-4">
                             <Image
-                              src={item.Product.imagenUrl}
-                              alt={item.Product.name}
+                              src={item.imagenUrl || "/images/default.png"}
+                              alt={ item.productName}
                               width={64}
                               height={64}
                               className="rounded-lg"
@@ -246,23 +224,23 @@ export default function PedidosPage() {
 
                           <div>
                             <h3 className="text-xl font-bold text-gray-800">
-                              {item.Product.name}
+                              { item.productName}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              {item.Product.description}
+                              { item.description}
                             </p>
                             <p className="text-sm text-gray-600">
-                              Observacion: {item.observation}
+                              Observación: {item.observation}
                             </p>
                           </div>
                         </div>
 
                         <div className="text-right">
                           <p className="text-lg font-bold text-gray-700">
-                            {item.Product.promotional_price ? (
+                            { item.promotional_price ? (
                               <>
                                 <span className="text-green-600">
-                                  S/ {item.Product.promotional_price.toFixed(2)}
+                                  S/ {item.promotional_price.toFixed(2)}
                                 </span>
                                 <span className="line-through text-red-500 ml-2">
                                   S/ {item.price.toFixed(2)}
@@ -274,11 +252,7 @@ export default function PedidosPage() {
                             x {item.quantity}
                           </p>
                           <p className="text-lg font-semibold text-gray-900">
-                            Subtotal: S/{" "}
-                            {(
-                              (item.Product.promotional_price || item.price) *
-                              item.quantity
-                            ).toFixed(2)}
+                            Subtotal: S/ {item.totalPrice.toFixed(2)}
                           </p>
                         </div>
                       </div>

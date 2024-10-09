@@ -6,6 +6,15 @@ const nextConfig = {
         domains: ['firebasestorage.googleapis.com'],
     },
     trailingSlash: false,
+    images: {
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: 'firebasestorage.googleapis.com',
+            pathname: '/v0/b/**', // Permite todas las rutas dentro de Firebase Storage
+          },
+        ],
+      },
 };
 
 export default nextConfig;

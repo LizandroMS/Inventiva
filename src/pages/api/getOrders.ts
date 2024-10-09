@@ -5,56 +5,62 @@ import { subDays, startOfDay, endOfDay } from 'date-fns'; // Para manipular fech
 const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Método no permitido' });
+  }
+
+  try {
     const { id } = req.query;
 
-    // Obtener el inicio y fin de hoy
+    // Validar que se proporcione un ID de usuario
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ message: 'ID de usuario inválido o no proporcionado.' });
+    }
+
+    // Definir rangos de fechas para hoy y ayer
     const todayStart = startOfDay(new Date());
     const todayEnd = endOfDay(new Date());
 
-    // Obtener el inicio y fin de ayer
     const yesterdayStart = startOfDay(subDays(new Date(), 1));
     const yesterdayEnd = endOfDay(subDays(new Date(), 1));
 
-    try {
-      const orders = await prisma.pedido.findMany({
-        where: {
-          userId: Number(id), // Filtrar por el userId si es necesario
-          NOT: {
-            status: {
-              in: ['CANCELADO', 'ENTREGADO'], // Excluir los estados CANCELADO y ENTREGADO
-            },
-          },
-          OR: [
-            {
-              createdAt: {
-                gte: yesterdayStart, // Pedidos desde ayer a las 00:00
-                lte: yesterdayEnd, // Pedidos hasta ayer a las 23:59
-              },
-            },
-            {
-              createdAt: {
-                gte: todayStart, // Pedidos desde hoy a las 00:00
-                lte: todayEnd, // Pedidos hasta hoy a las 23:59
-              },
-            },
-          ],
-        },
-        include: {
-          items: {
-            include: {
-              Product: true, // Incluir detalles del producto
-            },
+    // Buscar los pedidos del usuario dentro de los rangos de fecha y que no estén cancelados o entregados
+    const orders = await prisma.pedido.findMany({
+      where: {
+        userId: Number(id),
+        NOT: {
+          status: {
+            in: ['CANCELADO', 'ENTREGADO'], // Excluir pedidos con estos estados
           },
         },
-      });
+        OR: [
+          {
+            createdAt: {
+              gte: yesterdayStart,
+              lte: yesterdayEnd,
+            },
+          },
+          {
+            createdAt: {
+              gte: todayStart,
+              lte: todayEnd,
+            },
+          },
+        ],
+      },
+      include: {
+        items: {
+          include: {
+            Product: true, // Incluir los detalles del producto en cada item
+          },
+        },
+      },
+    });
 
-      res.status(200).json(orders);
-    } catch (error) {
-      console.error("Error al obtener los pedidos:", error);
-      res.status(500).json({ message: 'Error al obtener los pedidos', error });
-    }
-  } else {
-    res.status(405).json({ message: 'Método no permitido' });
+    // Devolver los pedidos encontrados
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error al obtener los pedidos:", error);
+    res.status(500).json({ message: 'Error al obtener los pedidos', error });
   }
 }
