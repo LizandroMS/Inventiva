@@ -79,14 +79,20 @@ model Pedido {
 }
 
 model OrderItem {
-  id          Int      @id @default(autoincrement())
-  orderId     Int
-  productId   Int?
-  quantity    Int
-  price       Float
-  order       Pedido   @relation(fields: [orderId], references: [id])
-  Product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  observation String?
+  id                Int      @id @default(autoincrement())
+  orderId           Int
+  productId         Int? // Puedes mantener esto para saber qué producto original estaba relacionado, pero no es obligatorio
+  productName       String // Nombre del producto en el momento del pedido
+  price             Float // Precio actual del producto en el momento del pedido
+  promotional_price Float? // Precio promocional del producto (si aplica)
+  familia           String // Familia del producto en el momento del pedido
+  quantity          Int
+  totalPrice        Float // Precio total por este producto (cantidad * precio/promocional_price)
+  order             Pedido   @relation(fields: [orderId], references: [id])
+  observation       String?
+  Product           Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  imagenUrl         String?
+  description       String?
 }
 
 model Address {

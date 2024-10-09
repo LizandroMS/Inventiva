@@ -17,6 +17,7 @@ export interface Product {
   quantity: number;
   promotional_price: number;
   description: string;
+  familia: string;
 }
 
 // Definir las propiedades del contexto

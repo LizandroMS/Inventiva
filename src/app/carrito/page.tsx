@@ -43,12 +43,47 @@ export default function CartPage() {
   );
 
   // Función para guardar el pedido
+  // const handleOrder = async () => {
+  //   if (!user) {
+  //     alert("Por favor inicia sesión para proceder con el pedido.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch("/api/createOrder", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         userId: user.id, // ID del usuario
+  //         items: cartItems.map((item) => ({
+  //           ...item,
+  //           observation: observations[item.id] || "", // Añadir la observación si la tiene
+  //         })),
+  //         totalAmount: totalPrice,
+  //       }),
+  //     });
+
+  //     if (response.ok) {
+  //       clearCart(); // Limpia el carrito
+
+  //       // Emitir el pedido a través del socket
+  //       socket.emit("newOrder");
+  //       router.push("/Pedidos");
+  //     } else {
+  //       console.error("Error al crear el pedido.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al crear el pedido:", error);
+  //   }
+  // };
   const handleOrder = async () => {
     if (!user) {
       alert("Por favor inicia sesión para proceder con el pedido.");
       return;
     }
-
+    console.log("cartItems", cartItems);
     try {
       const response = await fetch("/api/createOrder", {
         method: "POST",
@@ -58,10 +93,18 @@ export default function CartPage() {
         body: JSON.stringify({
           userId: user.id, // ID del usuario
           items: cartItems.map((item) => ({
-            ...item,
-            observation: observations[item.id] || "", // Añadir la observación si la tiene
+            id: item.id,
+            productName: item.name, // Nombre del producto en el momento del pedido
+            price: item.price, // Precio regular del producto
+            promotional_price: item.promotional_price || null, // Precio promocional, si lo hay
+            familia: item.familia || "Sin familia", // Familia del producto
+            quantity: item.quantity, // Cantidad comprada
+            totalPrice: (item.promotional_price || item.price) * item.quantity, // Total para este producto
+            observation: observations[item.id] || "", // Observaciones, si las hay
+            imagenUrl: item.imagenUrl,
+            description: item.description,
           })),
-          totalAmount: totalPrice,
+          totalAmount: totalPrice, // El total de la orden completa
         }),
       });
 
@@ -108,7 +151,7 @@ export default function CartPage() {
     localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
     router.push("/");
-    window.location.reload(); 
+    window.location.reload();
   };
 
   return (
