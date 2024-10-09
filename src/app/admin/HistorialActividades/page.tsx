@@ -5,15 +5,14 @@ import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
 const familias = [
-    "Pollos a la brasa",
-    "Chifa",
-    "Platos a la carta",
-    "Parrillas",
-    "Guarniciones",
-    "Bebidas sin alcohol",
-    "Bebidas con alcohol",
-  ].map(familia => familia.toUpperCase());
-  
+  "Pollos a la brasa",
+  "Chifa",
+  "Platos a la carta",
+  "Parrillas",
+  "Guarniciones",
+  "Bebidas sin alcohol",
+  "Bebidas con alcohol",
+].map(familia => familia.toUpperCase());
 
 interface Pedido {
   id: number;
@@ -26,14 +25,12 @@ interface Pedido {
 
 interface PedidoItem {
   id: number;
-  productId: number;
+  productName: string;
   quantity: number;
   price: number;
-  Product: {
-    name: string;
-    description: string;
-    imagenUrl: string;
-  };
+  promotional_price: number | null; // Manejar precio promocional
+  familia: string;
+  imagenUrl: string | null;
 }
 
 export default function HistorialActividades() {
@@ -135,6 +132,7 @@ export default function HistorialActividades() {
                 onChange={(e) => setFamiliaSeleccionada(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
               >
+                <option value="">Todas las familias</option>
                 {familias.map((familia) => (
                   <option key={familia} value={familia}>
                     {familia}
@@ -207,14 +205,31 @@ export default function HistorialActividades() {
                         {pedido.items.map((item) => (
                           <div key={item.id} className="mb-2">
                             <p>
-                              <strong>Producto:</strong> {item.Product.name}
+                              <strong>Producto:</strong> {item.productName}
                             </p>
                             <p>
                               <strong>Cantidad:</strong> {item.quantity}
                             </p>
                             <p>
-                              <strong>Precio:</strong> S/{" "}
-                              {item.price.toFixed(2)}
+                              {item.promotional_price ? (
+                                <>
+                                  <span className="text-green-600 font-bold">
+                                    S/ {item.promotional_price.toFixed(2)}
+                                  </span>{" "}
+                                  <span className="line-through text-red-500">
+                                    S/ {item.price.toFixed(2)}
+                                  </span>
+                                </>
+                              ) : (
+                                <span>S/ {item.price.toFixed(2)}</span>
+                              )}
+                            </p>
+                            <p>
+                              <strong>Subtotal:</strong> S/{" "}
+                              {(
+                                (item.promotional_price || item.price) *
+                                item.quantity
+                              ).toFixed(2)}
                             </p>
                           </div>
                         ))}

@@ -7,13 +7,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { fechaInicio, fechaFin, familia, page = 1, limit = 15 } = req.body;
 
-    // Convertir las fechas para abarcar todo el día
-        // Convertir las fechas a UTC
-        const startDate = new Date(new Date(fechaInicio).setUTCHours(0, 0, 0, 0)); // Inicio del día en UTC
-        const endDate = new Date(new Date(fechaFin).setUTCHours(23, 59, 59, 999)); // Fin del día en UTC
-    
-        console.log("Fechas UTC recibidas:", startDate.toISOString(), endDate.toISOString());
-    
+    // Convertir las fechas a UTC para abarcar todo el día
+    const startDate = new Date(new Date(fechaInicio).setUTCHours(0, 0, 0, 0)); // Inicio del día en UTC
+    const endDate = new Date(new Date(fechaFin).setUTCHours(23, 59, 59, 999)); // Fin del día en UTC
 
     const skip = (page - 1) * limit; // Calcular cuántos registros omitir
     const take = limit; // Limitar a `limit` registros
@@ -27,16 +23,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           items: {
             some: {
-              Product: {
-                familia: familia ? familia : undefined,
-              },
+              OR: [
+                {
+                  Product: {
+                    familia: familia ? familia : undefined, // Filtrar por familia de Product si existe
+                  },
+                },
+                {
+                  familia: familia ? familia : undefined, // Filtrar por familia en `OrderItem`
+                },
+              ],
             },
           },
         },
         include: {
           items: {
             include: {
-              Product: true,
+              Product: true, // Incluir detalles del producto si existen
             },
           },
           User: {
@@ -59,9 +62,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           items: {
             some: {
-              Product: {
-                familia: familia ? familia : undefined,
-              },
+              OR: [
+                {
+                  Product: {
+                    familia: familia ? familia : undefined,
+                  },
+                },
+                {
+                  familia: familia ? familia : undefined, // Considerar `familia` en `OrderItem`
+                },
+              ],
             },
           },
         },
