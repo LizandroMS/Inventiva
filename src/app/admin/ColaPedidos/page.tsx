@@ -2,26 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // Cambiado a jwtDecode
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
 interface PedidoItem {
   id: number;
-  productId: number;
+  productId: number | null; // El producto puede no tener un ID si no está relacionado
   quantity: number;
   price: number;
-  Product: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    promotional_price: number | null;
-    stock: number;
-    status: string;
-    imagenUrl: string;
-  };
+  productName: string;
   observation: string;
+  promotional_price: number | null;
+  imagenUrl: string;
 }
 
 interface Pedido {
@@ -34,7 +27,7 @@ interface Pedido {
     fullName: string;
     address: string;
     phone: string;
-    Referencia: string;
+    referencia: string; // Cambiado a minúscula si es necesario
   };
 }
 
@@ -141,7 +134,9 @@ export default function ColaPedidosPage() {
         {/* Selector de sucursales y botón de actualizar */}
         <div className="flex items-center space-x-4 justify-center mb-6">
           <div>
-            <label className="text-gray-700 font-semibold mr-4">Selecciona una sucursal:</label>
+            <label className="text-gray-700 font-semibold mr-4">
+              Selecciona una sucursal:
+            </label>
             <select
               value={selectedBranch ?? ""}
               onChange={(e) => setSelectedBranch(Number(e.target.value))}
@@ -193,7 +188,7 @@ export default function ColaPedidosPage() {
                       Dirección: <span className="font-bold">{pedido.User.address}</span>
                     </p>
                     <p className="text-gray-600">
-                      Referencia: <span className="font-bold">{pedido.User.Referencia}</span>
+                      Referencia: <span className="font-bold">{pedido.User.referencia}</span>
                     </p>
                     <p className="text-gray-600">
                       Número: <span className="font-bold">{pedido.User.phone}</span>
@@ -204,20 +199,23 @@ export default function ColaPedidosPage() {
                     Productos ({pedido.items.length})
                   </h3>
                   <ul className="space-y-2">
-                    {pedido.items.map((item) => (
-                      <li key={item.id} className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm">
-                        <p className="font-semibold text-gray-700">{item.Product.name}</p>
-                        <p className="text-gray-600 text-sm">{item.Product.description}</p>
-                        <p className="text-gray-600 text-sm">Observación: {item.observation}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-gray-600">Cantidad: {item.quantity}</p>
-                          <p className="text-gray-600">Precio: S/ {item.price.toFixed(2)}</p>
-                        </div>
-                        <p className="text-gray-600 text-sm">
-                          Subtotal: S/ {(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </li>
-                    ))}
+                    {pedido.items.map((item) => {
+                      const precioFinal = item.promotional_price ?? item.price;
+
+                      return (
+                        <li key={item.id} className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm">
+                          <p className="font-semibold text-gray-700">{item.productName}</p>
+                          <p className="text-gray-600 text-sm">{item.observation}</p>
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-gray-600">Cantidad: {item.quantity}</p>
+                            <p className="text-gray-600">Precio: S/ {precioFinal.toFixed(2)}</p>
+                          </div>
+                          <p className="text-gray-600 text-sm">
+                            Subtotal: S/ {(precioFinal * item.quantity).toFixed(2)}
+                          </p>
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   <p className="text-lg font-bold text-gray-800 mt-4">
@@ -230,7 +228,7 @@ export default function ColaPedidosPage() {
         )}
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

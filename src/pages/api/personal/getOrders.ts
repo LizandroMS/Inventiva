@@ -1,4 +1,3 @@
-// src/pages/api/personal/getOrders.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { addDays, startOfDay, endOfDay } from "date-fns"; // Librería para manipular fechas
@@ -34,14 +33,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         include: {
           items: {
             include: {
-              Product: true, // Incluir detalles del producto
+              Product: true, // Incluir detalles del producto (si los hay)
             },
           },
           User: {
             select: {
               fullName: true,
               phone: true,
-              addresses: { // Incluir las direcciones del usuario
+              addresses: {
                 select: {
                   address: true,
                   referencia: true,
@@ -53,7 +52,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       });
 
-      res.status(200).json(pedidos);
+      // Modificar los pedidos para manejar productos con `null`
+      const pedidosModificados = pedidos.map((pedido) => {
+        const itemsModificados = pedido.items.map((item) => ({
+          ...item,
+          productName:  item.productName,
+          price:  item.price, 
+          promotional_price:  item.promotional_price, 
+          imagenUrl:  item.imagenUrl,
+          description:  item.description, 
+        }));
+
+        return {
+          ...pedido,
+          items: itemsModificados,
+        };
+      });
+
+      res.status(200).json(pedidosModificados);
     } catch (error) {
       console.error("Error al obtener pedidos:", error);
       res.status(500).json({ message: "Error al obtener pedidos", error });

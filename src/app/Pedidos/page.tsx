@@ -91,7 +91,7 @@ export default function PedidosPage() {
 
   // Barra de progreso visual del pedido
   const PedidoProgress = ({ status }: { status: string }) => {
-    const steps = ["Pendiente", "Preparando", "En camino", "Entregado"];
+    const steps = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
     const currentStep = steps.indexOf(status);
 
     return (
@@ -215,7 +215,7 @@ export default function PedidosPage() {
                           <div className="mr-4">
                             <Image
                               src={item.imagenUrl || "/images/default.png"}
-                              alt={ item.productName}
+                              alt={item.productName}
                               width={64}
                               height={64}
                               className="rounded-lg"
@@ -224,10 +224,10 @@ export default function PedidosPage() {
 
                           <div>
                             <h3 className="text-xl font-bold text-gray-800">
-                              { item.productName}
+                              {item.productName}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              { item.description}
+                              {item.description}
                             </p>
                             <p className="text-sm text-gray-600">
                               Observación: {item.observation}
@@ -237,7 +237,7 @@ export default function PedidosPage() {
 
                         <div className="text-right">
                           <p className="text-lg font-bold text-gray-700">
-                            { item.promotional_price ? (
+                            {item.promotional_price ? (
                               <>
                                 <span className="text-green-600">
                                   S/ {item.promotional_price.toFixed(2)}

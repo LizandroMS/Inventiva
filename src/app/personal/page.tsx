@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
 
@@ -20,20 +20,23 @@ interface Address {
 
 interface PedidoItem {
   id: number;
-  productId: number;
+  productId: number | null;
   quantity: number;
   price: number;
+  productName: string;
+  observation: string;
+  imagenUrl: string;
+  description: string;
+  promotional_price: number | null;
+  totalPrice: number;
   Product: {
     id: number;
     name: string;
     description: string;
     price: number;
     promotional_price: number | null;
-    stock: number;
-    status: string;
     imagenUrl: string;
-  };
-  observation: string;
+  } | null;
 }
 
 interface Pedido {
@@ -64,13 +67,11 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
-  console.log(branchId);
-  // Mantener la referencia actualizada
+  console.log(branchId)
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
   }, [isAudioAllowed]);
 
-  // Inicializar el elemento de audio
   useEffect(() => {
     audioRef.current = new Audio("/audio/nuevo_pedido.mp3");
     audioRef.current.load();
@@ -166,7 +167,6 @@ export default function PersonalPage() {
     }
   };
 
-  // Solicitar permiso para reproducir audio
   if (!isAudioAllowed) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -174,7 +174,6 @@ export default function PersonalPage() {
           onClick={() => {
             setIsAudioAllowed(true);
             if (audioRef.current) {
-              // Intentar reproducir y pausar para "desbloquear" el audio
               audioRef.current
                 .play()
                 .then(() => {
@@ -230,7 +229,6 @@ export default function PersonalPage() {
                   <span className="text-yellow-500">{pedido.status}</span>
                 </p>
 
-                {/* Mostrar datos del usuario */}
                 <div className="mt-4 p-4 rounded-lg bg-gray-50">
                   <h3 className="font-semibold text-gray-800">
                     Datos del Cliente
@@ -275,9 +273,8 @@ export default function PersonalPage() {
                 </h3>
                 <ul className="space-y-2">
                   {pedido.items.map((item) => {
-                    // Determinar qué precio mostrar: el promocional o el regular
                     const precioFinal =
-                      item.Product.promotional_price ?? item.Product.price;
+                      item.promotional_price ?? item.price;
 
                     return (
                       <li
@@ -285,10 +282,10 @@ export default function PersonalPage() {
                         className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
                       >
                         <p className="font-semibold text-gray-700">
-                          {item.Product.name}
+                          {item.productName}
                         </p>
                         <p className="text-gray-600 text-sm">
-                          {item.Product.description}
+                          {item.description}
                         </p>
                         <p className="text-gray-600 text-sm">
                           Observación: {item.observation}
@@ -315,7 +312,6 @@ export default function PersonalPage() {
                 </p>
               </div>
 
-              {/* Cambiar estado */}
               <select
                 value={pedido.status}
                 onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
@@ -332,7 +328,6 @@ export default function PersonalPage() {
         </ul>
       </div>
 
-      {/* Footer */}
       <footer className="bg-green-700 text-white py-4 text-center mt-auto">
         <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
       </footer>
