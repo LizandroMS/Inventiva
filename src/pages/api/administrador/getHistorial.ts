@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fechaInicio, fechaFin, familia, page = 1, limit = 15 } = req.body;
+    const { fechaInicio, fechaFin, familia, estado, page = 1, limit = 15 } = req.body;
 
     // Convertir las fechas a UTC para abarcar todo el día
     const startDate = new Date(new Date(fechaInicio).setUTCHours(0, 0, 0, 0)); // Inicio del día en UTC
@@ -21,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             gte: startDate,
             lte: endDate,
           },
+          status: estado ? estado : undefined, // Filtrar por estado si se proporciona
           items: {
             some: {
               OR: [
@@ -60,6 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             gte: startDate,
             lte: endDate,
           },
+          status: estado ? estado : undefined, // Contar también con el filtro de estado
           items: {
             some: {
               OR: [

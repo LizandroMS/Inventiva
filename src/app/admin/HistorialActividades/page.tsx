@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
+// Definir las familias y los estados posibles
 const familias = [
   "Pollos a la brasa",
   "Chifa",
@@ -12,7 +13,9 @@ const familias = [
   "Guarniciones",
   "Bebidas sin alcohol",
   "Bebidas con alcohol",
-].map(familia => familia.toUpperCase());
+].map((familia) => familia.toUpperCase());
+
+const estados = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO", "CANCELADO"];
 
 interface Pedido {
   id: number;
@@ -28,7 +31,7 @@ interface PedidoItem {
   productName: string;
   quantity: number;
   price: number;
-  promotional_price: number | null; // Manejar precio promocional
+  promotional_price: number | null;
   familia: string;
   imagenUrl: string | null;
 }
@@ -39,6 +42,7 @@ export default function HistorialActividades() {
   );
   const [fechaFin, setFechaFin] = useState(format(new Date(), "yyyy-MM-dd"));
   const [familiaSeleccionada, setFamiliaSeleccionada] = useState("");
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState(""); // Nuevo estado para manejar el filtro de estado
   const [historial, setHistorial] = useState<Pedido[]>([]);
   const [totalOrders, setTotalOrders] = useState(0); // Guardar el total de pedidos
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,15 +63,16 @@ export default function HistorialActividades() {
           fechaInicio,
           fechaFin,
           familia: familiaSeleccionada,
-          page: currentPage, // Enviar la página actual
-          limit: ordersPerPage, // Enviar el límite de pedidos por página
+          estado: estadoSeleccionado, // Enviar el estado seleccionado
+          page: currentPage,
+          limit: ordersPerPage,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        setHistorial(data.orders); // Guardar el historial filtrado
-        setTotalOrders(data.totalOrders); // Guardar el total de pedidos
+        setHistorial(data.orders);
+        setTotalOrders(data.totalOrders);
       } else {
         console.error("Error al obtener historial");
       }
@@ -100,7 +105,7 @@ export default function HistorialActividades() {
 
         {/* Filtros */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div>
               <label className="block text-black font-bold mb-2">
                 Fecha de Inicio
@@ -136,6 +141,23 @@ export default function HistorialActividades() {
                 {familias.map((familia) => (
                   <option key={familia} value={familia}>
                     {familia}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Nuevo filtro de estado */}
+            <div>
+              <label className="block text-black font-bold mb-2">Estado</label>
+              <select
+                value={estadoSeleccionado}
+                onChange={(e) => setEstadoSeleccionado(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black"
+              >
+                <option value="">Todos los estados</option>
+                {estados.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {estado}
                   </option>
                 ))}
               </select>
@@ -252,7 +274,9 @@ export default function HistorialActividades() {
             onClick={handlePrevPage}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-md ${
-              currentPage === 1 ? "bg-gray-300" : "bg-blue-500 hover:bg-blue-600"
+              currentPage === 1
+                ? "bg-gray-300"
+                : "bg-blue-500 hover:bg-blue-600"
             } text-white font-semibold`}
           >
             Anterior
