@@ -2,13 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {jwtDecode} from "jwt-decode"; // Cambiado a jwtDecode
+import {jwtDecode} from "jwt-decode"; // Importación correcta
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
 
+interface Address {
+  address: string;
+  referencia: string;
+  isActive: boolean;
+}
+
+interface User {
+  fullName: string;
+  phone: string;
+  addresses: Address[];
+}
+
 interface PedidoItem {
   id: number;
-  productId: number | null; // El producto puede no tener un ID si no está relacionado
+  productId: number | null;
   quantity: number;
   price: number;
   productName: string;
@@ -23,12 +35,7 @@ interface Pedido {
   status: string;
   createdAt: string;
   items: PedidoItem[];
-  User: {
-    fullName: string;
-    address: string;
-    phone: string;
-    referencia: string; // Cambiado a minúscula si es necesario
-  };
+  User: User;
 }
 
 interface Branch {
@@ -184,12 +191,29 @@ export default function ColaPedidosPage() {
                     <p className="text-gray-600">
                       Nombres: <span className="font-bold">{pedido.User.fullName}</span>
                     </p>
-                    <p className="text-gray-600">
-                      Dirección: <span className="font-bold">{pedido.User.address}</span>
-                    </p>
-                    <p className="text-gray-600">
-                      Referencia: <span className="font-bold">{pedido.User.referencia}</span>
-                    </p>
+                    <h4 className="font-bold text-gray-800 mt-2">Direcciones:</h4>
+                    <ul>
+                      {pedido.User.addresses.map((address, index) => (
+                        <li
+                          key={index}
+                          className={`p-2 mb-2 rounded-lg ${
+                            address.isActive
+                              ? "bg-green-100 border-l-4 border-green-500"
+                              : "bg-gray-100 border-l-4 border-gray-500"
+                          }`}
+                        >
+                          <p className="text-gray-700 font-semibold">
+                            Dirección: {address.address}
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            Referencia: {address.referencia}
+                          </p>
+                          {address.isActive && (
+                            <span className="text-green-600 font-bold">[Activa]</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                     <p className="text-gray-600">
                       Número: <span className="font-bold">{pedido.User.phone}</span>
                     </p>
@@ -203,12 +227,19 @@ export default function ColaPedidosPage() {
                       const precioFinal = item.promotional_price ?? item.price;
 
                       return (
-                        <li key={item.id} className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm">
-                          <p className="font-semibold text-gray-700">{item.productName}</p>
+                        <li
+                          key={item.id}
+                          className="flex flex-col bg-gray-50 p-2 rounded-lg shadow-sm"
+                        >
+                          <p className="font-semibold text-gray-700">
+                            {item.productName}
+                          </p>
                           <p className="text-gray-600 text-sm">{item.observation}</p>
                           <div className="flex justify-between items-center mt-2">
                             <p className="text-gray-600">Cantidad: {item.quantity}</p>
-                            <p className="text-gray-600">Precio: S/ {precioFinal.toFixed(2)}</p>
+                            <p className="text-gray-600">
+                              Precio: S/ {precioFinal.toFixed(2)}
+                            </p>
                           </div>
                           <p className="text-gray-600 text-sm">
                             Subtotal: S/ {(precioFinal * item.quantity).toFixed(2)}
