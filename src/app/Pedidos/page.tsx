@@ -130,7 +130,7 @@ export default function PedidosPage() {
         }
       }
     }
-    
+
     const fetchPedidos = async () => {
       const token = localStorage.getItem("userToken"); // Obtener el token del localStorage
       if (!token) {
@@ -175,6 +175,7 @@ export default function PedidosPage() {
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("cartItems");
     setUser(null);
     router.push("/login");
     window.location.reload();
