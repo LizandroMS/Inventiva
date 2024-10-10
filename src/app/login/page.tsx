@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import { FaArrowLeft } from "react-icons/fa"; // Importamos el icono
 
 interface Address {
   address: string;
@@ -18,16 +18,14 @@ export default function LoginPage() {
     phone: "",
     dni: "",
     birthDate: "",
-    addresses: [{ address: "", referencia: "", isActive: false }], 
+    addresses: [{ address: "", referencia: "", isActive: false }],
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Validar si el usuario ya está logueado y redirigirlo
   useEffect(() => {
     const token = localStorage.getItem("user");
-    console.log("token",token)
     if (token) {
       const rol = JSON.parse(token);
       if (rol.role === "cliente") {
@@ -46,14 +44,12 @@ export default function LoginPage() {
     field?: keyof Address
   ) => {
     if (typeof index === "number" && field) {
-      // Actualizar una dirección específica
       const newAddresses = [...formData.addresses];
       newAddresses[index] = {
         ...newAddresses[index],
         [field]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
       };
 
-      // Si se marca una dirección como activa, desactivar las demás
       if (field === "isActive" && e.target.checked) {
         newAddresses.forEach((address, i) => {
           if (i !== index) address.isActive = false;
@@ -62,7 +58,6 @@ export default function LoginPage() {
 
       setFormData({ ...formData, addresses: newAddresses });
     } else {
-      // Actualizar otros campos (no direcciones)
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
@@ -71,7 +66,6 @@ export default function LoginPage() {
   };
 
   const handleAddAddress = () => {
-    // Agregar una nueva dirección vacía
     setFormData({
       ...formData,
       addresses: [...formData.addresses, { address: "", referencia: "", isActive: false }],
@@ -79,13 +73,11 @@ export default function LoginPage() {
   };
 
   const handleRemoveAddress = (index: number) => {
-    // Eliminar una dirección específica
     const newAddresses = [...formData.addresses];
     newAddresses.splice(index, 1);
     setFormData({ ...formData, addresses: newAddresses });
   };
 
-  // Manejo del registro de usuario
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -107,7 +99,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Si el registro fue exitoso
       const user = await res.json();
       localStorage.setItem("user", JSON.stringify(user));
 
@@ -121,7 +112,6 @@ export default function LoginPage() {
     }
   };
 
-  // Manejo del inicio de sesión de usuario
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -143,7 +133,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Si el login fue exitoso
       const user = await res.json();
 
       if (user.token) {
@@ -170,7 +159,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 relative">
+      <button
+        onClick={() => router.push("/")}
+        className="absolute top-4 left-4 text-blue-500 hover:text-blue-700 flex items-center"
+      >
+        <FaArrowLeft className="mr-2" /> {/* Icono de regreso */}
+        Volver a Home
+      </button>
+
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         {loading ? (
           <div className="flex flex-col justify-center items-center h-48">
@@ -233,7 +230,6 @@ export default function LoginPage() {
               Registro
             </h2>
             <form onSubmit={handleRegisterSubmit}>
-              {/* Formulario de registro */}
               <div className="mb-4">
                 <label className="block text-gray-700">Nombre Completo</label>
                 <input
@@ -304,7 +300,6 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* Múltiples direcciones */}
               <h3 className="text-xl font-bold text-gray-700 mb-4">
                 Direcciones
               </h3>
@@ -318,7 +313,6 @@ export default function LoginPage() {
                   </label>
                   <input
                     type="text"
-                    name={`address_${index}`}
                     placeholder="Ingresa la dirección"
                     value={address.address}
                     onChange={(e) => handleChange(e, index, "address")}
@@ -329,13 +323,11 @@ export default function LoginPage() {
                   </label>
                   <input
                     type="text"
-                    name={`referencia_${index}`}
                     placeholder="Ingresa la referencia"
                     value={address.referencia}
                     onChange={(e) => handleChange(e, index, "referencia")}
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
                   />
-
                   <div className="flex items-center mt-2">
                     <input
                       type="checkbox"
@@ -347,7 +339,6 @@ export default function LoginPage() {
                       Marcar como dirección activa
                     </label>
                   </div>
-
                   <button
                     type="button"
                     onClick={() => handleRemoveAddress(index)}
