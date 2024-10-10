@@ -119,6 +119,18 @@ export default function PedidosPage() {
   };
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error("Error al parsear el usuario del localStorage:", error);
+        }
+      }
+    }
+    
     const fetchPedidos = async () => {
       const token = localStorage.getItem("userToken"); // Obtener el token del localStorage
       if (!token) {
