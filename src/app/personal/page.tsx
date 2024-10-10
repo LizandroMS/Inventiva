@@ -172,14 +172,49 @@ export default function PersonalPage() {
           <head>
             <title>Boleta Pedido #${pedido.id}</title>
             <style>
-              body { font-family: 'Courier New', Courier, monospace; padding: 10px; width: 80mm; }
-              .center { text-align: center; }
-              .right { text-align: right; }
-              .left { text-align: left; }
-              table { width: 100%; }
-              th, td { padding: 5px; border-bottom: 1px solid black; }
-              .bold { font-weight: bold; }
-              .total { font-size: 1.2em; font-weight: bold; }
+              body { 
+                font-family: 'Courier New', Courier, monospace; 
+                padding: 10px; 
+                width: 80mm; 
+              }
+              .center { 
+                text-align: center; 
+              }
+              .right { 
+                text-align: right; 
+              }
+              .left { 
+                text-align: left; 
+              }
+              table { 
+                width: 100%; 
+              }
+              th, td { 
+                padding: 5px; 
+                border-bottom: 1px solid black; 
+              }
+              .bold { 
+                font-weight: bold; 
+              }
+              .total { 
+                font-size: 1.2em; 
+                font-weight: bold; 
+              }
+              .print-btn {
+                display: inline-block;
+                margin: 20px 0;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                font-size: 16px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+              }
+              .print-btn:hover {
+                background-color: #45a049;
+              }
             </style>
           </head>
           <body>
@@ -206,7 +241,7 @@ export default function PersonalPage() {
                 <td class="right">${pedido.User.addresses.find(addr => addr.isActive)?.address || "N/A"}</td>
               </tr>
             </table>
-
+  
             <h3>Productos</h3>
             <table>
               ${pedido.items.map(item => `
@@ -216,7 +251,7 @@ export default function PersonalPage() {
                 </tr>
               `).join('')}
             </table>
-
+  
             <div class="right total">
               <p>Total: S/ ${pedido.totalAmount.toFixed(2)}</p>
             </div>
@@ -224,7 +259,9 @@ export default function PersonalPage() {
               <p>Gracias por su compra</p>
               <p>Pollería El Sabrosito</p>
             </div>
-            <button onclick="window.print();">Imprimir</button>
+            <div class="center">
+              <button class="print-btn" onclick="window.print();">Imprimir Boleta</button>
+            </div>
           </body>
         </html>
       `);
@@ -232,6 +269,7 @@ export default function PersonalPage() {
       printWindow.focus();
     }
   };
+  
 
   if (!isAudioAllowed) {
     return (
