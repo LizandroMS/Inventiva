@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'PUT') {
-    const { id, fullName, email, phone, dni, addresses } = req.body;
+    const { id, fullName, email, phone, dni, addresses, branchId } = req.body;
 
     try {
-      // Actualizar los detalles del usuario
+      // Actualizar los detalles del usuario, incluyendo direcciones y la sucursal si aplica
       const updatedUser = await prisma.user.update({
         where: { id: Number(id) },
         data: {
@@ -16,17 +16,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           email,
           phone,
           dni,
+          branch: branchId
+            ? {
+                connect: { id: Number(branchId) },
+              }
+            : {
+                disconnect: true, // Desconectar la sucursal si no se proporciona
+              },
           addresses: {
-            deleteMany: {}, // Eliminar las direcciones existentes para reemplazarlas
-            create: addresses.map((address: { address: string, referencia: string }) => ({
-              address: address.address,
-              referencia: address.referencia,
-            })),
+            deleteMany: {}, // Eliminar todas las direcciones actuales para crear nuevas
+            create: addresses.map(
+              (address: { address: string; referencia: string; isActive: boolean }) => ({
+                address: address.address,
+                referencia: address.referencia,
+                isActive: address.isActive, // Guardar el estado de dirección activa
+              })
+            ),
           },
         },
         include: {
           addresses: true, // Devolver las direcciones actualizadas
-          branch: true, // Incluir la sucursal
+          branch: true, // Incluir la sucursal actualizada
         },
       });
 

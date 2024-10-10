@@ -53,7 +53,7 @@ export default function EditarAccesoPersonal() {
           console.error("Error al obtener sucursales");
         }
       } catch (error) {
-        console.error("Error al obtener sucursales:", error);
+        console.error("Error al obtener sucursales", error);
       }
     };
 
@@ -91,6 +91,18 @@ export default function EditarAccesoPersonal() {
     setSelectedUser({ ...selectedUser!, addresses: updatedAddresses });
   };
 
+  const handleAddNewAddress = () => {
+    const newAddress: Address = {
+      address: "",
+      referencia: "",
+      isActive: false,
+    };
+    setSelectedUser({
+      ...selectedUser!,
+      addresses: [...selectedUser!.addresses, newAddress],
+    });
+  };
+
   const handleUpdateSubmit = async () => {
     setLoading(true);
     try {
@@ -99,7 +111,10 @@ export default function EditarAccesoPersonal() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(selectedUser),
+        body: JSON.stringify({
+          ...selectedUser,
+          branchId: selectedUser?.branch?.id || null, // Asegurarse de enviar el branchId
+        }),
       });
 
       if (res.ok) {
@@ -263,32 +278,36 @@ export default function EditarAccesoPersonal() {
                     </div>
                   </div>
                 ))}
-                {/* Seleccionar sucursal si el rol es 'cliente' */}
-                {selectedUser.role !== "cliente" && (
-                  <div>
-                    <label className="block text-gray-700 font-medium">
-                      Sucursal
-                    </label>
-                    <select
-                      name="branchId"
-                      value={selectedUser.branch?.id || ""}
-                      onChange={(e) => {
-                        const branchId = parseInt(e.target.value, 10);
-                        const branch =
-                          branches.find((b) => b.id === branchId) || null;
-                        setSelectedUser({ ...selectedUser!, branch });
-                      }}
-                      className="w-full px-4 py-2 border rounded-lg text-gray-800"
-                    >
-                      <option value="">Seleccionar sucursal</option>
-                      {branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                          {branch.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                <button
+                  onClick={handleAddNewAddress}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+                >
+                  Agregar nueva dirección
+                </button>
+                {/* Seleccionar sucursal para cualquier rol */}
+                <div>
+                  <label className="block text-gray-700 font-medium">
+                    Sucursal
+                  </label>
+                  <select
+                    name="branchId"
+                    value={selectedUser.branch?.id || ""}
+                    onChange={(e) => {
+                      const branchId = parseInt(e.target.value, 10);
+                      const branch =
+                        branches.find((b) => b.id === branchId) || null;
+                      setSelectedUser({ ...selectedUser!, branch });
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg text-gray-800"
+                  >
+                    <option value="">Seleccionar sucursal</option>
+                    {branches.map((branch) => (
+                      <option key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="text-center mt-6">
                 <button

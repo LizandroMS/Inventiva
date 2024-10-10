@@ -57,6 +57,7 @@ model Product {
   branch            Branch      @relation(fields: [branchId], references: [id])
   imagenUrl         String? // Campo para almacenar la URL de la imagen
   orders            OrderItem[]
+  estadoProduct     Boolean?
 }
 
 model Promotion {
