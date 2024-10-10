@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 where: {
                     branchId: branchId ? Number(branchId) : {}, // Filtrar por sucursal
                     familia: familia ? familia : undefined, // Filtrar por familia si está presente
+                    status: 'Disponible'
                 },
             });
 
