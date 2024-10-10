@@ -67,7 +67,7 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
-console.log(branchId)
+  console.log(branchId)
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
   }, [isAudioAllowed]);
@@ -165,7 +165,7 @@ console.log(branchId)
   };
 
   const handlePrintBoleta = (pedido: Pedido) => {
-    const printWindow = window.open("", "_blank");
+    const printWindow = window.open("", "_blank", "width=800,height=600");
     if (printWindow) {
       printWindow.document.write(`
         <html>
@@ -224,6 +224,7 @@ console.log(branchId)
               <p>Gracias por su compra</p>
               <p>Pollería El Sabrosito</p>
             </div>
+            <button onclick="window.print();">Imprimir</button>
           </body>
         </html>
       `);
