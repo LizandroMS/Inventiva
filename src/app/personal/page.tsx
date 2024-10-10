@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
 
@@ -67,7 +67,7 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
-  console.log(branchId)
+console.log(branchId)
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
   }, [isAudioAllowed]);
@@ -115,9 +115,7 @@ export default function PersonalPage() {
       fetchPedidos();
       setTokenValid(true);
 
-      // Escuchar eventos de nuevos pedidos a través del socket
       socket.on("newOrder", () => {
-        console.log("Nuevo pedido recibido a través del socket");
         fetchPedidos();
         if (isAudioAllowedRef.current && audioRef.current) {
           audioRef.current.play().catch((error) => {
@@ -157,13 +155,80 @@ export default function PersonalPage() {
 
         setPedidos(updatedPedidos);
 
-        // Emitir actualización de estado a los comensales
         socket.emit("updateOrderStatus", { id, status: nuevoEstado });
       } else {
         console.error("Error al actualizar el estado del pedido");
       }
     } catch (error) {
       console.error("Error al cambiar el estado del pedido:", error);
+    }
+  };
+
+  const handlePrintBoleta = (pedido: Pedido) => {
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Boleta Pedido #${pedido.id}</title>
+            <style>
+              body { font-family: 'Courier New', Courier, monospace; padding: 10px; width: 80mm; }
+              .center { text-align: center; }
+              .right { text-align: right; }
+              .left { text-align: left; }
+              table { width: 100%; }
+              th, td { padding: 5px; border-bottom: 1px solid black; }
+              .bold { font-weight: bold; }
+              .total { font-size: 1.2em; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <div class="center">
+              <h2>Pollería El Sabrosito</h2>
+              <p><strong>Boleta de Venta</strong></p>
+              <p>Pedido #${pedido.id}</p>
+            </div>
+            <table>
+              <tr>
+                <td>Fecha:</td>
+                <td class="right">${new Date(pedido.createdAt).toLocaleString()}</td>
+              </tr>
+              <tr>
+                <td>Cliente:</td>
+                <td class="right">${pedido.User.fullName}</td>
+              </tr>
+              <tr>
+                <td>Teléfono:</td>
+                <td class="right">${pedido.User.phone}</td>
+              </tr>
+              <tr>
+                <td>Dirección:</td>
+                <td class="right">${pedido.User.addresses.find(addr => addr.isActive)?.address || "N/A"}</td>
+              </tr>
+            </table>
+
+            <h3>Productos</h3>
+            <table>
+              ${pedido.items.map(item => `
+                <tr>
+                  <td>${item.productName}</td>
+                  <td class="right">${item.quantity} x S/ ${(item.promotional_price || item.price).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </table>
+
+            <div class="right total">
+              <p>Total: S/ ${pedido.totalAmount.toFixed(2)}</p>
+            </div>
+            <div class="center">
+              <p>Gracias por su compra</p>
+              <p>Pollería El Sabrosito</p>
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
     }
   };
 
@@ -311,6 +376,13 @@ export default function PersonalPage() {
                   Total: S/ {pedido.totalAmount.toFixed(2)}
                 </p>
               </div>
+
+              <button
+                onClick={() => handlePrintBoleta(pedido)}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg mt-4"
+              >
+                Imprimir Boleta
+              </button>
 
               <select
                 value={pedido.status}
