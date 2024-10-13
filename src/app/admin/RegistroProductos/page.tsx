@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { uploadNewImage } from "@/pages/api/api_firebase/firebaseUpload";
-import imageCompression from "browser-image-compression"; // Importa la librería
+import imageCompression from "browser-image-compression"; // Importa la librería para la compresión
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
+import { FaCheckCircle } from "react-icons/fa"; // Icono para el check de éxito
 
 const familias = [
   "Pollos a la brasa",
@@ -14,7 +15,7 @@ const familias = [
   "Guarniciones",
   "Bebidas sin alcohol",
   "Bebidas con alcohol",
-].map(familia => familia.toUpperCase());
+].map((familia) => familia.toUpperCase());
 
 interface Branch {
   id: number;
@@ -30,18 +31,19 @@ export default function RegistroProducto() {
     stock: "",
     estado: "Disponible",
     fechaCreacion: new Date().toISOString().split("T")[0], // Fecha actual
-    creadoPor: "admin", // Temporalmente estático, puedes cambiarlo según el usuario autenticado
-    branchId: "", // Campo para almacenar la sucursal seleccionada
-    imagenUrl: "", // Almacena la URL de la imagen subida
-    familia: "", // Campo para almacenar la familia seleccionada
+    creadoPor: "admin", // Temporalmente estático
+    branchId: "", // Sucursal seleccionada
+    imagenUrl: "", // URL de la imagen subida
+    familia: "", // Familia seleccionada
   });
 
   const [branches, setBranches] = useState<Branch[]>([]); // Para almacenar las sucursales
   const [file, setFile] = useState<File | null>(null); // Estado para almacenar el archivo
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false); // Estado para manejar el progreso de la subida
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal de éxito
   const router = useRouter();
-
+  console.log(router);
   // Fetch para obtener las sucursales desde la API
   useEffect(() => {
     const fetchBranches = async () => {
@@ -90,29 +92,26 @@ export default function RegistroProducto() {
     setUploading(true); // Mostrar indicador de subida
 
     try {
-      // Opciones para la compresión y conversión de la imagen a WebP
+      // Opciones para la compresión de la imagen
       const options = {
         maxSizeMB: 0.5,
         maxWidthOrHeight: 500,
         useWebWorker: true,
         fileType: "image/webp",
-        initialQuality: 0.6, // Ajusta la calidad (entre 0 y 1). Aquí la estamos reduciendo al 70%
+        initialQuality: 0.6, // Ajusta la calidad (entre 0 y 1)
       };
 
-      // Comprimir y convertir la imagen seleccionada a WebP
+      // Comprimir la imagen y subirla a Firebase
       const compressedFile = await imageCompression(file, options);
-
-      // Subir la imagen comprimida a Firebase y obtener la URL
       const imagenUrl: string = await uploadNewImage(compressedFile);
-      console.log("imageUrl", imagenUrl);
 
-      // Realizar la solicitud para registrar el producto junto con la URL de la imagen
+      // Guardar el producto en la base de datos
       const res = await fetch("/api/registroProductos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, imagenUrl: imagenUrl }), // Guardamos la URL de la imagen junto con los datos del producto
+        body: JSON.stringify({ ...formData, imagenUrl: imagenUrl }),
       });
 
       if (!res.ok) {
@@ -121,7 +120,8 @@ export default function RegistroProducto() {
         return;
       }
 
-      router.push("/admin"); // Redirige de vuelta al admin
+      // Abrir el modal de éxito
+      setIsModalOpen(true);
     } catch (error) {
       setError("Ocurrió un error al registrar el producto.");
     } finally {
@@ -129,9 +129,27 @@ export default function RegistroProducto() {
     }
   };
 
+  // Función para cerrar el modal y resetear el formulario
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setFormData({
+      nombreProducto: "",
+      descripcion: "",
+      precio: "",
+      precioPromocional: "",
+      stock: "",
+      estado: "Disponible",
+      fechaCreacion: new Date().toISOString().split("T")[0],
+      creadoPor: "admin",
+      branchId: "",
+      imagenUrl: "",
+      familia: "",
+    });
+    setFile(null);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header reutilizable */}
       <Header />
 
       <div className="container mx-auto p-8 bg-white">
@@ -142,7 +160,7 @@ export default function RegistroProducto() {
           onSubmit={handleSubmit}
           className="max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg"
         >
-          {/* Campos del formulario de registro */}
+          {/* Nombre del Producto */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
               Nombre del Producto
@@ -157,6 +175,7 @@ export default function RegistroProducto() {
             />
           </div>
 
+          {/* Descripción */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
               Descripción
@@ -171,6 +190,7 @@ export default function RegistroProducto() {
             ></textarea>
           </div>
 
+          {/* Precio */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Precio</label>
             <input
@@ -183,6 +203,7 @@ export default function RegistroProducto() {
             />
           </div>
 
+          {/* Precio Promocional */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
               Precio Promocional
@@ -196,6 +217,7 @@ export default function RegistroProducto() {
             />
           </div>
 
+          {/* Stock */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Stock</label>
             <input
@@ -208,6 +230,7 @@ export default function RegistroProducto() {
             />
           </div>
 
+          {/* Estado */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Estado</label>
             <select
@@ -223,7 +246,9 @@ export default function RegistroProducto() {
 
           {/* Selector de familia */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Familia</label>
+            <label className="block text-gray-700 font-bold mb-2">
+              Familia
+            </label>
             <select
               name="familia"
               value={formData.familia}
@@ -285,7 +310,25 @@ export default function RegistroProducto() {
         </form>
       </div>
 
-      {/* Footer reutilizable */}
+      {/* Modal emergente para indicar éxito */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+            <FaCheckCircle className="text-6xl text-green-500 animate-pulse mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-4">¡Producto Guardado!</h2>
+            <p className="text-gray-700 mb-4">
+              El producto ha sido registrado exitosamente.
+            </p>
+            <button
+              onClick={handleModalClose}
+              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
