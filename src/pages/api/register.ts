@@ -12,6 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!fullName || !email || !password || !phone || !dni || !birthDate || !addresses || addresses.length === 0) {
       return res.status(400).json({ error: 'Faltan campos requeridos o no se ha proporcionado ninguna dirección' });
     }
+    // Validar que al menos una dirección esté marcada como activa
+    const hasActiveAddress = addresses.some((addr: { isActive: boolean }) => addr.isActive);
+    if (!hasActiveAddress) {
+      return res.status(400).json({ error: 'Debes marcar al menos una dirección como activa' });
+    }
 
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -53,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const activeAddressInDb = newUser.addresses.find(
           (addr) => addr.address === activeAddress.address && addr.referencia === activeAddress.referencia
         );
-        
+
         if (activeAddressInDb) {
           await prisma.address.update({
             where: { id: activeAddressInDb.id },
