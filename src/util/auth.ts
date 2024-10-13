@@ -10,7 +10,7 @@ interface CustomJwtPayload extends JwtPayload {
 
 // Función para generar un token
 export const generateToken = (payload: object) => {
-  return jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" });
+  return jwt.sign(payload, SECRET_KEY, { expiresIn: "8h" });
 };
 
 // Función para verificar y decodificar un token

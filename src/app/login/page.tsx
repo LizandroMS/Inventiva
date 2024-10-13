@@ -47,7 +47,8 @@ export default function LoginPage() {
       const newAddresses = [...formData.addresses];
       newAddresses[index] = {
         ...newAddresses[index],
-        [field]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
+        [field]:
+          e.target.type === "checkbox" ? e.target.checked : e.target.value,
       };
 
       if (field === "isActive" && e.target.checked) {
@@ -68,7 +69,10 @@ export default function LoginPage() {
   const handleAddAddress = () => {
     setFormData({
       ...formData,
-      addresses: [...formData.addresses, { address: "", referencia: "", isActive: false }],
+      addresses: [
+        ...formData.addresses,
+        { address: "", referencia: "", isActive: false },
+      ],
     });
   };
 
@@ -100,6 +104,7 @@ export default function LoginPage() {
       }
 
       const user = await res.json();
+      console.log("USER >> ", JSON.stringify(user));
       localStorage.setItem("user", JSON.stringify(user));
 
       setTimeout(() => {
@@ -214,7 +219,7 @@ export default function LoginPage() {
               </div>
             </form>
             {error && <p className="text-red-500">{error}</p>}
-            <p className="text-center">
+            <p className="text-center text-black">
               ¿No tienes una cuenta?{" "}
               <button
                 onClick={() => setIsLogin(false)}
@@ -366,7 +371,7 @@ export default function LoginPage() {
               </div>
               {error && <p className="text-red-500">{error}</p>}
             </form>
-            <p className="text-center">
+            <p className="text-center text-black">
               ¿Ya tienes una cuenta?{" "}
               <button
                 onClick={() => setIsLogin(true)}

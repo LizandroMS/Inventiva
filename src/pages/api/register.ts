@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
@@ -61,7 +62,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       }
 
-      return res.status(201).json(newUser);
+      // Generar un token JWT para el usuario recién creado
+      const token = jwt.sign(
+        { id: newUser.id, email: newUser.email, role: newUser.role, branchId: newUser.branchId }, // Payload
+        'secret-key', // Clave secreta (deberías usar una clave segura en producción)
+        { expiresIn: '8h' } // Expiración del token
+      );
+
+      // Enviar el token junto con los datos del usuario, incluyendo direcciones
+      return res.status(201).json({
+        id: newUser.id,
+        fullName: newUser.fullName,
+        email: newUser.email,
+        role: newUser.role,
+        branchId: newUser.branchId,
+        token, // Incluir el token en la respuesta
+        addresses: newUser.addresses, // Incluir las direcciones en la respuesta
+        birthDate: newUser.birthDate,
+        dni: newUser.dni,
+        phone: newUser.phone,
+      });
+
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002' && error.meta?.target === 'User_email_key') {

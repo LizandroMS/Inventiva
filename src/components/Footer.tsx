@@ -2,7 +2,7 @@ import { FaInstagram, FaFacebook, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="bg-green-700 text-white py-6 mt-auto">
+    <footer className="bg-orange-500 text-white py-6 mt-auto">
       <div className="container mx-auto text-center px-4">
         <p className="text-lg font-semibold">
           © 2024 Pollería El Sabrosito. Todos los derechos reservados.

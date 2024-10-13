@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const token = jwt.sign(
                 { id: user.id, email: user.email, role: user.role, branchId: user.branchId }, // Payload
                 'secret-key', // Clave secreta (deberías usar una clave segura en producción)
-                { expiresIn: '1h' } // Expiración del token
+                { expiresIn: '8h' } // Expiración del token
             );
 
             // Enviar el token junto con los datos del usuario, incluyendo direcciones
