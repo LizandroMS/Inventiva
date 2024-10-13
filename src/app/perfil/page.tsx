@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaCheckCircle, FaUserCircle, FaPlusCircle } from "react-icons/fa";
+import { FaCheckCircle, FaUserCircle, FaPlusCircle, FaArrowLeft } from "react-icons/fa";
 
 interface Address {
   id: number;
@@ -27,7 +27,7 @@ export default function Perfil() {
   const [newAddress, setNewAddress] = useState("");
   const [newReferencia, setNewReferencia] = useState("");
   const router = useRouter();
-  console.log(router);
+
   // Cargar los datos del usuario al montar el componente
   useEffect(() => {
     const fetchUser = async () => {
@@ -113,18 +113,32 @@ export default function Perfil() {
     }
   };
 
+  // Botón para volver a la página de inicio
+  const handleBackToHome = () => {
+    router.push("/");
+  };
+
   if (!user) return <p className="text-center text-gray-500">Cargando...</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-blue-900 to-black p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-700 via-pink-500 to-indigo-600 p-4 md:p-8">
       <div className="container mx-auto">
+        {/* Botón de retroceso */}
+        <button
+          onClick={handleBackToHome}
+          className="mb-4 text-white font-semibold text-lg flex items-center space-x-2 hover:text-gray-300 transition-colors"
+        >
+          <FaArrowLeft className="mr-2" />
+          <span>Regresar a Inicio</span>
+        </button>
+
         <div className="flex flex-col items-center mb-8">
           {/* Ícono de usuario */}
           <FaUserCircle className="text-7xl md:text-8xl text-yellow-400 mb-4" />
-          <h1 className="text-4xl md:text-5xl font-bold text-yellow-300 mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">
             {user.fullName}
           </h1>
-          <p className="text-lg md:text-xl text-yellow-100">
+          <p className="text-lg md:text-xl text-white">
             Gestiona tu perfil y direcciones
           </p>
         </div>
@@ -132,7 +146,7 @@ export default function Perfil() {
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         {/* Información estática del usuario */}
-        <div className="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 max-w-3xl mx-auto text-white">
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 max-w-3xl mx-auto text-gray-800">
           <h2 className="text-3xl font-semibold mb-4">Información Personal</h2>
           <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
             <p className="text-lg font-medium">📧 Email: {user.email}</p>
@@ -146,7 +160,7 @@ export default function Perfil() {
         </div>
 
         {/* Formulario para agregar nueva dirección */}
-        <div className="bg-gray-800 shadow-lg rounded-lg p-6 mb-8 max-w-3xl mx-auto text-white">
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 max-w-3xl mx-auto text-gray-800">
           <h2 className="text-3xl font-semibold mb-4">
             Añadir Nueva Dirección
           </h2>
@@ -156,14 +170,14 @@ export default function Perfil() {
               placeholder="Dirección"
               value={newAddress}
               onChange={(e) => setNewAddress(e.target.value)}
-              className="w-full p-2 rounded-lg border-2 border-gray-500 bg-gray-700 text-white"
+              className="w-full p-2 rounded-lg border-2 border-gray-500 bg-gray-100 text-gray-800"
             />
             <input
               type="text"
               placeholder="Referencia (Opcional)"
               value={newReferencia}
               onChange={(e) => setNewReferencia(e.target.value)}
-              className="w-full p-2 rounded-lg border-2 border-gray-500 bg-gray-700 text-white"
+              className="w-full p-2 rounded-lg border-2 border-gray-500 bg-gray-100 text-gray-800"
             />
             <button
               onClick={handleAddAddress}
@@ -176,7 +190,7 @@ export default function Perfil() {
         </div>
 
         {/* Direcciones del usuario */}
-        <div className="bg-gray-800 shadow-lg rounded-lg p-6 max-w-3xl mx-auto text-white">
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-3xl mx-auto text-gray-800">
           <h2 className="text-3xl font-semibold mb-4">Direcciones</h2>
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {user.addresses.map((address) => (
@@ -184,13 +198,13 @@ export default function Perfil() {
                 key={address.id}
                 className={`p-6 border rounded-lg transition-all duration-300 ${
                   address.isActive
-                    ? "border-yellow-400 bg-gray-700 shadow-lg"
-                    : "border-gray-500 bg-gray-900 hover:bg-gray-800"
+                    ? "border-yellow-400 bg-yellow-100 shadow-lg"
+                    : "border-gray-300 bg-gray-100 hover:bg-gray-200"
                 }`}
               >
                 <p className="text-lg font-semibold">📍 {address.address}</p>
                 {address.referencia && (
-                  <p className="text-gray-300 mt-2">
+                  <p className="text-gray-500 mt-2">
                     📝 Referencia: {address.referencia}
                   </p>
                 )}
