@@ -112,7 +112,10 @@ export default function EditarProductosPage() {
         const compressedFile = await imageCompression(file, options);
 
         // Reemplazar la imagen existente en Firebase y obtener la nueva URL
-        imagenUrl = await replaceImage(compressedFile, editingProduct.imagenUrl);
+        imagenUrl = await replaceImage(
+          compressedFile,
+          editingProduct.imagenUrl
+        );
       }
 
       // Actualizar el producto con la nueva imagen (si la hay) y los demás datos
@@ -121,7 +124,10 @@ export default function EditarProductosPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...editingProduct, imagenUrl }), // Actualizamos el campo imagenUrl
+        body: JSON.stringify({
+          ...editingProduct,
+          imagenUrl: imagenUrl || editingProduct.imagenUrl, // Si no se seleccionó una imagen nueva, mantener la existente
+        }),
       });
 
       if (response.ok) {
@@ -135,6 +141,7 @@ export default function EditarProductosPage() {
       }
     } catch (error) {
       console.error("Error al actualizar el producto:", error);
+      setErrorMessage("Error al actualizar el producto.");
     }
   };
 
