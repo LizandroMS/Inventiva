@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
-
-// Inicializar el socket
-const socket = io({
-  path: "/api/socket",
-});
+import Footer from "@/components/Footer";
 
 interface Address {
   id: number;
@@ -50,12 +46,21 @@ interface Pedido {
     phone: string;
     addresses: Address[];
   };
+  paymentType: string;
+  ruc?: string;
+  companyName?: string;
+  companyAddress?: string;
 }
 
 interface DecodedToken {
   role: string;
   branchId: number;
 }
+
+// Inicializar el socket
+const socket = io({
+  path: "/api/socket",
+});
 
 export default function PersonalPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -122,7 +127,7 @@ export default function PersonalPage() {
         if (
           isAudioAllowedRef.current &&
           audioRef.current &&
-          Validation != "CANCELADO"
+          Validation !== "CANCELADO"
         ) {
           audioRef.current.play().catch((error) => {
             console.error("Error al reproducir el audio:", error);
@@ -160,7 +165,7 @@ export default function PersonalPage() {
           .filter(
             (pedido) =>
               pedido.status !== "ENTREGADO" && pedido.status !== "CANCELADO"
-          ); // Excluimos los pedidos entregados o cancelados
+          );
 
         setPedidos(updatedPedidos);
 
@@ -254,6 +259,28 @@ export default function PersonalPage() {
                     ?.address || "N/A"
                 }</td>
               </tr>
+              <tr>
+                <td>Comprobante:</td>
+                <td class="right">${pedido.paymentType}</td>
+              </tr>
+              ${
+                pedido.paymentType === "Factura"
+                  ? `
+                <tr>
+                  <td>RUC:</td>
+                  <td class="right">${pedido.ruc || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>Nombre Empresa:</td>
+                  <td class="right">${pedido.companyName || "N/A"}</td>
+                </tr>
+                <tr>
+                  <td>Dirección Empresa:</td>
+                  <td class="right">${pedido.companyAddress || "N/A"}</td>
+                </tr>
+              `
+                  : ""
+              }
             </table>
   
             <h3>Productos</h3>
@@ -313,7 +340,7 @@ export default function PersonalPage() {
 
   if (!isAudioAllowed) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-100">
         <button
           onClick={() => {
             setIsAudioAllowed(true);
@@ -328,7 +355,7 @@ export default function PersonalPage() {
                 });
             }
           }}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
         >
           Habilitar Sonido
         </button>
@@ -412,6 +439,37 @@ export default function PersonalPage() {
                   </ul>
                 </div>
 
+                {/* Mostrar Información de Pago */}
+                <div className="mt-4 p-4 rounded-lg bg-gray-50">
+                  <h3 className="font-semibold text-gray-800">
+                    Información de Pago
+                  </h3>
+                  <p className="text-gray-600">
+                    Comprobante:{" "}
+                    <span className="font-bold">{pedido.paymentType}</span>
+                  </p>
+                  {pedido.paymentType === "Factura" && (
+                    <>
+                      <p className="text-gray-600">
+                        RUC:{" "}
+                        <span className="font-bold">{pedido.ruc || "N/A"}</span>
+                      </p>
+                      <p className="text-gray-600">
+                        Nombre Empresa:{" "}
+                        <span className="font-bold">
+                          {pedido.companyName || "N/A"}
+                        </span>
+                      </p>
+                      <p className="text-gray-600">
+                        Dirección Empresa:{" "}
+                        <span className="font-bold">
+                          {pedido.companyAddress || "N/A"}
+                        </span>
+                      </p>
+                    </>
+                  )}
+                </div>
+
                 <h3 className="font-bold text-gray-800 mt-4 mb-2">
                   Productos ({pedido.items.length})
                 </h3>
@@ -457,7 +515,7 @@ export default function PersonalPage() {
 
               <button
                 onClick={() => handlePrintBoleta(pedido)}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg mt-4"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg mt-4 transition-colors"
               >
                 Imprimir Ticket
               </button>
@@ -466,7 +524,7 @@ export default function PersonalPage() {
               <select
                 value={pedido.status}
                 onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
-                className="mt-4 bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg"
+                className="mt-4 bg-gray-100 border border-gray-300 text-black py-2 px-4 rounded-lg"
               >
                 {getAvailableStates(pedido.status).map((estado) => (
                   <option key={estado} value={estado}>
@@ -476,10 +534,10 @@ export default function PersonalPage() {
               </select>
 
               {/* Botón para cancelar */}
-              {pedido.status !== "CANCELADO" && (
+              {pedido.status === "PENDIENTE" && (
                 <button
                   onClick={() => handleCancelarPedido(pedido.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg mt-4"
+                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg mt-4 transition-colors"
                 >
                   Cancelar Pedido
                 </button>
@@ -489,9 +547,7 @@ export default function PersonalPage() {
         </ul>
       </div>
 
-      <footer className="bg-green-700 text-white py-4 text-center mt-auto">
-        <p>© 2024 Pollería El Sabrosito. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
