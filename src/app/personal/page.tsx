@@ -151,7 +151,7 @@ export default function PersonalPage() {
             }
             return pedido;
           })
-          .filter((pedido) => pedido.status !== "ENTREGADO");
+          .filter((pedido) => pedido.status !== "ENTREGADO" && pedido.status !== "CANCELADO"); // Excluimos los pedidos entregados o cancelados
 
         setPedidos(updatedPedidos);
 
@@ -170,7 +170,7 @@ export default function PersonalPage() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Boleta Pedido #${pedido.id}</title>
+            <title>Ticket  #${pedido.id}</title>
             <style>
               body { 
                 font-family: 'Courier New', Courier, monospace; 
@@ -220,7 +220,7 @@ export default function PersonalPage() {
           <body>
             <div class="center">
               <h2>Pollería El Sabrosito</h2>
-              <p><strong>Boleta de Venta</strong></p>
+              <p><strong>Ticket de Venta</strong></p>
               <p>Pedido #${pedido.id}</p>
             </div>
             <table>
@@ -260,7 +260,7 @@ export default function PersonalPage() {
               <p>Pollería El Sabrosito</p>
             </div>
             <div class="center">
-              <button class="print-btn" onclick="window.print();">Imprimir Boleta</button>
+              <button class="print-btn" onclick="window.print();">Imprimir Ticket</button>
             </div>
           </body>
         </html>
@@ -269,7 +269,27 @@ export default function PersonalPage() {
       printWindow.focus();
     }
   };
-  
+
+  const handleCancelarPedido = async (id: number) => {
+    await cambiarEstadoPedido(id, "CANCELADO");
+  };
+
+  const getAvailableStates = (estadoActual: string) => {
+    console.log("estado actual",estadoActual)
+    switch (estadoActual) {
+      case "PENDIENTE":
+        return ["PENDIENTE","PREPARANDO"];
+      case "PREPARANDO":
+        return [,"PREPARANDO","DRIVER"];
+      case "DRIVER":
+        return ["DRIVER","ENTREGADO"];
+      case "ENTREGADO":
+      case "CANCELADO":
+        return []; // No se puede cambiar el estado una vez que se ha entregado o cancelado
+      default:
+        return estadosPosibles;
+    }
+  };
 
   if (!isAudioAllowed) {
     return (
@@ -420,20 +440,31 @@ export default function PersonalPage() {
                 onClick={() => handlePrintBoleta(pedido)}
                 className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg mt-4"
               >
-                Imprimir Boleta
+                Imprimir Ticket
               </button>
 
+              {/* Selector de estados */}
               <select
                 value={pedido.status}
                 onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
                 className="mt-4 bg-gray-100 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg"
               >
-                {estadosPosibles.map((estado) => (
+                {getAvailableStates(pedido.status).map((estado) => (
                   <option key={estado} value={estado}>
                     {estado.charAt(0).toUpperCase() + estado.slice(1)}
                   </option>
                 ))}
               </select>
+
+              {/* Botón para cancelar */}
+              {pedido.status !== "CANCELADO" && (
+                <button
+                  onClick={() => handleCancelarPedido(pedido.id)}
+                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg mt-4"
+                >
+                  Cancelar Pedido
+                </button>
+              )}
             </li>
           ))}
         </ul>
