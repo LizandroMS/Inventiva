@@ -42,42 +42,7 @@ export default function CartPage() {
     0
   );
 
-  // Función para guardar el pedido
-  // const handleOrder = async () => {
-  //   if (!user) {
-  //     alert("Por favor inicia sesión para proceder con el pedido.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch("/api/createOrder", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         userId: user.id, // ID del usuario
-  //         items: cartItems.map((item) => ({
-  //           ...item,
-  //           observation: observations[item.id] || "", // Añadir la observación si la tiene
-  //         })),
-  //         totalAmount: totalPrice,
-  //       }),
-  //     });
-
-  //     if (response.ok) {
-  //       clearCart(); // Limpia el carrito
-
-  //       // Emitir el pedido a través del socket
-  //       socket.emit("newOrder");
-  //       router.push("/Pedidos");
-  //     } else {
-  //       console.error("Error al crear el pedido.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al crear el pedido:", error);
-  //   }
-  // };
+ 
   const handleOrder = async () => {
     if (!user) {
       alert("Por favor inicia sesión para proceder con el pedido.");
@@ -110,9 +75,9 @@ export default function CartPage() {
 
       if (response.ok) {
         clearCart(); // Limpia el carrito
-
+        const nuevoEstado: string = "";
         // Emitir el pedido a través del socket
-        socket.emit("newOrder");
+        socket.emit("newOrder",{ CANCELACION: nuevoEstado });
         router.push("/Pedidos");
       } else {
         console.error("Error al crear el pedido.");
