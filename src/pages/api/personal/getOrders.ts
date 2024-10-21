@@ -68,7 +68,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           items: itemsModificados,
         };
       });
-
       res.status(200).json(pedidosModificados);
     } catch (error) {
       console.error("Error al obtener pedidos:", error);

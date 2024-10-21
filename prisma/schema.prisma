@@ -77,6 +77,12 @@ model Pedido {
   items       OrderItem[]
   createdAt   DateTime    @default(now())
   User        User        @relation(fields: [userId], references: [id])
+
+  // Nuevos campos para comprobante de pago
+  paymentType   String?    @default("Boleta") // "Boleta" o "Factura"
+  ruc           String?   // RUC para factura, opcional
+  companyName   String?   // Nombre de la empresa, opcional
+  companyAddress String?  // Dirección de la empresa, opcional
 }
 
 model OrderItem {

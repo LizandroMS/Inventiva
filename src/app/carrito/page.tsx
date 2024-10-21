@@ -1,12 +1,12 @@
 "use client";
-import { useCart } from "@/context/CartContext";
-import Image from "next/image";
-import Header from "@/components/Header";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Para redirigir al usuario
-import { User } from "@prisma/client";
-import { io } from "socket.io-client";
+import { useCart } from "@/context/CartContext";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { User } from "@prisma/client";
+import { useRouter } from "next/navigation"; // Para redirigir al usuario
+import { io } from "socket.io-client";
+import Image from "next/image"; // Mantener el uso de Image de Next.js
 
 // Inicializar el socket
 const socket = io({
@@ -20,6 +20,11 @@ export default function CartPage() {
   const [observations, setObservations] = useState<{ [key: number]: string }>(
     {}
   ); // Para almacenar observaciones por producto
+  const [paymentType, setPaymentType] = useState("Boleta"); // Boleta por defecto
+  const [ruc, setRuc] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+
   const router = useRouter(); // Redireccionar si es necesario
 
   useEffect(() => {
@@ -42,13 +47,19 @@ export default function CartPage() {
     0
   );
 
- 
+  // Función para guardar el pedido
   const handleOrder = async () => {
     if (!user) {
       alert("Por favor inicia sesión para proceder con el pedido.");
       return;
     }
-    console.log("cartItems", cartItems);
+
+    // Validar si se selecciona factura y si se han llenado los campos requeridos
+    if (paymentType === "Factura" && (!ruc || !companyName || !companyAddress)) {
+      alert("Por favor, complete los campos requeridos para la Factura.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/createOrder", {
         method: "POST",
@@ -70,12 +81,17 @@ export default function CartPage() {
             description: item.description,
           })),
           totalAmount: totalPrice, // El total de la orden completa
+          paymentType, // Boleta o Factura
+          ruc: paymentType === "Factura" ? ruc : null,
+          companyName: paymentType === "Factura" ? companyName : null,
+          companyAddress: paymentType === "Factura" ? companyAddress : null,
         }),
       });
 
       if (response.ok) {
         clearCart(); // Limpia el carrito
         const nuevoEstado: string = "";
+
         // Emitir el pedido a través del socket
         socket.emit("newOrder",{ CANCELACION: nuevoEstado });
         router.push("/Pedidos");
@@ -145,7 +161,7 @@ export default function CartPage() {
                         className="rounded-lg"
                       />
                     </div>
-                    <h3 className="text-xl font-bold text-center text-gray-800">
+                    <h3 className="text-xl font-bold text-center text-black">
                       {item.name}
                     </h3>
 
@@ -160,7 +176,7 @@ export default function CartPage() {
                         </p>
                       </div>
                     ) : (
-                      <p className="text-lg font-semibold text-center text-gray-700">
+                      <p className="text-lg font-semibold text-center text-black">
                         S/ {item.price.toFixed(2)}
                       </p>
                     )}
@@ -174,16 +190,16 @@ export default function CartPage() {
                     <div className="mt-4 flex items-center space-x-2">
                       <button
                         onClick={() => handleDecrement(item.id)}
-                        className="bg-gray-300 px-3 py-1 rounded-lg"
+                        className="bg-gray-300 px-3 py-1 rounded-lg text-black"
                       >
                         -
                       </button>
-                      <span className="text-lg font-semibold text-gray-700">
+                      <span className="text-lg font-semibold text-black">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => handleIncrement(item.id)}
-                        className="bg-gray-300 px-3 py-1 rounded-lg"
+                        className="bg-gray-300 px-3 py-1 rounded-lg text-black"
                       >
                         +
                       </button>
@@ -196,7 +212,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         handleObservationChange(item.id, e.target.value)
                       }
-                      className="mt-4 w-full p-2 border rounded-lg text-gray-600"
+                      className="mt-4 w-full p-2 border rounded-lg text-black"
                     ></textarea>
 
                     {/* Botón Eliminar */}
@@ -210,9 +226,65 @@ export default function CartPage() {
                 ))}
               </div>
 
+              {/* Opciones de Boleta o Factura */}
+              <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-lg font-bold text-black">Comprobante de pago:</h2>
+                <div className="flex items-center mt-4 space-x-6">
+                  <label className="flex items-center text-black cursor-pointer">
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      value="Boleta"
+                      checked={paymentType === "Boleta"}
+                      onChange={(e) => setPaymentType(e.target.value)}
+                      className="mr-2 accent-yellow-500"
+                    />
+                    <span className="text-lg">Boleta</span>
+                  </label>
+                  <label className="flex items-center text-black cursor-pointer">
+                    <input
+                      type="radio"
+                      name="paymentType"
+                      value="Factura"
+                      checked={paymentType === "Factura"}
+                      onChange={(e) => setPaymentType(e.target.value)}
+                      className="mr-2 accent-blue-500"
+                    />
+                    <span className="text-lg">Factura</span>
+                  </label>
+                </div>
+
+                {/* Mostrar campos adicionales si se selecciona Factura */}
+                {paymentType === "Factura" && (
+                  <div className="mt-4 space-y-4">
+                    <input
+                      type="text"
+                      placeholder="RUC"
+                      value={ruc}
+                      onChange={(e) => setRuc(e.target.value)}
+                      className="w-full p-2 border rounded-lg text-black"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Nombre de la empresa"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      className="w-full p-2 border rounded-lg text-black"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Dirección de la empresa"
+                      value={companyAddress}
+                      onChange={(e) => setCompanyAddress(e.target.value)}
+                      className="w-full p-2 border rounded-lg text-black"
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Total del carrito */}
               <div className="mt-8 p-4 bg-gray-200 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-gray-700 text-center">
+                <h2 className="text-2xl font-bold text-black text-center">
                   Total a pagar: S/ {totalPrice.toFixed(2)}
                 </h2>
                 <button

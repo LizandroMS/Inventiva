@@ -7,11 +7,15 @@ const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { userId, items, totalAmount } = req.body;
-      console.log(" items --> ",items)
+      const { userId, items, totalAmount, paymentType, ruc, companyAddress, companyName } = req.body;
+      console.log(" items --> ", items)
       // Crear el pedido y los items en la base de datos
       const order = await prisma.pedido.create({
         data: {
+          paymentType,
+          ruc,
+          companyAddress,
+          companyName,
           userId,
           totalAmount,
           status: 'PENDIENTE',
