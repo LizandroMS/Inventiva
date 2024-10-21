@@ -172,6 +172,34 @@ export default function PedidosPage() {
     };
   }, [router]);
 
+  // Función para cancelar el pedido
+  const handleCancelOrder = async (id: number) => {
+    try {
+      const nuevoEstado: string = "CANCELADO";
+      const res = await fetch(`/api/personal/updateOrderStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, nuevoEstado }),
+      });
+
+      if (res.ok) {
+        socket.emit("newOrder", { CANCELACION: nuevoEstado });
+        // Actualizar el estado del pedido en la interfaz
+        setPedidos((prevPedidos) =>
+          prevPedidos.map((pedido) =>
+            pedido.id === id ? { ...pedido, status: "CANCELADO" } : pedido
+          )
+        );
+      } else {
+        console.error("Error al cancelar el pedido.");
+      }
+    } catch (error) {
+      console.error("Error al cancelar el pedido:", error);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("user");
@@ -278,6 +306,16 @@ export default function PedidosPage() {
                     Total a pagar: S/ {pedido.totalAmount.toFixed(2)}
                   </p>
                 </div>
+
+                {/* Botón para cancelar pedido si el estado es PENDIENTE */}
+                {pedido.status === "PENDIENTE" && (
+                  <button
+                    onClick={() => handleCancelOrder(pedido.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg mt-4 transition-colors"
+                  >
+                    Cancelar Pedido
+                  </button>
+                )}
               </div>
             ))
           ) : (

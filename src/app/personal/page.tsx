@@ -67,7 +67,7 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
-  console.log(branchId)
+  console.log(branchId);
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
   }, [isAudioAllowed]);
@@ -115,9 +115,15 @@ export default function PersonalPage() {
       fetchPedidos();
       setTokenValid(true);
 
-      socket.on("newOrder", () => {
+      socket.on("newOrder", (data) => {
+        const Validation: string = data.CANCELACION;
+        console.log("Validation ===> ", Validation);
         fetchPedidos();
-        if (isAudioAllowedRef.current && audioRef.current) {
+        if (
+          isAudioAllowedRef.current &&
+          audioRef.current &&
+          Validation != "CANCELADO"
+        ) {
           audioRef.current.play().catch((error) => {
             console.error("Error al reproducir el audio:", error);
           });
@@ -151,7 +157,10 @@ export default function PersonalPage() {
             }
             return pedido;
           })
-          .filter((pedido) => pedido.status !== "ENTREGADO" && pedido.status !== "CANCELADO"); // Excluimos los pedidos entregados o cancelados
+          .filter(
+            (pedido) =>
+              pedido.status !== "ENTREGADO" && pedido.status !== "CANCELADO"
+          ); // Excluimos los pedidos entregados o cancelados
 
         setPedidos(updatedPedidos);
 
@@ -226,7 +235,9 @@ export default function PersonalPage() {
             <table>
               <tr>
                 <td>Fecha:</td>
-                <td class="right">${new Date(pedido.createdAt).toLocaleString()}</td>
+                <td class="right">${new Date(
+                  pedido.createdAt
+                ).toLocaleString()}</td>
               </tr>
               <tr>
                 <td>Cliente:</td>
@@ -238,18 +249,27 @@ export default function PersonalPage() {
               </tr>
               <tr>
                 <td>Dirección:</td>
-                <td class="right">${pedido.User.addresses.find(addr => addr.isActive)?.address || "N/A"}</td>
+                <td class="right">${
+                  pedido.User.addresses.find((addr) => addr.isActive)
+                    ?.address || "N/A"
+                }</td>
               </tr>
             </table>
   
             <h3>Productos</h3>
             <table>
-              ${pedido.items.map(item => `
+              ${pedido.items
+                .map(
+                  (item) => `
                 <tr>
                   <td>${item.productName}</td>
-                  <td class="right">${item.quantity} x S/ ${(item.promotional_price || item.price).toFixed(2)}</td>
+                  <td class="right">${item.quantity} x S/ ${(
+                    item.promotional_price || item.price
+                  ).toFixed(2)}</td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join("")}
             </table>
   
             <div class="right total">
@@ -275,14 +295,14 @@ export default function PersonalPage() {
   };
 
   const getAvailableStates = (estadoActual: string) => {
-    console.log("estado actual",estadoActual)
+    console.log("estado actual", estadoActual);
     switch (estadoActual) {
       case "PENDIENTE":
-        return ["PENDIENTE","PREPARANDO"];
+        return ["PENDIENTE", "PREPARANDO"];
       case "PREPARANDO":
-        return [,"PREPARANDO","DRIVER"];
+        return [, "PREPARANDO", "DRIVER"];
       case "DRIVER":
-        return ["DRIVER","ENTREGADO"];
+        return ["DRIVER", "ENTREGADO"];
       case "ENTREGADO":
       case "CANCELADO":
         return []; // No se puede cambiar el estado una vez que se ha entregado o cancelado
@@ -397,8 +417,7 @@ export default function PersonalPage() {
                 </h3>
                 <ul className="space-y-2">
                   {pedido.items.map((item) => {
-                    const precioFinal =
-                      item.promotional_price ?? item.price;
+                    const precioFinal = item.promotional_price ?? item.price;
 
                     return (
                       <li
