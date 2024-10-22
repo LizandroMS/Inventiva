@@ -522,15 +522,17 @@ export default function PersonalPage() {
 
               {/* Selector de estados */}
               <select
-                value={pedido.status}
+                value={pedido.status || ""}
                 onChange={(e) => cambiarEstadoPedido(pedido.id, e.target.value)}
                 className="mt-4 bg-gray-100 border border-gray-300 text-black py-2 px-4 rounded-lg"
               >
-                {getAvailableStates(pedido.status).map((estado) => (
-                  <option key={estado} value={estado}>
-                    {estado.charAt(0).toUpperCase() + estado.slice(1)}
-                  </option>
-                ))}
+                {getAvailableStates(pedido.status)
+                  .filter((estado) => estado !== undefined && estado !== null)
+                  .map((estado) => (
+                    <option key={estado} value={estado}>
+                      {estado.charAt(0).toUpperCase() + estado.slice(1)}
+                    </option>
+                  ))}
               </select>
 
               {/* Botón para cancelar */}

@@ -13,7 +13,7 @@ export default function Footer() {
           <ul className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm sm:text-base">
             <li>
               <a
-                href="/about"
+                href="/footer/nosotros"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
                 Sobre nosotros
@@ -29,7 +29,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="/terms"
+                href="/footer/terminos"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
                 Términos y condiciones
@@ -37,7 +37,15 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="/privacy"
+                href="/footer/mivi"
+                className="hover:underline hover:text-gray-200 transition-colors duration-300"
+              >
+                Mision / Vision
+              </a>
+            </li>
+            <li>
+              <a
+                href="/footer/privacidad"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
                 Política de privacidad
