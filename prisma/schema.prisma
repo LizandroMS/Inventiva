@@ -16,20 +16,21 @@ generator client {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   fullName  String
-  email     String    @unique
+  email     String      @unique
   password  String
   phone     String
   dni       String
   birthDate DateTime
-  role      String    @default("cliente") // Añadimos el campo de rol
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  role      String      @default("cliente")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   orders    Pedido[]
   branchId  Int?
-  branch    Branch?   @relation(fields: [branchId], references: [id])
+  branch    Branch?     @relation(fields: [branchId], references: [id])
   addresses Address[]
+  claimBook ClaimBook[] // Relación con la nueva tabla de reclamos
 }
 
 model Branch {
@@ -55,7 +56,7 @@ model Product {
   created_by        String
   branchId          Int
   branch            Branch      @relation(fields: [branchId], references: [id])
-  imagenUrl         String? // Campo para almacenar la URL de la imagen
+  imagenUrl         String?
   orders            OrderItem[]
   estadoProduct     Boolean?
 }
@@ -78,23 +79,22 @@ model Pedido {
   createdAt   DateTime    @default(now())
   User        User        @relation(fields: [userId], references: [id])
 
-  // Nuevos campos para comprobante de pago
-  paymentType   String?    @default("Boleta") // "Boleta" o "Factura"
-  ruc           String?   // RUC para factura, opcional
-  companyName   String?   // Nombre de la empresa, opcional
-  companyAddress String?  // Dirección de la empresa, opcional
+  paymentType    String? @default("Boleta")
+  ruc            String?
+  companyName    String?
+  companyAddress String?
 }
 
 model OrderItem {
   id                Int      @id @default(autoincrement())
   orderId           Int
-  productId         Int? // Puedes mantener esto para saber qué producto original estaba relacionado, pero no es obligatorio
-  productName       String // Nombre del producto en el momento del pedido
-  price             Float // Precio actual del producto en el momento del pedido
-  promotional_price Float? // Precio promocional del producto (si aplica)
-  familia           String // Familia del producto en el momento del pedido
+  productId         Int?
+  productName       String
+  price             Float
+  promotional_price Float?
+  familia           String
   quantity          Int
-  totalPrice        Float // Precio total por este producto (cantidad * precio/promocional_price)
+  totalPrice        Float
   order             Pedido   @relation(fields: [orderId], references: [id])
   observation       String?
   Product           Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
@@ -104,12 +104,25 @@ model OrderItem {
 
 model Address {
   id         Int      @id @default(autoincrement())
-  address    String // Dirección del usuario
-  referencia String? // Campo opcional para la referencia
+  address    String
+  referencia String?
   createdAt  DateTime @default(now())
-  userId     Int // Relación con el usuario
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Eliminación en cascada
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
   isActive   Boolean  @default(false)
+}
+
+// Nueva tabla para el Libro de Reclamaciones
+model ClaimBook {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull) // No eliminación en cascada
+  reason      String // Motivo del reclamo
+  description String // Detalles del reclamo
+  response    String? // Respuesta al reclamo
+  status      String   @default("Pendiente") // Estado del reclamo (Pendiente, Resuelto, Rechazado)
+  createdAt   DateTime @default(now()) // Fecha del reclamo
+  updatedAt   DateTime @updatedAt // Última fecha de actualización
 }
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
