@@ -28,8 +28,6 @@ export default function FilteredClaimBook() {
   const [totalClaims, setTotalClaims] = useState(0);
   const [user, setUser] = useState<User | null>(null);
 
-
-
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -37,8 +35,7 @@ export default function FilteredClaimBook() {
     }
   }, []);
 
-  
-
+  // Función para obtener los reclamos filtrados
   const fetchClaims = async () => {
     if (!user?.id) return;
 
@@ -64,9 +61,11 @@ export default function FilteredClaimBook() {
     }
   };
 
-  useEffect(() => {
+  // Función para manejar el filtro al hacer clic en el botón
+  const handleFilter = () => {
+    setPage(1); // Reiniciar la paginación cuando se cambia el filtro
     fetchClaims();
-  }, [page, startDate, endDate]);
+  };
 
   const totalPages = Math.ceil(totalClaims / pageSize);
 
@@ -105,7 +104,7 @@ export default function FilteredClaimBook() {
           </div>
 
           <button
-            onClick={() => setPage(1)} // Reiniciar paginación cuando cambien las fechas
+            onClick={handleFilter} // Solo busca cuando se presiona este botón
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline"
           >
             Filtrar
@@ -151,7 +150,10 @@ export default function FilteredClaimBook() {
             <div className="mt-6 flex justify-center items-center">
               <button
                 disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
+                onClick={() => {
+                  setPage(page - 1);
+                  fetchClaims(); // Volver a ejecutar la búsqueda
+                }}
                 className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-l-lg"
               >
                 Anterior
@@ -161,7 +163,10 @@ export default function FilteredClaimBook() {
               </span>
               <button
                 disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
+                onClick={() => {
+                  setPage(page + 1);
+                  fetchClaims(); // Volver a ejecutar la búsqueda
+                }}
                 className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-r-lg"
               >
                 Siguiente
