@@ -17,7 +17,7 @@ const geistMono = localFont({
 
 // Metadatos con favicon y Open Graph
 export const metadata: Metadata = {
-  title: "Tu Página Web",
+  title: "El Sabrasito",
   description: "Descripción de tu página web",
   icons: {
     icon: "/og-image.png",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.elsabrasito.com",
-    title: "Tu Página Web",
+    title: "El Sabrasito",
     description: "Descripción de tu página web",
     images: [
       {
@@ -52,10 +52,10 @@ export default function RootLayout({
         {/* Meta etiquetas Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.elsabrasito.com" />
-        <meta property="og:title" content="elsabrasito" />
+        <meta property="og:title" content="El Sabrasito" />
         <meta
           property="og:description"
-          content="Descripción de tu página web"
+          content="Somos una empresa peruana con más de 10 años de experiencia, con un sabor ya muy conocido por nuestros clientes."
         />
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:image:width" content="1200" />
