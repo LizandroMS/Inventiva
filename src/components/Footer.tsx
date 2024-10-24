@@ -51,14 +51,14 @@ export default function Footer() {
                 Política de privacidad
               </a>
             </li>
-            {/* <li>
+            <li>
               <a
-                href="/contact"
+                href="/footer/reclamaciones"
                 className="hover:underline hover:text-gray-200 transition-colors duration-300"
               >
-                Contáctanos
+                Libro de Reclamaciones
               </a>
-            </li> */}
+            </li>
           </ul>
         </nav>
 

@@ -30,7 +30,7 @@ model User {
   branchId  Int?
   branch    Branch?     @relation(fields: [branchId], references: [id])
   addresses Address[]
-  claimBook ClaimBook[] // Relación con la nueva tabla de reclamos
+  claimBook ClaimBook[] 
 }
 
 model Branch {
@@ -112,11 +112,11 @@ model Address {
   isActive   Boolean  @default(false)
 }
 
-// Nueva tabla para el Libro de Reclamaciones
+
 model ClaimBook {
   id          Int      @id @default(autoincrement())
   userId      Int?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull) // No eliminación en cascada
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull) 
   reason      String // Motivo del reclamo
   description String // Detalles del reclamo
   response    String? // Respuesta al reclamo
@@ -126,14 +126,5 @@ model ClaimBook {
 }
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
-//cada ves que se agrege datos se debe ejecutar     npx prisma generate
-//npx prisma migrate dev --name add_branch_to_user_relation
 
-//si quieres migrar las nuevas columnas agregadas a una tabla  npx prisma migrate dev
-
-//npx prisma generate
-//npx prisma migrate deploy
-
-//Migracion de nuevas columnas , estas deben ser de tipo opcionl ?
-//npx prisma migrate dev --name add-familia-to-product
 //npx prisma generate

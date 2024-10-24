@@ -12,6 +12,7 @@ import {
   FaSyncAlt, // Icono para actualizar productos
   FaBuilding, // Icono para branch
   FaUserShield, // Icono para editar acceso al personal
+  FaExclamationCircle, // Icono para reclamaciones
 } from "react-icons/fa"; // Íconos
 import Footer from "@/components/Footer";
 
@@ -193,6 +194,25 @@ export default function AdminPage() {
               onClick={() => router.push("/admin/EditarAccesoPersonal")}
             >
               Editar Acceso
+            </button>
+          </div>
+
+          {/* Card: Reclamaciones */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <div className="flex items-center justify-center mb-4 text-pink-500">
+              <FaExclamationCircle size={50} />
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-gray-700 text-center">
+              Reclamaciones
+            </h2>
+            <p className="text-gray-600 text-center">
+              Gestiona y revisa las reclamaciones realizadas por los usuarios.
+            </p>
+            <button
+              className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+              onClick={() => router.push("/admin/Reclamaciones")}
+            >
+              Ver Reclamaciones
             </button>
           </div>
         </div>
