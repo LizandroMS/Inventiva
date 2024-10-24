@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function MissionVision() {
-
   const [user, setUser] = useState<User | null>(null);
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const router = useRouter();
@@ -41,16 +40,15 @@ export default function MissionVision() {
           Nuestra Misión y Visión
         </h1>
         <div className="bg-white p-8 rounded-lg shadow-lg text-gray-800 leading-relaxed">
-          
           {/* Misión */}
           <section className="mb-12">
             <h2 className="text-3xl font-bold text-green-600 mb-4">Misión</h2>
             <p className="text-lg mb-4">
-              Elaborar y ofrecer principalmente el mejor pollo a la brasa en nuestra zona,
-              con una variedad de platos a la carta, chifa y parrillas, utilizando insumos
-              de alta calidad que son oriundos de la zona. Nuestro compromiso es también
-              brindar la mejor atención a nuestros clientes, haciendo que se sientan
-              especiales y valorados.
+              Elaborar y ofrecer principalmente el mejor pollo a la brasa en
+              nuestra zona, con una variedad de platos a la carta, chifa y
+              parrillas, utilizando insumos de alta calidad que son oriundos de
+              la zona. Nuestro compromiso es también brindar la mejor atención a
+              nuestros clientes, haciendo que se sientan especiales y valorados.
             </p>
           </section>
 
@@ -58,10 +56,11 @@ export default function MissionVision() {
           <section>
             <h2 className="text-3xl font-bold text-yellow-600 mb-4">Visión</h2>
             <p className="text-lg">
-              Consolidarnos como la primera empresa de Barranca en tener una cadena de
-              pollerías a nivel nacional, con un alto reconocimiento en el sabor de nuestros
-              productos. Además, buscamos brindar un servicio de excelencia a través de
-              nuestro dedicado equipo de trabajo.
+              Consolidarnos como la primera empresa de Barranca en tener una
+              cadena de pollerías a nivel nacional, con un alto reconocimiento
+              en el sabor de nuestros productos. Además, buscamos brindar un
+              servicio de excelencia a través de nuestro dedicado equipo de
+              trabajo.
             </p>
           </section>
         </div>

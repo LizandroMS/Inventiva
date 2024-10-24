@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export default function AboutUs() {
-
   const [user, setUser] = useState<User | null>(null);
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const router = useRouter();
