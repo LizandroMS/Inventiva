@@ -30,7 +30,7 @@ model User {
   branchId  Int?
   branch    Branch?     @relation(fields: [branchId], references: [id])
   addresses Address[]
-  claimBook ClaimBook[] 
+  claimBook ClaimBook[]
 }
 
 model Branch {
@@ -112,11 +112,10 @@ model Address {
   isActive   Boolean  @default(false)
 }
 
-
 model ClaimBook {
   id          Int      @id @default(autoincrement())
   userId      Int?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull) 
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   reason      String // Motivo del reclamo
   description String // Detalles del reclamo
   response    String? // Respuesta al reclamo
