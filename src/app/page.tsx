@@ -6,10 +6,11 @@ import Slider from "react-slick";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Product } from "@/context/CartContext";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import { platos } from "@/util/platos";
+import { Plato } from "@/util/interfaces/platos";
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -73,7 +74,7 @@ export default function Home() {
     localStorage.removeItem("cartItems");
     setUser(null);
     router.push("/");
-    window.location.reload(); 
+    window.location.reload();
   };
 
   const settings = {
@@ -117,29 +118,7 @@ export default function Home() {
     },
   ];
 
-  const platos = [
-    {
-      id: 1,
-      nombre: "Pollos a la Brasa",
-      imagen: "/images/PolloEntero.png",
-    },
-    {
-      id: 2,
-      nombre: "Chifa",
-      imagen: "/images/OctavoPollo.png",
-    },
-    {
-      id: 3,
-      nombre: "Platos a la Carta",
-      imagen: "/images/PolloEntero.png",
-    },
-    {
-      id: 4,
-      nombre: "Parrillas",
-      imagen: "/images/OctavoPollo.png",
-    },
-    // Agrega más categorías según necesites
-  ];
+  
 
   return (
     <div>
@@ -158,7 +137,7 @@ export default function Home() {
                     src={item.imagen}
                     alt={item.nombre}
                     layout="fill"
-                    objectFit="contain"  // Cambiado para que no se recorte
+                    objectFit="contain" // Cambiado para que no se recorte
                     objectPosition="center"
                     className="rounded-lg"
                     quality={100}
@@ -172,12 +151,12 @@ export default function Home() {
       )}
 
       <section className="py-10 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-8xl mx-auto px-4">
           <h2 className="text-3xl font-bold mb-6 text-center text-gray-700">
             Nuestro Menú
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {platos.map((plato) => (
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {platos.map((plato:Plato) => (
               <Link
                 key={plato.id}
                 href={{
@@ -198,7 +177,7 @@ export default function Home() {
                       src={plato.imagen}
                       alt={plato.nombre}
                       layout="fill"
-                      objectFit="contain"  // Ajustado para que no se recorte
+                      objectFit="contain" // Ajustado para que no se recorte
                     />
                   </div>
                 </div>

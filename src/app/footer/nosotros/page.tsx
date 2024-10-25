@@ -6,10 +6,12 @@ import { User } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function AboutUs() {
   const [user, setUser] = useState<User | null>(null);
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const router = useRouter();
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -27,7 +29,6 @@ export default function AboutUs() {
     localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
     setUser(null); // Limpiar el estado del usuario
-
     router.push("/");
     window.location.reload();
   };
@@ -37,16 +38,18 @@ export default function AboutUs() {
       <Header user={user} handleLogout={handleLogout} cartItems={cartItems} />
 
       {/* Hero section */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative w-full h-80 md:h-[600px]">
         <Image
-          src="/images/Todo_personal.jpg" // Asegúrate de tener una imagen atractiva en esta ruta
+          src="/images/Todo_personal.jpg"
           alt="Nosotros"
           layout="fill"
-          objectFit="cover"
-          className="w-full h-64 md:h-96 p-100"
+          objectFit="cover" // Cambiado a "cover" para cubrir toda el área
+          className="w-full h-full object-cover"
         />
-        <div className="relative z-10 text-center text-white py-20 md:py-32">
+        {/* Overlay oscuro para el texto */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        {/* Texto centrado */}
+        <div className="absolute inset-0 flex flex-col justify-center items-center z-10 text-center text-white">
           <h1 className="text-5xl font-extrabold mb-4">Sobre Nosotros</h1>
           <p className="text-lg font-medium">
             Nuestra historia, compromiso y evolución a lo largo de los años
@@ -84,7 +87,7 @@ export default function AboutUs() {
               </div>
               <div className="md:w-1/2 md:pl-8">
                 <Image
-                  src="/images/Mascota_Tienda.jpg" // Asegúrate de tener una imagen relacionada con la historia del equipo
+                  src="/images/Mascota_Tienda.jpg"
                   alt="Nuestro equipo"
                   width={500}
                   height={300}
