@@ -40,11 +40,11 @@ export default function AboutUs() {
       <div className="relative">
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <Image
-          src="/images/hero-about-us.jpg" // Asegúrate de tener una imagen atractiva en esta ruta
+          src="/images/Todo_personal.jpg" // Asegúrate de tener una imagen atractiva en esta ruta
           alt="Nosotros"
           layout="fill"
           objectFit="cover"
-          className="w-full h-64 md:h-96"
+          className="w-full h-64 md:h-96 p-100"
         />
         <div className="relative z-10 text-center text-white py-20 md:py-32">
           <h1 className="text-5xl font-extrabold mb-4">Sobre Nosotros</h1>
@@ -84,7 +84,7 @@ export default function AboutUs() {
               </div>
               <div className="md:w-1/2 md:pl-8">
                 <Image
-                  src="/images/nosotros-team.jpg" // Asegúrate de tener una imagen relacionada con la historia del equipo
+                  src="/images/Mascota_Tienda.jpg" // Asegúrate de tener una imagen relacionada con la historia del equipo
                   alt="Nuestro equipo"
                   width={500}
                   height={300}
