@@ -26,10 +26,10 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://www.elsabrasito.com",
     title: "El Sabrasito",
-    description: "Descripción de tu página web",
+    description: "Somos una empresa peruana con más de 10 años de experiencia, con un sabor ya muy conocido por nuestros clientes.",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://www.elsabrasito.com/og-image.png", // Asegúrate de usar la URL completa
         width: 1200,
         height: 630,
         alt: "Descripción de la imagen de previsualización",
@@ -57,7 +57,7 @@ export default function RootLayout({
           property="og:description"
           content="Somos una empresa peruana con más de 10 años de experiencia, con un sabor ya muy conocido por nuestros clientes."
         />
-        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image" content="https://www.elsabrasito.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
       </head>
