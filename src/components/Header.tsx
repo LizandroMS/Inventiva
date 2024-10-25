@@ -18,13 +18,16 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
       <div className="container mx-auto flex items-center justify-between p-4">
         {/* Sección Izquierda: Logo e imagen */}
         <div className="flex items-center">
-          <Image
-            src="/images/logo.png"
-            alt="Logo"
-            width={100}
-            height={100}
-            className="mr-2 rounded-full border-2 border-white"
-          />
+          <Link href="https://www.elsabrasito.com/">
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={100}
+              height={100}
+              className="mr-2 rounded-full border-2 border-white"
+            />
+          </Link>
+
           <h1 className="text-lg md:text-xl lg:text-2xl font-extrabold whitespace-nowrap tracking-wider">
             Pollería El Sabrosito
           </h1>
@@ -109,9 +112,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
               <Link href="/perfil">
                 <button className="bg-transparent text-white flex items-center space-x-2 hover:text-yellow-200 transition-transform transform hover:scale-105">
                   <FaUser className="h-6 w-6" /> {/* Icono de perfil */}
-                  <span className="text-base font-medium">
-                    {user.fullName}
-                  </span>
+                  <span className="text-base font-medium">{user.fullName}</span>
                 </button>
               </Link>
               <button
