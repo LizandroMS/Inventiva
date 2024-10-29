@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,  // Activar modo estricto de React
   swcMinify: true,        // Minificación de código usando SWC
-  output: 'export',
   images: {
     domains: ['firebasestorage.googleapis.com'],
     remotePatterns: [
