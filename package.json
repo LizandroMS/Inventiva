@@ -2,11 +2,11 @@
   "name": "inventiva",
   "version": "0.1.0",
   "private": true,
-  "homepage": "www.polleriaelsabrosito.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",
+    "export":"next export && next build",
     "lint": "next lint"
   },
   "dependencies": {
