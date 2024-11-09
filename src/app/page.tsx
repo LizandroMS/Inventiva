@@ -102,23 +102,21 @@ export default function Home() {
       id: 2,
       nombre: "1/8 Pollo a la Brasa",
       precio: "S/ 12.00",
-      imagen: "/images/promo1.png",
+      imagen: "/images/promos/promo2.png",
     },
-    {
-      id: 3,
-      nombre: "Combo Familiar",
-      precio: "S/ 85.00",
-      imagen: "/images/promo1.png",
-    },
-    {
-      id: 4,
-      nombre: "Pollo al Horno",
-      precio: "S/ 50.00",
-      imagen: "/images/promo1.png",
-    },
+    // {
+    //   id: 3,
+    //   nombre: "Combo Familiar",
+    //   precio: "S/ 85.00",
+    //   imagen: "/images/promo1.png",
+    // },
+    // {
+    //   id: 4,
+    //   nombre: "Pollo al Horno",
+    //   precio: "S/ 50.00",
+    //   imagen: "/images/promo1.png",
+    // },
   ];
-
-  
 
   return (
     <div>
@@ -156,7 +154,7 @@ export default function Home() {
             Nuestro Menú
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-            {platos.map((plato:Plato) => (
+            {platos.map((plato: Plato) => (
               <Link
                 key={plato.id}
                 href={{

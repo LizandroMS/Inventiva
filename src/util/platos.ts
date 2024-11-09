@@ -18,12 +18,12 @@ export const platos = [
     {
         id: 4,
         nombre: "Bebidas sin alcohol",
-        imagen: "/images/options/Bebidas_en_general.jpg",
+        imagen: "/images/options/Bebidas_sin_alcohol.jpg",
     },
     {
         id: 5,
         nombre: "Bebidas con alcohol",
-        imagen: "/images/options/Bebidas_en_general.jpg",
+        imagen: "/images/options/Bebidas_con_alcohol.jpg",
     },
 
 ];
