@@ -18,7 +18,7 @@ export default function Header({ user, handleLogout, cartItems }: HeaderProps) {
       <div className="container mx-auto flex items-center justify-between p-4">
         {/* Sección Izquierda: Logo e imagen */}
         <div className="flex items-center">
-          <Link href="https://www.elsabrasito.com/">
+          <Link href="https://www.polleriasabrosito.com/">
             <Image
               src="/images/logo.png"
               alt="Logo"

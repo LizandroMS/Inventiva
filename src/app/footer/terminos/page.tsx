@@ -46,10 +46,10 @@ export default function TermsAndConditions() {
           <p className="mb-6">
             En nuestro sitio web (
             <a
-              href="https://www.elsabrosito.com"
+              href="https://www.polleriasabrosito.com/"
               className="text-blue-600 underline"
             >
-              www.elsabrosito.com
+              https://www.polleriasabrosito.com/
             </a>
             ), nos comprometemos a leer nuestros Términos y Condiciones del
             Servicio Online. Al utilizar nuestro sitio web, usted acepta
@@ -167,10 +167,10 @@ export default function TermsAndConditions() {
           <p className="mb-6">
             Las ofertas y precios bajos en nuestro sitio web (
             <a
-              href="https://www.elsabrosito.com"
+              href="https://www.polleriasabrosito.com/"
               className="text-blue-600 underline"
             >
-              www.elsabrosito.com
+              https://www.polleriasabrosito.com/
             </a>
             ) solo aplican para compras online. Si desea comprar en la tienda
             física, el precio puede variar.
