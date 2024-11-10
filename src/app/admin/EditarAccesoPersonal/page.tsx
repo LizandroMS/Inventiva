@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Branch, User } from "@prisma/client";
 import Header from "@/components/Header_Interno";
 import Footer from "@/components/Footer";
+import { format } from "date-fns";
 
 // Interfaz extendida para incluir direcciones
 interface Address {
@@ -167,7 +168,7 @@ export default function EditarAccesoPersonal() {
                 <td className="p-4 text-black">{user.fullName}</td>
                 <td className="p-4 text-black">{user.email}</td>
                 <td className="p-4 text-black">{user.phone}</td>
-                <td className="p-4 text-black">{user.birthDate.toString()}</td>
+                <td className="p-4 text-black">{format(new Date(user.birthDate), "dd/MM/yyyy")}</td>
                 <td className="p-4 text-black">{user.role}</td>
                 <td className="p-4 text-black">{user.branch?.name || "N/A"}</td>
                 <td className="p-4 text-black">
