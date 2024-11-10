@@ -15,6 +15,7 @@ interface Address {
 interface UserWithAddresses extends User {
   addresses: Address[];
   branch: Branch | null; // Incluimos la sucursal si es personal
+  birthDate:Date
 }
 
 export default function EditarAccesoPersonal() {
@@ -154,7 +155,7 @@ export default function EditarAccesoPersonal() {
               <th className="p-4 text-black">Nombre</th>
               <th className="p-4 text-black">Correo</th>
               <th className="p-4 text-black">Teléfono</th>
-              <th className="p-4 text-black">DNI</th>
+              <th className="p-4 text-black">Cumpleaños</th>
               <th className="p-4 text-black">Rol</th>
               <th className="p-4 text-black">Sucursal</th>
               <th className="p-4 text-black">Acciones</th>
@@ -166,7 +167,7 @@ export default function EditarAccesoPersonal() {
                 <td className="p-4 text-black">{user.fullName}</td>
                 <td className="p-4 text-black">{user.email}</td>
                 <td className="p-4 text-black">{user.phone}</td>
-                <td className="p-4 text-black">{user.dni}</td>
+                <td className="p-4 text-black">{user.birthDate.toString()}</td>
                 <td className="p-4 text-black">{user.role}</td>
                 <td className="p-4 text-black">{user.branch?.name || "N/A"}</td>
                 <td className="p-4 text-black">
