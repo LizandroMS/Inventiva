@@ -133,6 +133,7 @@ export default function PedidosPage() {
 
     const fetchPedidos = async () => {
       const token = localStorage.getItem("userToken"); // Obtener el token del localStorage
+      console.log("token  :  ",token)
       if (!token) {
         console.error("Usuario no autenticado");
         router.push("/login"); // Redirigir al login si no hay token

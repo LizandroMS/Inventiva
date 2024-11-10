@@ -110,6 +110,7 @@ export default function LoginPage() {
       }
 
       const user = await res.json();
+      localStorage.setItem("userToken", user.token);
       localStorage.setItem("user", JSON.stringify(user));
 
       setTimeout(() => {
