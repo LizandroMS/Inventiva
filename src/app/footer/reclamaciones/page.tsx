@@ -41,6 +41,8 @@ export default function ClaimBook() {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
+      } else {
+        router.push("/"); // Redirige al inicio si no está autenticado
       }
 
       const storedCart = localStorage.getItem("cartItems");
