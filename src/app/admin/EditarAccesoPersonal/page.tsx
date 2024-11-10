@@ -235,7 +235,7 @@ export default function EditarAccesoPersonal() {
                   <input
                     type="text"
                     name="dni"
-                    value={selectedUser.dni}
+                    value={selectedUser.dni ||''}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border rounded-lg text-gray-800"
                   />

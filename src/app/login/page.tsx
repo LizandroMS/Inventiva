@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FaArrowLeft } from "react-icons/fa"; // Importamos el icono
+import { FaArrowLeft, FaCheck } from "react-icons/fa";
 
 interface Address {
   address: string;
@@ -15,8 +15,8 @@ export default function LoginPage() {
     fullName: "",
     email: "",
     password: "",
+    confirmPassword: "", // Nuevo campo para confirmar la contraseña
     phone: "",
-    dni: "",
     birthDate: "",
     addresses: [{ address: "", referencia: "", isActive: false }],
   });
@@ -87,6 +87,12 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/register", {
         method: "POST",
@@ -104,7 +110,6 @@ export default function LoginPage() {
       }
 
       const user = await res.json();
-      console.log("USER >> ", JSON.stringify(user));
       localStorage.setItem("user", JSON.stringify(user));
 
       setTimeout(() => {
@@ -169,8 +174,7 @@ export default function LoginPage() {
         onClick={() => router.push("/")}
         className="absolute top-4 left-4 text-blue-500 hover:text-blue-700 flex items-center"
       >
-        <FaArrowLeft className="mr-2" /> {/* Icono de regreso */}
-        Volver a Home
+        <FaArrowLeft className="mr-2" /> Volver a Home
       </button>
 
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -186,9 +190,7 @@ export default function LoginPage() {
             </h2>
             <form onSubmit={handleLoginSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
+                <label className="block text-gray-700">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -247,9 +249,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">
-                  Correo Electrónico
-                </label>
+                <label className="block text-gray-700">Correo Electrónico</label>
                 <input
                   type="email"
                   name="email"
@@ -270,6 +270,21 @@ export default function LoginPage() {
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
                 />
               </div>
+              <div className="mb-4 relative">
+                <label className="block text-gray-700">Confirmar Contraseña</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Repite tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
+                />
+                {formData.password && formData.password === formData.confirmPassword && (
+                  <FaCheck className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />
+                )}
+              </div>
+
               <div className="mb-4">
                 <label className="block text-gray-700">Teléfono</label>
                 <input
@@ -281,21 +296,9 @@ export default function LoginPage() {
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700">DNI</label>
-                <input
-                  type="text"
-                  name="dni"
-                  placeholder="Ingresa tu DNI"
-                  value={formData.dni}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
-                />
-              </div>
+
               <div className="mb-6">
-                <label className="block text-gray-700">
-                  Fecha de Nacimiento
-                </label>
+                <label className="block text-gray-700">Fecha de Nacimiento</label>
                 <input
                   type="date"
                   name="birthDate"
@@ -305,17 +308,13 @@ export default function LoginPage() {
                 />
               </div>
 
-              <h3 className="text-xl font-bold text-gray-700 mb-4">
-                Direcciones
-              </h3>
+              <h3 className="text-xl font-bold text-gray-700 mb-4">Direcciones</h3>
               {formData.addresses.map((address, index) => (
                 <div
                   key={index}
                   className="mb-4 border p-4 rounded-lg bg-gray-50"
                 >
-                  <label className="block text-gray-700">
-                    Dirección {index + 1}
-                  </label>
+                  <label className="block text-gray-700">Dirección {index + 1}</label>
                   <input
                     type="text"
                     placeholder="Ingresa la dirección"
@@ -323,9 +322,7 @@ export default function LoginPage() {
                     onChange={(e) => handleChange(e, index, "address")}
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white mb-2"
                   />
-                  <label className="block text-gray-700">
-                    Referencia {index + 1}
-                  </label>
+                  <label className="block text-gray-700">Referencia {index + 1}</label>
                   <input
                     type="text"
                     placeholder="Ingresa la referencia"
@@ -340,9 +337,7 @@ export default function LoginPage() {
                       onChange={(e) => handleChange(e, index, "isActive")}
                       className="mr-2"
                     />
-                    <label className="text-gray-700">
-                      Marcar como dirección activa
-                    </label>
+                    <label className="text-gray-700">Marcar como dirección activa</label>
                   </div>
                   <button
                     type="button"
@@ -361,25 +356,14 @@ export default function LoginPage() {
                 Agregar otra dirección
               </button>
 
-              <div className="mb-6">
-                <button
-                  type="submit"
-                  className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
-                >
-                  Registrarse
-                </button>
-              </div>
-              {error && <p className="text-red-500">{error}</p>}
-            </form>
-            <p className="text-center text-black">
-              ¿Ya tienes una cuenta?{" "}
               <button
-                onClick={() => setIsLogin(true)}
-                className="text-blue-500 hover:underline"
+                type="submit"
+                className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
               >
-                Inicia sesión aquí
+                Registrarse
               </button>
-            </p>
+            </form>
+            {error && <p className="text-red-500">{error}</p>}
           </div>
         )}
       </div>

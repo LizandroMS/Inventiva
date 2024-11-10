@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { fullName, email, password, phone, dni, birthDate, addresses } = req.body;
+    const { fullName, email, password, phone, birthDate, addresses } = req.body;
 
-    if (!fullName || !email || !password || !phone || !dni || !birthDate || !addresses || addresses.length === 0) {
+    if (!fullName || !email || !password || !phone || !birthDate || !addresses || addresses.length === 0) {
       return res.status(400).json({ error: 'Faltan campos requeridos o no se ha proporcionado ninguna dirección' });
     }
     // Validar que al menos una dirección esté marcada como activa
@@ -28,7 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           email,
           password: hashedPassword,
           phone,
-          dni,
           birthDate: new Date(birthDate),
           addresses: {
             create: addresses.map((addr: { address: string; referencia: string; isActive: boolean }) => ({
