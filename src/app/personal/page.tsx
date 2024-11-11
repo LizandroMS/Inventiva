@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+// Corrección en la importación de jwtDecode
 import {jwtDecode} from "jwt-decode";
 import Header from "@/components/Header_Interno";
 import { io } from "socket.io-client";
@@ -72,6 +73,7 @@ export default function PersonalPage() {
   const [isAudioAllowed, setIsAudioAllowed] = useState(false);
   const isAudioAllowedRef = useRef(isAudioAllowed);
   const estadosPosibles = ["PENDIENTE", "PREPARANDO", "DRIVER", "ENTREGADO"];
+  console.log(branchId);
 
   useEffect(() => {
     isAudioAllowedRef.current = isAudioAllowed;
@@ -82,14 +84,12 @@ export default function PersonalPage() {
     audioRef.current.load();
   }, []);
 
-  // Mover fetchPedidos fuera del useEffect
-  const fetchPedidos = async () => {
-    if (!branchId) {
-      console.error("Branch ID is not set.");
-      return;
-    }
+  // Función para obtener los pedidos
+  const fetchPedidos = async (branchIdToUse: number) => {
     try {
-      const res = await fetch(`/api/personal/getOrders?branchId=${branchId}`);
+      const res = await fetch(
+        `/api/personal/getOrders?branchId=${branchIdToUse}`
+      );
       if (res.ok) {
         const data = await res.json();
         setPedidos(data);
@@ -119,15 +119,15 @@ export default function PersonalPage() {
       }
 
       setBranchId(decoded.branchId);
-      setTokenValid(true);
 
-      // Llamar a fetchPedidos después de establecer branchId
-      fetchPedidos();
+      // Llamar a fetchPedidos con decoded.branchId
+      fetchPedidos(decoded.branchId);
+      setTokenValid(true);
 
       socket.on("newOrder", (data) => {
         const Validation: string = data.CANCELACION;
         console.log("Validation ===> ", Validation);
-        fetchPedidos();
+        fetchPedidos(decoded.branchId);
         if (
           isAudioAllowedRef.current &&
           audioRef.current &&
@@ -292,13 +292,13 @@ export default function PersonalPage() {
               ${pedido.items
                 .map(
                   (item) => `
-                  <tr>
-                    <td>${item.productName}</td>
-                    <td class="right">${item.quantity} x S/ ${(
-                      item.promotional_price || item.price
-                    ).toFixed(2)}</td>
-                  </tr>
-                `
+                <tr>
+                  <td>${item.productName}</td>
+                  <td class="right">${item.quantity} x S/ ${(
+                    item.promotional_price || item.price
+                  ).toFixed(2)}</td>
+                </tr>
+              `
                 )
                 .join("")}
             </table>
@@ -321,6 +321,7 @@ export default function PersonalPage() {
     }
   };
 
+
   const handleCancelarPedido = async (id: number) => {
     await cambiarEstadoPedido(id, "CANCELADO");
   };
@@ -339,6 +340,15 @@ export default function PersonalPage() {
         return []; // No se puede cambiar el estado una vez que se ha entregado o cancelado
       default:
         return estadosPosibles;
+    }
+  };
+
+  // Función para refrescar los pedidos
+  const refrescarPedidos = async () => {
+    if (branchId !== null) {
+      await fetchPedidos(branchId);
+    } else {
+      console.error("Branch ID is not set.");
     }
   };
 
@@ -387,10 +397,10 @@ export default function PersonalPage() {
           Bandeja de Pedidos
         </h1>
 
-        {/* Agregar botón de "Refrescar Pedidos" */}
+        {/* Botón "Refrescar Pedidos" */}
         <div className="flex justify-center mb-4">
           <button
-            onClick={fetchPedidos}
+            onClick={refrescarPedidos}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
           >
             Refrescar Pedidos
@@ -404,6 +414,7 @@ export default function PersonalPage() {
               className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between border-l-4 border-yellow-500"
             >
               <div>
+                {/* Información del pedido */}
                 <h2 className="font-bold text-lg text-yellow-600">
                   Pedido #{pedido.id}
                 </h2>
@@ -415,7 +426,7 @@ export default function PersonalPage() {
                   <span className="text-yellow-500">{pedido.status}</span>
                 </p>
 
-                {/* ...resto del código para mostrar los detalles del pedido... */}
+                {/* Aquí va el resto del contenido del pedido */}
               </div>
 
               <button
