@@ -7,6 +7,7 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation"; // Para redirigir al usuario
 import { io } from "socket.io-client";
 import Image from "next/image"; // Mantener el uso de Image de Next.js
+import WhatsappButton from "@/components/WhatsappButton";
 
 // Inicializar el socket
 const socket = io({
@@ -303,6 +304,10 @@ export default function CartPage() {
 
       {/* Footer */}
       <Footer />
+      <WhatsappButton
+        phoneNumber="993250683"
+        message="Hola, me gustaría saber más sobre sus productos!"
+      />
     </div>
   );
 }

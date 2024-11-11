@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { io } from "socket.io-client";
 import Image from "next/image"; // Mantener el uso de Image de Next.js
+import WhatsappButton from "@/components/WhatsappButton";
 
 // Inicializar el socket
 const socket = io({
@@ -328,6 +329,10 @@ export default function PedidosPage() {
       </div>
 
       <Footer />
+      <WhatsappButton
+        phoneNumber="993250683"
+        message="Hola, me gustaría saber más sobre sus productos!"
+      />
     </div>
   );
 }

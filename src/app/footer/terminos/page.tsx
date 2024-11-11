@@ -175,6 +175,13 @@ export default function TermsAndConditions() {
             ) solo aplican para compras online. Si desea comprar en la tienda
             física, el precio puede variar.
           </p>
+          <h2 className="text-3xl font-bold mt-8 mb-6">
+            6. Publicidad Y Promociones
+          </h2>
+          <p className="mb-6">
+            Aceptas que la empresa Corporacion Sabrosito H&V S.A.C. pueda enviarte correos y mensajes de promociones y/o publicidad.
+
+          </p>
         </div>
       </div>
       <Footer />

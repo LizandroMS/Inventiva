@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { platos } from "@/util/platos";
 import { Plato } from "@/util/interfaces/platos";
+import WhatsappButton from "@/components/WhatsappButton";
 interface ArrowProps {
   className?: string;
   style?: React.CSSProperties;
@@ -186,6 +187,10 @@ export default function Home() {
       </section>
 
       <Footer />
+      <WhatsappButton
+        phoneNumber="993250683"
+        message="Hola, me gustaría saber más sobre sus productos!"
+      />
     </div>
   );
 }

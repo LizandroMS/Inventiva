@@ -25,5 +25,9 @@ export const platos = [
         nombre: "Bebidas con alcohol",
         imagen: "/images/options/Bebidas_con_alcohol.jpg",
     },
-
+    {
+        id: 5,
+        nombre: "Parrillas",
+        imagen: "/images/options/Parrillas.jpg",
+    },
 ];

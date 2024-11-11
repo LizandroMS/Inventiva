@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
+import WhatsappButton from "@/components/WhatsappButton";
 
 interface Product {
   id: number;
@@ -352,6 +353,10 @@ export default function CartaPage() {
         </section>
       </main>
       <Footer />
+      <WhatsappButton
+        phoneNumber="993250683"
+        message="Hola, me gustaría saber más sobre sus productos!"
+      />
     </div>
   );
 }
