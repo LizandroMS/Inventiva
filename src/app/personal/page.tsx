@@ -173,9 +173,19 @@ export default function PersonalPage() {
         socket.emit("updateOrderStatus", { id, status: nuevoEstado });
       } else {
         console.error("Error al actualizar el estado del pedido");
+        const errorData = await res.json();
+        const errorMessage =
+          errorData.message || "Error al actualizar el estado del pedido";
+        window.alert(errorMessage);
       }
     } catch (error) {
       console.error("Error al cambiar el estado del pedido:", error);
+      // Mostrar el mensaje de error en una ventana emergente
+      let errorMessage = "Error al cambiar el estado del pedido";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      window.alert(errorMessage);
     }
   };
 
@@ -494,9 +504,7 @@ export default function PersonalPage() {
                     <>
                       <p className="text-gray-600">
                         RUC:{" "}
-                        <span className="font-bold">
-                          {pedido.ruc || "N/A"}
-                        </span>
+                        <span className="font-bold">{pedido.ruc || "N/A"}</span>
                       </p>
                       <p className="text-gray-600">
                         Nombre Empresa:{" "}
