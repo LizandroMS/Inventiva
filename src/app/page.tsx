@@ -189,7 +189,7 @@ export default function Home() {
       <Footer />
       <WhatsappButton
         phoneNumber="914931631"
-        message="Hola, me gustaría saber más sobre sus productos. 👀"
+        message="Hola, me gustaría saber más sobre sus productos. \u{1F440}"
       />
     </div>
   );
