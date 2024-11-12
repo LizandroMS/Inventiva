@@ -189,7 +189,7 @@ export default function Home() {
       <Footer />
       <WhatsappButton
         phoneNumber="914931631"
-        message={encodeURIComponent("Hola, me gustaría saber más sobre sus productos. 👀")}
+        message="Hola, me gustaría saber más sobre sus productos. 👀"
       />
     </div>
   );
