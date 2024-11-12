@@ -355,7 +355,7 @@ export default function CartaPage() {
       <Footer />
       <WhatsappButton
         phoneNumber="914931631"
-        message="Hola, me gustaría saber más sobre sus productos. 👀"
+        message="Hola, me gustaría saber más sobre sus productos."
       />
     </div>
   );

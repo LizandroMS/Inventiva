@@ -331,7 +331,7 @@ export default function PedidosPage() {
       <Footer />
       <WhatsappButton
         phoneNumber="914931631"
-        message="Hola, me gustaría saber más sobre sus productos. 👀"
+        message="Hola, me gustaría saber más sobre sus productos."
       />
     </div>
   );
