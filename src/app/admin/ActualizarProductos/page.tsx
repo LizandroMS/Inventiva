@@ -263,6 +263,21 @@ export default function EditarProductosPage() {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
+                  Descripcion
+                </label>
+                <input
+                  type="text"
+                  value={editingProduct?.description || ""}
+                  onChange={(e) =>
+                    setEditingProduct((prev) =>
+                      prev ? { ...prev, name: e.target.value } : prev
+                    )
+                  }
+                  className="w-full p-3 border rounded-lg text-black"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 font-semibold mb-2">
                   Precio
                 </label>
                 <input

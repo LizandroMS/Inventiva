@@ -1,4 +1,3 @@
-// src/pages/admin/AgregarBranch.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,6 +9,15 @@ export default function AgregarBranch() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [schedules, setSchedules] = useState([
+    { day: "Lunes", startTime: "", endTime: "" },
+    { day: "Martes", startTime: "", endTime: "" },
+    { day: "Miércoles", startTime: "", endTime: "" },
+    { day: "Jueves", startTime: "", endTime: "" },
+    { day: "Viernes", startTime: "", endTime: "" },
+    { day: "Sábado", startTime: "", endTime: "" },
+    { day: "Domingo", startTime: "", endTime: "" },
+  ]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
@@ -17,6 +25,11 @@ export default function AgregarBranch() {
   const handleSave = async () => {
     if (!name || !address || !phone) {
       setErrorMessage("Todos los campos son obligatorios.");
+      return;
+    }
+
+    if (schedules.some((schedule) => !schedule.startTime || !schedule.endTime)) {
+      setErrorMessage("Completa los horarios de todos los días.");
       return;
     }
 
@@ -30,6 +43,7 @@ export default function AgregarBranch() {
           name,
           address,
           phone,
+          schedules,
         }),
       });
 
@@ -39,6 +53,13 @@ export default function AgregarBranch() {
         setName("");
         setAddress("");
         setPhone("");
+        setSchedules(
+          schedules.map((schedule) => ({
+            ...schedule,
+            startTime: "",
+            endTime: "",
+          }))
+        );
         setTimeout(() => {
           router.push("/admin"); // Redirigir después de 2 segundos
         }, 2000);
@@ -51,19 +72,32 @@ export default function AgregarBranch() {
     }
   };
 
+  const handleScheduleChange = (index: number, field: string, value: string) => {
+    const updatedSchedules = [...schedules];
+    updatedSchedules[index] = {
+      ...updatedSchedules[index],
+      [field]: value,
+    };
+    setSchedules(updatedSchedules);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header /> {/* Header reutilizable */}
 
       <div className="container mx-auto p-8 flex-grow">
-        <h1 className="text-4xl font-bold mb-10 text-center text-gray-800">Agregar Nueva Sucursal</h1>
+        <h1 className="text-4xl font-bold mb-10 text-center text-gray-800">
+          Agregar Nueva Sucursal
+        </h1>
 
         <div className="max-w-lg mx-auto bg-white shadow-md p-6 rounded-lg">
           {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
           {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
 
           <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Nombre de la Sucursal</label>
+            <label className="block text-gray-700 font-semibold mb-2">
+              Nombre de la Sucursal
+            </label>
             <input
               type="text"
               value={name}
@@ -94,6 +128,33 @@ export default function AgregarBranch() {
               placeholder="Ej. 999 888 777"
             />
           </div>
+
+          <h3 className="text-lg font-semibold mb-4">Horarios de Atención</h3>
+          {schedules.map((schedule, index) => (
+            <div key={index} className="mb-4">
+              <label className="block text-gray-700 font-semibold mb-2">
+                {schedule.day}
+              </label>
+              <div className="flex gap-4">
+                <input
+                  type="time"
+                  value={schedule.startTime}
+                  onChange={(e) =>
+                    handleScheduleChange(index, "startTime", e.target.value)
+                  }
+                  className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
+                />
+                <input
+                  type="time"
+                  value={schedule.endTime}
+                  onChange={(e) =>
+                    handleScheduleChange(index, "endTime", e.target.value)
+                  }
+                  className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
+                />
+              </div>
+            </div>
+          ))}
 
           <button
             onClick={handleSave}

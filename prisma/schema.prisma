@@ -41,7 +41,18 @@ model Branch {
   products   Product[]
   promotions Promotion[]
   user       User[]
+  schedules  Schedule[]
 }
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  day       String   // Día de la semana (e.g., Lunes, Martes)
+  startTime String   // Hora de inicio (e.g., 09:00)
+  endTime   String   // Hora de fin (e.g., 18:00)
+  branchId  Int?     // Hacemos el campo opcional para permitir `NULL`
+  branch    Branch?  @relation(fields: [branchId], references: [id])
+}
+
 
 model Product {
   id                Int         @id @default(autoincrement())
