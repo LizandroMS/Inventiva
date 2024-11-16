@@ -77,17 +77,15 @@ export default function Locales() {
   const groupSchedules = (schedules: Schedule[]) => {
     const grouped: { days: string[]; startTime: string; endTime: string }[] = [];
 
-    schedules.forEach((schedule, index) => {
-      console.log(index)
+    schedules.forEach((schedule) => {
+      const lastGroup = grouped[grouped.length - 1];
       if (
-        grouped.length > 0 &&
-        grouped[grouped.length - 1].startTime === schedule.startTime &&
-        grouped[grouped.length - 1].endTime === schedule.endTime
+        lastGroup &&
+        lastGroup.startTime === schedule.startTime &&
+        lastGroup.endTime === schedule.endTime
       ) {
-        // Si el horario coincide con el grupo anterior, agregar el día
-        grouped[grouped.length - 1].days.push(schedule.day);
+        lastGroup.days.push(schedule.day);
       } else {
-        // Crear un nuevo grupo
         grouped.push({
           days: [schedule.day],
           startTime: schedule.startTime,
@@ -97,6 +95,14 @@ export default function Locales() {
     });
 
     return grouped;
+  };
+
+  // Convertir hora a formato AM/PM
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12; // Ajusta las horas para formato 12h
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
 
   return (
@@ -134,12 +140,19 @@ export default function Locales() {
               <div className="flex items-center mt-2">
                 <FaClock className="text-green-700 mr-2" />
                 <div>
-                  <p className="font-semibold text-sm text-black">Horario de tienda</p>
-                  {groupSchedules(branch.schedules).map((group, index) => (
-                    <p key={index} className="text-sm text-black">
-                      {group.days.join(", ")}: {group.startTime} - {group.endTime}
-                    </p>
-                  ))}
+                  <p className="font-semibold text-sm text-black mb-2">Horario de tienda:</p>
+                  <table className="table-auto w-full text-sm">
+                    <tbody>
+                      {groupSchedules(branch.schedules).map((group, index) => (
+                        <tr key={index}>
+                          <td className="text-gray-800 pr-4">{group.days.join(", ")}</td>
+                          <td className="text-gray-800">
+                            {formatTime(group.startTime)} - {formatTime(group.endTime)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 

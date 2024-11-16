@@ -270,7 +270,7 @@ export default function EditarProductosPage() {
                   value={editingProduct?.description || ""}
                   onChange={(e) =>
                     setEditingProduct((prev) =>
-                      prev ? { ...prev, name: e.target.value } : prev
+                      prev ? { ...prev, description: e.target.value } : prev
                     )
                   }
                   className="w-full p-3 border rounded-lg text-black"
