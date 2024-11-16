@@ -45,14 +45,13 @@ model Branch {
 }
 
 model Schedule {
-  id        Int      @id @default(autoincrement())
-  day       String   // Día de la semana (e.g., Lunes, Martes)
-  startTime String   // Hora de inicio (e.g., 09:00)
-  endTime   String   // Hora de fin (e.g., 18:00)
-  branchId  Int?     // Hacemos el campo opcional para permitir `NULL`
-  branch    Branch?  @relation(fields: [branchId], references: [id])
+  id        Int    @id @default(autoincrement())
+  day       String // Día de la semana (e.g., Lunes, Martes)
+  startTime String // Hora de inicio (e.g., 09:00)
+  endTime   String // Hora de fin (e.g., 18:00)
+  branchId  Int // Campo obligatorio, relacionado con Branch
+  branch    Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
 }
-
 
 model Product {
   id                Int         @id @default(autoincrement())

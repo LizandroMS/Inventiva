@@ -34,7 +34,7 @@ export default function GestionarSucursales() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
-  console.log(successMessage, router);
+  console.log(router, successMessage);
   useEffect(() => {
     fetchBranches();
   }, []);
@@ -72,16 +72,18 @@ export default function GestionarSucursales() {
 
     try {
       const method = branchId ? "PUT" : "POST";
-      const url = branchId
-        ? `/api/administrador/createbranch/${branchId}`
-        : "/api/administrador/createbranch";
+      const url = "/api/administrador/createbranch"; // Esta es la ruta correcta según tu API
 
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, address, phone, schedules }),
+        body: JSON.stringify(
+          branchId
+            ? { id: branchId, name, address, phone, schedules } // Para edición
+            : { name, address, phone, schedules } // Para creación
+        ),
       });
 
       if (response.ok) {
@@ -129,13 +131,17 @@ export default function GestionarSucursales() {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/administrador/branch/${id}`, {
-        method: "DELETE",
+      const response = await fetch(`/api/administrador/eliminarbranche`, {
+        method: "POST", // Cambiamos el método a POST
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }), // Enviamos el id dentro de un objeto
       });
 
       if (response.ok) {
         setSuccessMessage("Sucursal eliminada con éxito.");
-        fetchBranches();
+        fetchBranches(); // Recarga la lista de sucursales después de eliminar
       } else {
         setErrorMessage("Error al eliminar la sucursal.");
       }
@@ -170,12 +176,12 @@ export default function GestionarSucursales() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <Header />
 
       <div className="container mx-auto p-8 flex-grow">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-black">
             Gestión de Sucursales
           </h1>
           <button
@@ -183,7 +189,7 @@ export default function GestionarSucursales() {
               resetForm();
               setIsModalOpen(true);
             }}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
           >
             Agregar Sucursal
           </button>
@@ -196,24 +202,30 @@ export default function GestionarSucursales() {
             <table className="table-auto w-full text-left border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2 border border-gray-300">Nombre</th>
-                  <th className="px-4 py-2 border border-gray-300">
+                  <th className="px-4 py-2 border border-gray-300 text-black font-bold">
+                    Nombre
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 text-black font-bold">
                     Dirección
                   </th>
-                  <th className="px-4 py-2 border border-gray-300">Teléfono</th>
-                  <th className="px-4 py-2 border border-gray-300">Acciones</th>
+                  <th className="px-4 py-2 border border-gray-300 text-black font-bold">
+                    Teléfono
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 text-black font-bold">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {branches.map((branch) => (
                   <tr key={branch.id} className="hover:bg-gray-100">
-                    <td className="px-4 py-2 border border-gray-300">
+                    <td className="px-4 py-2 border border-gray-300 text-black">
                       {branch.name}
                     </td>
-                    <td className="px-4 py-2 border border-gray-300">
+                    <td className="px-4 py-2 border border-gray-300 text-black">
                       {branch.address}
                     </td>
-                    <td className="px-4 py-2 border border-gray-300">
+                    <td className="px-4 py-2 border border-gray-300 text-black">
                       {branch.phone}
                     </td>
                     <td className="px-4 py-2 border border-gray-300 flex gap-2">
@@ -244,7 +256,7 @@ export default function GestionarSucursales() {
             className="bg-white rounded-lg shadow-lg max-w-lg w-full overflow-y-auto p-6"
             style={{ height: "90%" }}
           >
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-4 text-black">
               {branchId ? "Editar Sucursal" : "Agregar Sucursal"}
             </h2>
             {errorMessage && (
@@ -258,7 +270,7 @@ export default function GestionarSucursales() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
                 placeholder="Ej. Sucursal Lima"
               />
             </div>
@@ -270,7 +282,7 @@ export default function GestionarSucursales() {
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
                 placeholder="Ej. Av. Principal 123, Lima"
               />
             </div>
@@ -282,11 +294,13 @@ export default function GestionarSucursales() {
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
                 placeholder="Ej. 999 888 777"
               />
             </div>
-            <h3 className="text-lg font-semibold mb-4">Horarios de Atención</h3>
+            <h3 className="text-lg font-semibold mb-4 text-black">
+              Horarios de Atención
+            </h3>
             {schedules.map((schedule, index) => (
               <div key={index} className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">
@@ -299,7 +313,7 @@ export default function GestionarSucursales() {
                     onChange={(e) =>
                       handleScheduleChange(index, "startTime", e.target.value)
                     }
-                    className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
                   />
                   <input
                     type="time"
@@ -307,7 +321,7 @@ export default function GestionarSucursales() {
                     onChange={(e) =>
                       handleScheduleChange(index, "endTime", e.target.value)
                     }
-                    className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-gray-700"
                   />
                 </div>
               </div>
