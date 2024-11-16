@@ -6,21 +6,29 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { name, address, phone } = req.body;
+    const { name, address, phone, schedules } = req.body;
 
     // Validar los datos
-    if (!name || !address || !phone) {
+    if (!name || !address || !phone || !Array.isArray(schedules)) {
       return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
 
     try {
-      // Crear la nueva sucursal en la base de datos
+      // Crear la nueva sucursal junto con los horarios en la base de datos
       const branch = await prisma.branch.create({
         data: {
           name,
           address,
           phone,
+          schedules: {
+            create: schedules.map((schedule: { day: string; startTime: string; endTime: string }) => ({
+              day: schedule.day,
+              startTime: schedule.startTime,
+              endTime: schedule.endTime,
+            })),
+          },
         },
+        include: { schedules: true }, // Incluimos los horarios en la respuesta
       });
 
       return res.status(201).json(branch);
