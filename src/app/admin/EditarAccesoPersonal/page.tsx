@@ -26,7 +26,7 @@ export default function EditarAccesoPersonal() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Controla la visibilidad del modal
   const router = useRouter();
-  console.log(router)
+  console.log(router);
   // Cargar usuarios y sucursales al cargar el componente
   useEffect(() => {
     const fetchUsers = async () => {
@@ -235,7 +235,7 @@ export default function EditarAccesoPersonal() {
                   <input
                     type="text"
                     name="dni"
-                    value={selectedUser.dni}
+                    value={selectedUser.dni || ""}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border rounded-lg text-gray-800"
                   />
@@ -253,9 +253,7 @@ export default function EditarAccesoPersonal() {
                       type="text"
                       placeholder="Dirección"
                       value={address.address}
-                      onChange={(e) =>
-                        handleInputChange(e, index, "address")
-                      }
+                      onChange={(e) => handleInputChange(e, index, "address")}
                       className="w-full px-4 py-2 mb-2 border rounded-lg text-gray-800"
                     />
                     <input
