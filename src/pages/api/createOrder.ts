@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           items: true, // Incluir los items en la respuesta
         },
       });
-
+      console.log("---------------")
       res.status(201).json(order);
     } catch (error) {
       console.error('Error al crear el pedido:', error);
