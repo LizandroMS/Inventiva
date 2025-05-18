@@ -34,7 +34,6 @@ const familias = [
   "Pollos a la brasa",
   "Chifa",
   "Platos a la carta",
-  "Parrillas",
   "Guarniciones",
   "Bebidas sin alcohol",
   "Bebidas con alcohol",
