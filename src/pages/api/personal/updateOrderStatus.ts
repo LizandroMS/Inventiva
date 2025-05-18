@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 // Definir las transiciones de estado permitidas
 const allowedTransitions: { [key: string]: string[] } = {
-  PENDIENTE: ["PREPARANDO"],
+  PENDIENTE: ["PREPARANDO", "CANCELADO"],
   PREPARANDO: ["DRIVER"],
   DRIVER: ["ENTREGADO"],
   // ENTREGADO y CANCELADO no permiten transiciones adicionales
