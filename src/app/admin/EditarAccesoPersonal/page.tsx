@@ -16,7 +16,7 @@ interface Address {
 interface UserWithAddresses extends User {
   addresses: Address[];
   branch: Branch | null; // Incluimos la sucursal si es personal
-  birthDate:Date
+  birthDate: Date;
 }
 
 export default function EditarAccesoPersonal() {
@@ -28,7 +28,7 @@ export default function EditarAccesoPersonal() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Controla la visibilidad del modal
   const router = useRouter();
-  console.log(router)
+  console.log(router);
   // Cargar usuarios y sucursales al cargar el componente
   useEffect(() => {
     const fetchUsers = async () => {
@@ -67,6 +67,28 @@ export default function EditarAccesoPersonal() {
     setSelectedUser(user);
     setIsModalOpen(true); // Abrir el modal cuando se haga clic en editar
   };
+  const handleDeleteUser = async (id: number) => {
+  if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) return;
+
+  try {
+    const res = await fetch("/api/administrador/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (res.ok) {
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } else {
+      console.error("Error al eliminar usuario");
+    }
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+  }
+};
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -168,7 +190,9 @@ export default function EditarAccesoPersonal() {
                 <td className="p-4 text-black">{user.fullName}</td>
                 <td className="p-4 text-black">{user.email}</td>
                 <td className="p-4 text-black">{user.phone}</td>
-                <td className="p-4 text-black">{format(new Date(user.birthDate), "dd/MM/yyyy")}</td>
+                <td className="p-4 text-black">
+                  {format(new Date(user.birthDate), "dd/MM/yyyy")}
+                </td>
                 <td className="p-4 text-black">{user.role}</td>
                 <td className="p-4 text-black">{user.branch?.name || "N/A"}</td>
                 <td className="p-4 text-black">
@@ -177,6 +201,14 @@ export default function EditarAccesoPersonal() {
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                   >
                     Editar
+                  </button>
+                </td>
+                <td className="p-4 text-black">
+                  <button
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="bg-red-500 text-white px-4 py-1 rounded-lg"
+                  >
+                    Eliminar
                   </button>
                 </td>
               </tr>
@@ -237,7 +269,7 @@ export default function EditarAccesoPersonal() {
                   <input
                     type="text"
                     name="dni"
-                    value={selectedUser.dni ||''}
+                    value={selectedUser.dni || ""}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border rounded-lg text-gray-800"
                   />
@@ -255,9 +287,7 @@ export default function EditarAccesoPersonal() {
                       type="text"
                       placeholder="Dirección"
                       value={address.address}
-                      onChange={(e) =>
-                        handleInputChange(e, index, "address")
-                      }
+                      onChange={(e) => handleInputChange(e, index, "address")}
                       className="w-full px-4 py-2 mb-2 border rounded-lg text-gray-800"
                     />
                     <input
