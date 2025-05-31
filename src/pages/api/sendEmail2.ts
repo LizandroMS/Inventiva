@@ -43,13 +43,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "polleriaelsabrosito14@gmail.com",//process.env.EMAIL_USER,
-        pass: "bpga onox xzbz urjv"//process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: "polleriaelsabrosito14@gmail.com",//process.env.EMAIL_USER,
+      from: process.env.EMAIL_USER,
       to: user.email,
       subject: "Recuperación de contraseña",
       html: `
