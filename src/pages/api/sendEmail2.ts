@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // 4. Preparar enlace de recuperación
-    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+    const resetUrl = `https://www.polleriasabrosito.com//reset-password?token=${token}`;
 
     // 5. Enviar correo
     const transporter = nodemailer.createTransport({

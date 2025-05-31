@@ -35,14 +35,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md mx-auto mt-20">
-      <h2 className="text-2xl font-bold text-center mb-4">Cambiar Contraseña</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 block text-gray-700">Cambiar Contraseña</h2>
 
       <input
         type="password"
         placeholder="Nueva contraseña"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 border rounded mb-4"
+        className="w-full px-4 py-2 border rounded mb-4 block text-gray-700"
         required
       />
       <input

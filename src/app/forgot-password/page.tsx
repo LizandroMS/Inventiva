@@ -26,13 +26,13 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Recuperar Contraseña</h2>
+        <h2 className="text-2xl font-bold text-center mb-4 block text-gray-700">Recuperar Contraseña</h2>
         <input
           type="email"
           placeholder="Ingresa tu correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-2 border rounded mb-4"
+          className="w-full px-4 py-2 border rounded mb-4 block text-gray-700"
           required
         />
         <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
