@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ message: "Correo no registrado" });
     }
 
-    // ✅ Puedes hacer aquí procesos adicionales con `user`
+    // Puedes hacer aquí procesos adicionales con `user`
     console.log("Usuario completo:", user);
 
     // 2. Generar token y expiración
