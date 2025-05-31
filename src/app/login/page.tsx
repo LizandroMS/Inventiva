@@ -191,7 +191,9 @@ export default function LoginPage() {
             </h2>
             <form onSubmit={handleLoginSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700">Correo Electrónico</label>
+                <label className="block text-gray-700">
+                  Correo Electrónico
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -231,6 +233,12 @@ export default function LoginPage() {
                 Regístrate aquí
               </button>
             </p>
+            <p
+              className="text-sm text-center text-blue-500 hover:underline cursor-pointer mt-2"
+              onClick={() => router.push("/forgot-password")}
+            >
+              ¿Olvidaste tu contraseña?
+            </p>
           </div>
         ) : (
           <div>
@@ -250,7 +258,9 @@ export default function LoginPage() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Correo Electrónico</label>
+                <label className="block text-gray-700">
+                  Correo Electrónico
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -272,7 +282,9 @@ export default function LoginPage() {
                 />
               </div>
               <div className="mb-4 relative">
-                <label className="block text-gray-700">Confirmar Contraseña</label>
+                <label className="block text-gray-700">
+                  Confirmar Contraseña
+                </label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -281,9 +293,10 @@ export default function LoginPage() {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white"
                 />
-                {formData.password && formData.password === formData.confirmPassword && (
-                  <FaCheck className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />
-                )}
+                {formData.password &&
+                  formData.password === formData.confirmPassword && (
+                    <FaCheck className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500" />
+                  )}
               </div>
 
               <div className="mb-4">
@@ -299,7 +312,9 @@ export default function LoginPage() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-700">Fecha de Nacimiento</label>
+                <label className="block text-gray-700">
+                  Fecha de Nacimiento
+                </label>
                 <input
                   type="date"
                   name="birthDate"
@@ -309,13 +324,17 @@ export default function LoginPage() {
                 />
               </div>
 
-              <h3 className="text-xl font-bold text-gray-700 mb-4">Direcciones</h3>
+              <h3 className="text-xl font-bold text-gray-700 mb-4">
+                Direcciones
+              </h3>
               {formData.addresses.map((address, index) => (
                 <div
                   key={index}
                   className="mb-4 border p-4 rounded-lg bg-gray-50"
                 >
-                  <label className="block text-gray-700">Dirección {index + 1}</label>
+                  <label className="block text-gray-700">
+                    Dirección {index + 1}
+                  </label>
                   <input
                     type="text"
                     placeholder="Ingresa la dirección"
@@ -323,7 +342,9 @@ export default function LoginPage() {
                     onChange={(e) => handleChange(e, index, "address")}
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black bg-white mb-2"
                   />
-                  <label className="block text-gray-700">Referencia {index + 1}</label>
+                  <label className="block text-gray-700">
+                    Referencia {index + 1}
+                  </label>
                   <input
                     type="text"
                     placeholder="Ingresa la referencia"
@@ -338,7 +359,9 @@ export default function LoginPage() {
                       onChange={(e) => handleChange(e, index, "isActive")}
                       className="mr-2"
                     />
-                    <label className="text-gray-700">Marcar como dirección activa</label>
+                    <label className="text-gray-700">
+                      Marcar como dirección activa
+                    </label>
                   </div>
                   <button
                     type="button"

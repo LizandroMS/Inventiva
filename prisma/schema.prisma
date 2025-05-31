@@ -133,6 +133,14 @@ model ClaimBook {
   createdAt   DateTime @default(now()) // Fecha del reclamo
   updatedAt   DateTime @updatedAt // Última fecha de actualización
 }
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 
 //npx prisma migrate dev --name init  //este codigo migra es esquema que se detalla arriba a la db
 
