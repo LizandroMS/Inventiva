@@ -50,7 +50,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
         placeholder="Confirmar contraseña"
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
-        className="w-full px-4 py-2 border rounded mb-4"
+        className="w-full px-4 py-2 border rounded mb-4 block text-gray-700"
         required
       />
       <button className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">
