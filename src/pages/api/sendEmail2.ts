@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client';
 import crypto from "crypto";
 import nodemailer from 'nodemailer';
 const prisma = new PrismaClient();
+
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ message: "Método no permitido" });
 
